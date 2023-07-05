@@ -23,6 +23,14 @@ const Dashboard = () => {
             >
                 DOWNLOAD
             </a>
+
+            <button
+            onClick={() => {
+                
+            }}
+            >
+                create Client
+            </button>
         </>
     )
 }

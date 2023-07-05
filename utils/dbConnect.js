@@ -4,9 +4,9 @@ import mongoose from "mongoose";
 const MONGODB_URI = process.env.DB_URI
 
 if(!MONGODB_URI) {
-    throw new Error(
-        "No MongoDB uri environmental variable."
-    )
+    // throw new Error(
+    //     "No MongoDB uri environmental variable."
+    // )
 }
 
 let cached = global.mongoose

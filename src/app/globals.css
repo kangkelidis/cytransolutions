@@ -26,6 +26,6 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-input {
+input, li {
   color: black;
 }

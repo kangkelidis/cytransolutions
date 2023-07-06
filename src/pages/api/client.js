@@ -7,6 +7,7 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
         const data = JSON.parse(req.body)
         console.log(data);
+        // data.count = Client.countDocuments({}).exec(())
         await Client.create(data)
         return res.json({message: "ok"})
     }

@@ -1,6 +1,5 @@
 'use client'
 
-import Navbar from "../components/Navbar"
 import { jsPDF } from "jspdf";
 
 async function handleDownloadPDF() {
@@ -16,7 +15,6 @@ const Dashboard = () => {
 
     return (
         <>
-            <Navbar />
             <h1>DASHBOARD</h1>
             <a 
             onClick={handleDownloadPDF}

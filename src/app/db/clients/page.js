@@ -41,9 +41,9 @@ export default function Clients() {
   }, [needsUpdate]);
 
   return (
-    <main className="w-3/4 h-screen overflow-hidden ">
+    <main className="w-full h-full overflow-hidden ">
       <Title title={"Clients Overview"} data={clientsNames} />
-      <div className="w-full h-5/6 overflow-y-scroll overflow-x-hidden">
+      <div className="w-full h-5/6 overflow-y-scroll">
         {clients.map((client) => (
           <Card
             key={client._id}
@@ -53,8 +53,6 @@ export default function Clients() {
           />
         ))}
       </div>
-
-      <button onClick={handleAddClicked}>Add</button>
     </main>
   );
 }

@@ -1,7 +1,11 @@
+'use client'
+
 import "./globals.css";
 import { Inter } from "next/font/google";
 import AuthContext from "./AuthContext";
 import Navbar from "./components/Navbar";
+import React from "react";
+import TopBar from "./components/TopBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,15 +15,19 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+
   return (
     <AuthContext>
       <head></head>
 
       <html lang="en">
-        <body className="flex flex-row" >
-          <Navbar />
-          {children}
+        <body className="">
+          <TopBar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+          <div className="flex h-[calc(100vh-40px)]">
+            <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            {children}
+          </div>
         </body>
       </html>
     </AuthContext>

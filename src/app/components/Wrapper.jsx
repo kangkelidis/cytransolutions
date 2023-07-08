@@ -10,7 +10,7 @@ export default function Wrapper({ children }) {
   return (
     <body className="">
       <TopBar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <div className="flex">
+      <div className="flex h-[calc(100dvh-40px)]">
         <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
         {children}
       </div>

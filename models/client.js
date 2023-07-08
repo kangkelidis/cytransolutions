@@ -14,6 +14,15 @@ const clientSchema = new mongoose.Schema({
     address: {
         type: String,
     },
+    tel: {
+        type: String,
+    },
+    notes: {
+        type: String,
+    },
+    count: {
+        type: Number,
+    },
     createdAt: {
         type: Date,
         default: Date.now

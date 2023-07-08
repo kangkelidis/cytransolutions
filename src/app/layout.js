@@ -1,4 +1,3 @@
-
 import "./globals.css";
 import { Inter } from "next/font/google";
 import AuthContext from "./AuthContext";
@@ -15,7 +14,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <AuthContext>
-      <head></head>
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width,height=device-height initial-scale=1"
+        />
+      </head>
       <html lang="en">
         <Wrapper>{children}</Wrapper>
       </html>

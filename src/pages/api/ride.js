@@ -1,4 +1,4 @@
-import Client from "../../../models/client";
+import Ride from "../../../models/ride";
 import dbConnect from "../../../utils/dbConnect";
 
 export default async function handler(req, res) {
@@ -6,33 +6,26 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     const data = JSON.parse(req.body);
-    const total = await Client.count({});
+    const total = await Ride.count({});
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
     );
     filteredData.count = total + 1;
-    console.log(filteredData);
-    // data.count = Client.countDocuments({}).exec(())
-    await Client.create(filteredData);
+    await Ride.create(filteredData);
     return res.json({ message: "ok" });
   }
 
   if (req.method === "GET") {
-    const perPage = req.query.limit;
-    const page = req.query.page;
     const id = req.query.id;
 
     if (id) {
-      const result = await Client.findById(id);
+      const result = await Ride.findById(id);
       return res.json({ body: result });
     }
 
-    const total = await Client.count({});
-    const result = await Client.find({})
-      .limit(perPage)
-      .skip(perPage * page);
+    const result = await Ride.find({})
 
-    return res.json({ body: { data: result, total: total } });
+    return res.json({ body: { data: result } });
   }
 
   if (req.method === "PUT") {
@@ -41,19 +34,23 @@ export default async function handler(req, res) {
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
     );
-    await Client.findByIdAndUpdate(id, {
-      name: filteredData.name,
-      address: filteredData.address,
-      tel: filteredData.tel,
+    await Ride.findByIdAndUpdate(id, {
+      date: filteredData.date,
+      client: filteredData.client,
+      driver: filteredData.driver,
+      from: filteredData.from,
+      to: filteredData.to,
+      cash: filteredData.cash,
+      credit: filteredData.credit,
+      invoice: filteredData.invoice,
       notes: filteredData.notes,
-      email: filteredData.email,
     });
     return res.json({ message: "ok" });
   }
 
   if (req.method === "DELETE") {
     const id = req.query.id;
-    await Client.findByIdAndDelete(id)
+    await Ride.findByIdAndDelete(id)
     return res.json({ message: "ok" });
 
   }

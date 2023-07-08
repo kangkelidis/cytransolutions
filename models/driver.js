@@ -11,6 +11,9 @@ const driverSchema = new mongoose.Schema({
         type: String,
         validate: [validator.isEmail, 'Please enter a valid email']
     },
+    count: {
+        type: Number,
+    },
     createdAt: {
         type: Date,
         default: Date.now

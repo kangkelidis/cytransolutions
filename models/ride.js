@@ -11,7 +11,8 @@ const rideSchema = new mongoose.Schema({
     },
     driver: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Driver"
+        ref: "Driver",
+        required: true
     },
     from: {
         type: String,
@@ -23,7 +24,6 @@ const rideSchema = new mongoose.Schema({
     },
     notes: {
         type: String,
-        required: true
     },
     cash: {
         type: Number,
@@ -33,6 +33,9 @@ const rideSchema = new mongoose.Schema({
     },
     invoice: {
         type: mongoose.Schema.Types.ObjectId
+    },
+    count: {
+        type: Number,
     },
     createdAt: {
         type: Date,

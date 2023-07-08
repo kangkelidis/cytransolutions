@@ -4,7 +4,7 @@ import { MdModeEditOutline } from "react-icons/md";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
-export default function Card({
+export default function DriverRow({
   id,
   _id,
   name,
@@ -19,7 +19,7 @@ export default function Card({
   const router = useRouter();
 
   function handleEdit() {
-    router.push(`/db/clients/id=${_id}`)
+    router.push(`/db/drivers/id=${_id}`)
   }
 
   const tdClass = "align-top px-3 pt-1 pb-2 border-b-2"

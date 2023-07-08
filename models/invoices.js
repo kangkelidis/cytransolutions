@@ -24,6 +24,9 @@ const invoicesSchema = new mongoose.Schema({
             ]
         }
     },
+    count: {
+        type: Number,
+    },
     createdAt: {
         type: Date,
         default: Date.now

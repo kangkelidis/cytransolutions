@@ -14,8 +14,8 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
   return (
       <nav
         className={`${
-          sidebarOpen ? "w-[10rem]" : "max-md:!w-0 w-fit"
-        } max-md:absolute ease-in-out duration-300 flex flex-col items-center overflow-hidden text-white bg-gray-900 rounded`}
+          sidebarOpen ? "min-w-[10rem]" : "max-md:!w-0"
+        } max-md:absolute h-[calc(100vh-40px)] ease-in-out duration-300 flex flex-col items-center overflow-hidden text-white bg-gray-900 rounded`}
       >
         <a
           className="flex items-center justify-center w-full px-3 mt-3"

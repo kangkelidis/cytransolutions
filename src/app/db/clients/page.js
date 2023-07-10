@@ -68,7 +68,7 @@ export default function Clients() {
               <Card
                 key={client._id}
                 _id={client._id}
-                id={client.count}
+                code={client.code}
                 name={client.name}
                 address={client.address}
                 email={client.email}

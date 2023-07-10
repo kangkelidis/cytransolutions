@@ -1,19 +1,24 @@
 import Client from "../../../models/client";
 import dbConnect from "../../../utils/dbConnect";
+import Tables from "../../../models/tables";
 
 export default async function handler(req, res) {
   await dbConnect();
 
   if (req.method === "POST") {
     const data = JSON.parse(req.body);
+    // TODO:use a total created count. Stored in a table and update that
+    // to avoid duplicated ids after delete 
     const total = await Client.count({});
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
     );
     filteredData.count = total + 1;
     console.log(filteredData);
-    // data.count = Client.countDocuments({}).exec(())
-    await Client.create(filteredData);
+    if (await Client.create(filteredData)) {
+      const tables = Tables.find({})
+      Tables.findOneAndUpdate({}, {clients: tables.clients + 1})
+    };
     return res.json({ message: "ok" });
   }
 

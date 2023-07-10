@@ -16,11 +16,11 @@ const rideSchema = new mongoose.Schema({
     },
     from: {
         type: String,
-        required: true,
+        required: false,
     },
     to: {
         type: String,
-        required: true
+        required: false
     },
     notes: {
         type: String,

@@ -5,7 +5,7 @@ import { BsFillPlusCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
 export default function Card({
-  id,
+  code,
   _id,
   name,
   address,
@@ -27,7 +27,7 @@ export default function Card({
   return (
     <tr className="bg-gray-800 hover:bg-gray-700">
       <td className={tdClass}>
-        <span onClick={handleEdit} className="font-bold underline cursor-pointer">{id}</span>
+        <span onClick={handleEdit} className="font-bold underline cursor-pointer">{code}</span>
       </td>
 
       <td className={tdClass}>

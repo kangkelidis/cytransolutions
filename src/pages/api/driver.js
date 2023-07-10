@@ -1,5 +1,7 @@
 import Driver from "../../../models/driver";
 import dbConnect from "../../../utils/dbConnect";
+import Tables from "../../../models/tables";
+import tables from "../../../models/tables";
 
 export default async function handler(req, res) {
   await dbConnect();
@@ -11,7 +13,11 @@ export default async function handler(req, res) {
       Object.entries(data).filter(([_, v]) => v != "")
     );
     filteredData.count = total + 1;
-    await Driver.create(filteredData);
+
+    if (await Driver.create(filteredData)) {
+      const tables = Tables.find({})
+      Tables.findOneAndUpdate({}, {drivers: tables.drivers + 1})
+    };
     return res.json({ message: "ok" });
   }
 

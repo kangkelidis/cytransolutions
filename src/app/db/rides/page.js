@@ -51,6 +51,7 @@ export default function Rides() {
               key={ride._id}
               _id={ride._id}
               id={ride.count}
+              date={ride.date}
               from={ride.from}
               to={ride.to}
               client_id={ride.client}

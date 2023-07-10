@@ -20,8 +20,12 @@ const clientSchema = new mongoose.Schema({
     notes: {
         type: String,
     },
-    count: {
+    code: {
         type: Number,
+    },
+    invoicesCreated: {
+        default: 0,
+        type: Number
     },
     createdAt: {
         type: Date,

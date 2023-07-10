@@ -1,13 +1,14 @@
 import mongoose from "mongoose";
+import InvoiceApi from "@/pages/api/invoice"
 
 const invoicesSchema = new mongoose.Schema({
     date: {
         type: Date,
-        required: true,
     },
     client: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Client"
+        ref: "Client",
+        required: true,
     },
     notes: {
         type: String
@@ -24,8 +25,17 @@ const invoicesSchema = new mongoose.Schema({
             ]
         }
     },
-    count: {
+    rides: [
+        { type : mongoose.Schema.Types.ObjectId, 
+        ref: 'ride' }
+    ],
+    total: {
         type: Number,
+        default: 0
+    },
+    code: {
+        type: String,
+        required: true
     },
     createdAt: {
         type: Date,

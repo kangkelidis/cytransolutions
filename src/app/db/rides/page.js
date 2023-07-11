@@ -58,7 +58,8 @@ export default function Rides() {
               driver_id={ride.driver}
               cash={ride.cash}
               credit={ride.credit}
-              invoice={ride.invoice}
+              invoice_id={ride.invoice}
+              invoice={ride.invoice_code}
               notes={ride.notes}
             />
           ))}

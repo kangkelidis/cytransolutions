@@ -14,6 +14,7 @@ export default function RideRow({
   to,
   cash,
   credit,
+  invoice_id,
   invoice,
   notes,
 }) {
@@ -98,10 +99,12 @@ export default function RideRow({
       </td>
 
       <td className={tdClass}>
-        <div className="flex flex-col">
+        <div
+        onClick={() => router.push(`/db/invoices/id=${invoice_id}`)}
+        className="flex flex-col cursor-pointer">
           <small className="text-xs w-24">Open Invoice</small>
           <span className=" bg-green-400 bg-opacity-50 rounded-md text-center text-black font-bold">
-            {invoice}98
+            {invoice}
           </span>
         </div>
 

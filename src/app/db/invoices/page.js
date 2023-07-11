@@ -3,8 +3,11 @@
 import Title from "@/app/components/Title";
 import React from "react";
 import InvoiceRow from "@/app/db/invoices/components/InvoiceRow" 
+import { useRouter } from "next/navigation";
 
 export default function Invoices() {
+  const router = useRouter()
+
     const [invoices, setInvoices] = React.useState([]);
 
     async function fetchInvoices() {

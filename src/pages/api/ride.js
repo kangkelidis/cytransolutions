@@ -41,8 +41,15 @@ export default async function handler(req, res) {
     }
 
     const result = await Ride.find({})
-
-    return res.json({ body: { data: result } });
+    // add invoice code
+    let results = await Promise.all(result.map(async res => {
+      let invoice_code = await invoiceApi.getInvoiceCode(res.invoice)
+      return {
+        ...res._doc,
+        invoice_code: invoice_code
+      }
+    }))
+    return res.json({ body: { data: results } });
   }
 
   if (req.method === "PUT") {

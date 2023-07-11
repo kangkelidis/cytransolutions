@@ -71,11 +71,16 @@ export async function createNewInvoice(client_id, ride_id) {
     const total = client.invoicesCreated
     const code = `${client.code} / ${total+1}`
 
-    const result = await Invoice.create({client: client_id, code: code, rides: [ride_id] })
-    .then(async res => {
-        await findTotal(res._id)
-    })
-    return result._id
+    try {
+      const result = await Promise.resolve(Invoice.create({client: client_id, code: code, rides: [ride_id] }))
+      .then(async res => {
+          await findTotal(res._id)
+          return res
+      })
+      return result._id
+    } catch (error) {
+      console.log(error);
+    }
 }
 
 async function findClient(client_id) {
@@ -105,5 +110,16 @@ async function findTotal(inv_id) {
     }))
 
     await Invoice.findByIdAndUpdate(inv_id, {total: total})
+}
+
+export async function getInvoiceCode(inv_id) {
+  try {
+    const invoice = await Invoice.findById(inv_id)
+    return invoice.code
+    
+  } catch (error) {
+    console.log(error);
+    console.log(inv_id);
+  }
 }
 

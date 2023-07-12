@@ -29,7 +29,8 @@ export default async function handler(req, res) {
         const rides_num = tables.rides + 1
         await Tables.findOneAndUpdate({}, {rides: rides_num})
         if (belongsInAnInvoice(filteredData)) {
-          invoiceApi.addRideId(ride.invoice, new mongoose.Types.ObjectId(ride._id))
+          await invoiceApi.addRideId(ride.invoice, new mongoose.Types.ObjectId(ride._id))
+          await invoiceApi.findTotal(ride.invoice)
         }
       }
       return res.json({ message: "ok" });
@@ -73,7 +74,10 @@ export default async function handler(req, res) {
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
     );
-    await Ride.findByIdAndUpdate(id, {
+    // use this to find if invoice changed
+    const prevRide = await Ride.findById(id)
+
+    const ride = await Ride.findByIdAndUpdate(id, {
       date: filteredData.date,
       client: filteredData.client,
       driver: filteredData.driver,
@@ -84,6 +88,11 @@ export default async function handler(req, res) {
       invoice: filteredData.invoice,
       notes: filteredData.notes,
     });
+
+    if (ride.invoice) {
+      await invoiceApi.findTotal(ride.invoice)
+    }
+
     return res.json({ message: "ok" });
   }
 
@@ -111,7 +120,7 @@ async function generateInvoiceId(data) {
     invoice_id = openInvoice._id
   } else {
     // create a new Invoice
-    invoice_id = await invoiceApi.createNewInvoice(data.client, data._id)
+    invoice_id = await invoiceApi.createNewInvoice(data.client)
   }
 
   return invoice_id

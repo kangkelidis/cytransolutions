@@ -8,15 +8,6 @@ import Ride from "../../../models/ride";
 export default async function handler(req, res) {
   await dbConnect();
 
-  if (req.method === "POST") {
-    const data = JSON.parse(req.body);
-    let filteredData = Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v != "")
-    );
-
-    return res.json({ message: "ok" });
-  }
-
   if (req.method === "GET") {
     const id = req.query.id;
 
@@ -29,7 +20,6 @@ export default async function handler(req, res) {
     // add client model to result
     invoices = await Promise.all(invoices.map(async (invoice) => {
         let cli = await findClient(invoice.client)
-        await findTotal(invoice._id)
         let inv = invoice._doc
         return {
             ...inv,
@@ -66,17 +56,14 @@ export async function findOpenInvoice(client_id) {
     return result
 }
 
-export async function createNewInvoice(client_id, ride_id) {
+export async function createNewInvoice(client_id) {
     const client = await Client.findById(client_id);
     const total = client.invoicesCreated
     const code = `${client.code} / ${total+1}`
 
     try {
-      const result = await Promise.resolve(Invoice.create({client: client_id, code: code, rides: [ride_id] }))
-      .then(async res => {
-          await findTotal(res._id)
-          return res
-      })
+      const result = await Promise.resolve(Invoice.create({client: client_id, code: code, }))
+
       return result._id
     } catch (error) {
       console.log(error);
@@ -99,12 +86,13 @@ export async function addRideId(inv_id, ride_id) {
     await Invoice.findByIdAndUpdate(inv_id, {rides: invoice.rides})
 }
 
-async function findTotal(inv_id) {
+// to be called when a new ride is inserted and when updated and deleted
+export async function findTotal(inv_id) {
     // TODO: need to refresh cache
     // TODO: have array of ride objects
     const invoice = await Invoice.findById(inv_id)
     let total = 0
-    let credits = await Promise.all(invoice.rides.map(async ride_id => {
+    await Promise.all(invoice.rides.map(async ride_id => {
         const ride = await Ride.findById(ride_id)
         if (ride) total += ride.credit
     }))

@@ -14,6 +14,9 @@ const rideSchema = new mongoose.Schema({
         ref: "Driver",
         required: true
     },
+    passenger: {
+        type: String,
+    },
     from: {
         type: String,
         required: false,

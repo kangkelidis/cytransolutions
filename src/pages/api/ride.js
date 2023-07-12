@@ -11,33 +11,48 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     const data = JSON.parse(req.body);
-    const total = await Ride.count({});
+    const tables = await Tables.findOne({})
+    const count = tables.rides + 1
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
     );
-    filteredData.count = total + 1;
+    filteredData.count = count;
 
     if (belongsInAnInvoice(filteredData)) {
       filteredData.invoice = await generateInvoiceId(filteredData)
     }
     
-    const ride = await Ride.create(filteredData)
-    if (ride) {
-      const tables = Tables.find({})
-      Tables.findOneAndUpdate({}, {rides: tables.rides + 1})
-
-      invoiceApi.addRideId(ride.invoice, new mongoose.Types.ObjectId(ride._id))
+    try {
+      const ride = await Ride.create(filteredData)
+      if (ride) {
+        const tables = await Tables.findOne({})
+        const rides_num = tables.rides + 1
+        await Tables.findOneAndUpdate({}, {rides: rides_num})
+        if (belongsInAnInvoice(filteredData)) {
+          invoiceApi.addRideId(ride.invoice, new mongoose.Types.ObjectId(ride._id))
+        }
+      }
+      return res.json({ message: "ok" });
+      
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send("Error")
     }
 
-    return res.json({ message: "ok" });
   }
 
   if (req.method === "GET") {
     const id = req.query.id;
 
+    // TODO: not working, id is null and still runs
     if (id) {
-      const result = await Ride.findById(id);
-      return res.json({ body: result });
+      try {
+        const result = await Ride.findById(id);
+        return res.json({ body: result });
+        
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     const result = await Ride.find({})

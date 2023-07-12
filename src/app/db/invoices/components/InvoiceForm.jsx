@@ -7,14 +7,16 @@ import { changeSingleStateValue } from "../../../../../utils/utils";
 export default function InvoiceForm() {
   const router = useRouter();
 
-  const [data, setData] = React.useState({ date: null});
+  const [invoice, setInvoice] = React.useState();
+  const [rides, setRides] = React.useState([])
   const pathname = usePathname();
   const id = pathname.split("id=")[1];
 
   React.useEffect(() => {
-    fetchInvoice();
+    if (!invoice) fetchInvoice();
+    invoice && fetchRides()
 
-  }, []);
+  }, [invoice]);
 
   async function fetchInvoice() {
     const response = await fetch(`/api/invoice?id=${id}`, {
@@ -22,7 +24,16 @@ export default function InvoiceForm() {
     });
 
     const data = await response.json();
-    setData(data.body);
+    setInvoice(data.body);
+  }
+
+  async function fetchRides() {
+    const ri = await Promise.all(invoice.rides.map(async ride => {
+      const response = await fetch(`/api/ride?id=${ride}`)
+      const data = await response.json();
+      return data.body
+    }))
+    setRides(ri[0].data);
   }
 
 
@@ -52,6 +63,8 @@ export default function InvoiceForm() {
   }
 
   return (
+    <>
+
     <form onSubmit={handleSubmit}>
       <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
         <div>
@@ -63,7 +76,7 @@ export default function InvoiceForm() {
             id="Date"
             type="datetime-local"
             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-            value={data.date}
+            value={invoice ? invoice.date : null}
             onChange={(newVal) =>
               changeSingleStateValue(setData, "date", newVal.target.value)
             }
@@ -78,7 +91,7 @@ export default function InvoiceForm() {
             id="notes"
             type="email"
             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-            value={data.notes}
+            value={invoice ? invoice.notes : null}
             onChange={(newVal) =>
               changeSingleStateValue(setData, "notes", newVal.target.value)
             }
@@ -86,9 +99,6 @@ export default function InvoiceForm() {
         </div>
       </div>
 
-      <div>
-        {data.total}
-      </div>
 
       <div className="flex justify-end mt-6 gap-4">
         <button
@@ -115,5 +125,58 @@ export default function InvoiceForm() {
         </button>
       </div>
     </form>
+
+<div>
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Passenger</th>
+      <th>Itinerary</th>
+      <th>Price</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {rides &&
+      rides.map((ride) => (
+        <tr>
+          <th>{ride.date}</th>
+          <th>{ride.passenger}</th>
+          <th>{ride.itinerary}</th>
+          <th>{ride.credit}</th>
+          <th>{ride.notes}</th>
+        </tr>
+      ))}
+  </tbody>
+</table>
+
+{invoice &&
+<div>
+
+<div>
+  <span>Total</span>
+  <span>{invoice.total}</span>
+</div>
+
+<div>
+  <div><label>Invoice No.</label><span>{invoice.code}</span></div>
+  {/* <div><label>Client:</label><span>{clientName}</span></div> */}
+  <div><label>From</label><span>{}</span></div>
+  <div><label>Till</label><span>{}</span></div>
+</div>
+
+<div>
+  <span>Status</span>
+  <div>{invoice.status}</div>
+</div>
+</div>
+}
+
+
+
+
+</div>
+</>
   );
 }

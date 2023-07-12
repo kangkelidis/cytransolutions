@@ -113,6 +113,8 @@ async function findTotal(inv_id) {
 }
 
 export async function getInvoiceCode(inv_id) {
+  // does not belong to an invoice
+  if (!inv_id) return ""
   try {
     const invoice = await Invoice.findById(inv_id)
     return invoice.code

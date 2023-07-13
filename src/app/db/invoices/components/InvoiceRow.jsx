@@ -13,7 +13,6 @@ export default function InvoiceRow({
   total,
   notes,
 }) {
-    console.log(clientName);
   const router = useRouter();
 
   function handleEdit() {

@@ -2,7 +2,6 @@
 
 import React from "react";
 import Card from "./components/Card";
-import Title from "@/app/components/Title";
 
 export default function Clients() {
   const [clients, setClients] = React.useState([]);
@@ -49,8 +48,6 @@ export default function Clients() {
     "Actions",
   ];
   return (
-    <main className="w-full overflow-hidden ">
-      <Title title={"Clients Overview"} data={clientsNames} />
 
       <div className="overflow-scroll h-5/6 m-4">
         <table className="table-auto w-full min-w-fit">
@@ -86,7 +83,7 @@ export default function Clients() {
                 onClick={() => {
                   setPageNo((prev) => prev - (1 % numOfEntries));
                 }}
-                class="flex items-center px-4 py-2 mx-1 text-gray-500 bg-white rounded-md cursor-not-allowed1 dark:bg-gray-800 dark:text-gray-600"
+                className="flex items-center px-4 py-2 mx-1 text-gray-500 bg-white rounded-md cursor-not-allowed1 dark:bg-gray-800 dark:text-gray-600"
               >
                 {"<"}
               </a>
@@ -107,7 +104,7 @@ export default function Clients() {
                 onClick={() => {
                   setPageNo((prev) => prev + (1 % numOfEntries));
                 }}
-                class="flex items-center px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-white rounded-md dark:bg-gray-800 dark:text-gray-200 hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200"
+                className="flex items-center px-4 py-2 mx-1 text-gray-700 transition-colors duration-300 transform bg-white rounded-md dark:bg-gray-800 dark:text-gray-200 hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white dark:hover:text-gray-200"
               >
                 {">"}
               </a>
@@ -122,6 +119,6 @@ export default function Clients() {
           </div>
         </div>
       </div>
-    </main>
+
   );
 }

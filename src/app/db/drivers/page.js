@@ -1,6 +1,5 @@
 'use client'
 
-import Title from "@/app/components/Title";
 import React from "react";
 import DriverRow from "@/app/db/drivers/components/DriverRow" 
 
@@ -30,8 +29,6 @@ export default function Drivers() {
         "Actions",
       ];
   return (
-    <main className="w-full overflow-hidden ">
-              <Title title={"Drivers Overview"} />
 
       <table className="table-auto w-full min-w-fit">
         <thead>
@@ -58,6 +55,6 @@ export default function Drivers() {
           ))}
         </tbody>
       </table>
-    </main>
+
   );
 }

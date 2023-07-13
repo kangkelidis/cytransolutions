@@ -1,6 +1,5 @@
 'use client'
 
-import Title from "@/app/components/Title";
 import React from "react";
 import InvoiceRow from "@/app/db/invoices/components/InvoiceRow" 
 import { useRouter } from "next/navigation";
@@ -32,9 +31,6 @@ export default function Invoices() {
         "Actions",
       ];
   return (
-    <main className="w-full overflow-hidden ">
-              <Title title={"Invoices Overview"} />
-
       <table className="table-auto w-full min-w-fit">
         <thead>
           <tr>
@@ -60,6 +56,5 @@ export default function Invoices() {
           ))}
         </tbody>
       </table>
-    </main>
   );
 }

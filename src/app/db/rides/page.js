@@ -1,6 +1,5 @@
 'use client'
 
-import Title from "@/app/components/Title";
 import React from "react";
 import RideRow from "@/app/db/rides/components/RideRow" 
 
@@ -32,9 +31,6 @@ export default function Rides() {
         "Actions",
       ];
   return (
-    <main className="w-full overflow-hidden ">
-              <Title title={"Rides Overview"} />
-
       <table className="table-auto w-full min-w-fit">
         <thead>
           <tr>
@@ -65,6 +61,5 @@ export default function Rides() {
           ))}
         </tbody>
       </table>
-    </main>
   );
 }

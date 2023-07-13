@@ -10,7 +10,7 @@ export default function Title({ title, data }) {
 
     return (
         <div className="m-4">
-            <h1 className=" text-2xl font-bold">{title}</h1>
+            <h1 className=" capitalize text-2xl font-bold">{title}</h1>
 
   
             <div className="my-3 flex justify-between ">
@@ -20,13 +20,13 @@ export default function Title({ title, data }) {
                     <BiPlus className="self-center" />NEW
                 </button>
 
-                <ReactSearchBox
+                {/* <ReactSearchBox
                 placeholder="Search" 
                 data={data}
                 leftIcon={<>🔍</>}
                 onSelect={(record) => console.log(record)}
                 onChange={(value) => console.log(value)}
-                />
+                /> */}
 
             </div>
         </div>

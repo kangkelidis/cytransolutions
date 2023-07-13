@@ -23,8 +23,8 @@
     }
 
     .no-scrollbar {
-      -ms-overflow-style: none; 
-      scrollbar-width: none; 
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
   }
 }
@@ -39,6 +39,13 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-input, li {
+input,
+li {
   color: black;
+}
+
+small {
+  font-size: 0.65rem /* 10.4px */;
+  line-height: 1rem /* 16px */;
+  color: lightgrey;
 }

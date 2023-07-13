@@ -5,15 +5,20 @@ import { BsFillPlusCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
 export default function Card({
-  code,
-  _id,
-  name,
-  address,
-  tel,
-  email,
-  invoice,
-  total,
-  notes,
+  entry: {
+    code,
+    _id,
+    name,
+    address,
+    tel,
+    email,
+    invoice,
+    total,
+    notes,
+  },
+  tdClass,
+  trClass,
+  tdId,
 }) {
 
   const router = useRouter();
@@ -22,12 +27,10 @@ export default function Card({
     router.push(`/db/clients/id=${_id}`)
   }
 
-  const tdClass = "align-top px-3 pt-1 pb-2 border-b-2"
-
   return (
-    <tr className="bg-gray-800 hover:bg-gray-700">
+    <tr className={trClass}>
       <td className={tdClass}>
-        <span onClick={handleEdit} className="font-bold underline cursor-pointer">{code}</span>
+        <span onClick={handleEdit} className={tdId}>{code}</span>
       </td>
 
       <td className={tdClass}>
@@ -65,9 +68,7 @@ export default function Card({
       </td>
 
       <td className={tdClass}>
-        <div className=" text-xs px-2 w-32 h-16">
           {notes}
-        </div>
       </td>
 
       <td className={tdClass}>

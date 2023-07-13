@@ -5,29 +5,30 @@ import { BsFillPlusCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
 export default function DriverRow({
-  id,
-  _id,
-  name,
-  address,
-  tel,
-  email,
-  invoice,
-  total,
-  notes,
+  entry: {
+    count: id,
+    _id,
+    name,
+    address,
+    tel,
+    email,
+    invoice,
+    total,
+    notes,
+  },
+  tdClass,
+  trClass,
+  tdId,
 }) {
-
   const router = useRouter();
-
   function handleEdit() {
     router.push(`/db/drivers/id=${_id}`)
   }
 
-  const tdClass = "align-top px-3 pt-1 pb-2 border-b-2"
-
   return (
-    <tr className="bg-gray-800 hover:bg-gray-700">
+    <tr className={trClass}>
       <td className={tdClass}>
-        <span onClick={handleEdit} className="font-bold underline cursor-pointer">{id}</span>
+        <span onClick={handleEdit} className={tdId}>{id}</span>
       </td>
 
       <td className={tdClass}>

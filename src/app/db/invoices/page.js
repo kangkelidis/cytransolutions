@@ -1,12 +1,9 @@
 'use client'
 
 import React from "react";
-import InvoiceRow from "@/app/db/invoices/components/InvoiceRow" 
-import { useRouter } from "next/navigation";
+import Table from "../components/Table";
 
 export default function Invoices() {
-  const router = useRouter()
-
     const [invoices, setInvoices] = React.useState([]);
 
     async function fetchInvoices() {
@@ -31,30 +28,6 @@ export default function Invoices() {
         "Actions",
       ];
   return (
-      <table className="table-auto w-full min-w-fit">
-        <thead>
-          <tr>
-            {titles.map((title, i) => (
-              <th key={i} className="text-left px-3">
-                {title}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {invoices.map((invoice) => (
-            <InvoiceRow
-              key={invoice._id}
-              _id={invoice._id}
-              code={invoice.code}
-              clientName={invoice.client.name}
-              date={invoice.date}
-              status={invoice.status}
-              notes={invoice.notes}
-              total={invoice.total}
-            />
-          ))}
-        </tbody>
-      </table>
+    <Table titles={titles} data={invoices} type={"invoices"}/>
   );
 }

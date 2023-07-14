@@ -18,13 +18,14 @@ export default function RideRow({
     cash,
     credit,
     invoice: invoice_id,
-    invoice_code: invoice,
+    invoice_code,
     notes,
   },
   tdClass,
   trClass,
   tdId,
 }) {
+  console.log(invoice_code );
   const router = useRouter();
   const [driver, setDriver] = React.useState();
   const [client, setClient] = React.useState();
@@ -106,11 +107,11 @@ export default function RideRow({
       <td className={tdClass}>
         <div
           onClick={() => router.push(`/db/invoices/id=${invoice_id}`)}
-          className="flex flex-col cursor-pointer gap-3 "
+          className="flex flex-col gap-3 "
           >
         <small className="whitespace-nowrap">Open Invoice</small>
-          <span className=" bg-purple-400 bg-opacity-20 hover:bg-opacity-100 hover:text-white rounded-md text-center text-black font-bold">
-            {invoice}
+          <span className={`${invoice_code ? "cursor-pointer hover:bg-opacity-100 hover:text-white " : ""} bg-purple-400 bg-opacity-20 rounded-md text-center text-black font-bold`}>
+            {invoice_code}
           </span>
         </div>
       </td>

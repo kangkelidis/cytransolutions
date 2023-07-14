@@ -71,7 +71,7 @@ export default async function handler(req, res) {
         invoice_code: invoice_code
       }
     }))
-    return res.json({ body: { data: result, total: total } });
+    return res.json({ body: { data: results, total: total } });
   }
 
   if (req.method === "PUT") {

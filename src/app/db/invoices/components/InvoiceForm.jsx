@@ -5,6 +5,7 @@ import React from "react";
 import { changeSingleStateValue } from "../../../../../utils/utils";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
+import ChangeStatus from "./ChangeStatus";
 
 export default function InvoiceForm() {
   const router = useRouter();
@@ -58,6 +59,7 @@ export default function InvoiceForm() {
 
   return (
     <div>
+      <ChangeStatus />
       {invoice && (
         <div>
           <form onSubmit={handleSubmit}>

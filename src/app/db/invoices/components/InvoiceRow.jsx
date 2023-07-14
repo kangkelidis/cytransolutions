@@ -4,6 +4,7 @@ import { MdModeEditOutline } from "react-icons/md";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import DateDisplay from "../../components/DateDisplay";
+import StatusBox from "../../components/StatusBox";
 
 export default function InvoiceRow({
   entry: {
@@ -44,7 +45,7 @@ export default function InvoiceRow({
         <span className="font-bold">{total}</span>
       </td>
       <td className={tdClass}>
-        <span className="font-bold">{status}</span>
+        <StatusBox status={status}/>
       </td>
 
       <td className={tdClass}>{notes}</td>

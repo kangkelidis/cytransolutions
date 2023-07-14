@@ -1,5 +1,6 @@
 import Row from "./Row";
 import Pagination from "./Pagination";
+import Controls from "./Controls";
 
 export default function Table({
   titles,
@@ -14,6 +15,10 @@ export default function Table({
 }) {
   return (
     <div className="">
+
+    <div className="mt-2 mb-6">
+      <Controls />
+    </div>
 
     <div className="no-scrollbar overflow-x-scroll">
       <table className="w-full">

@@ -43,10 +43,13 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "GET") {
+    const perPage = req.query.limit;
+    const page = req.query.page;
     const id = req.query.id;
 
     // TODO: not working, id is null and still runs
     if (id) {
+      console.log(id);
       try {
         const result = await Ride.findById(id);
         return res.json({ body: result });
@@ -56,7 +59,10 @@ export default async function handler(req, res) {
       }
     }
 
+    const total = await Ride.count({});
     const result = await Ride.find({})
+      .limit(perPage)
+      .skip(perPage * page);
     // add invoice code
     let results = await Promise.all(result.map(async res => {
       let invoice_code = await invoiceApi.getInvoiceCode(res.invoice)
@@ -65,7 +71,7 @@ export default async function handler(req, res) {
         invoice_code: invoice_code
       }
     }))
-    return res.json({ body: { data: results } });
+    return res.json({ body: { data: result, total: total } });
   }
 
   if (req.method === "PUT") {

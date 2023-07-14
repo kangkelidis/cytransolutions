@@ -56,13 +56,13 @@ export default function Card({
         <div className="flex flex-col">
           <small className="text-xs w-24">Open Invoice</small>
           <span className=" bg-green-400 bg-opacity-50 rounded-md text-center text-black font-bold">
-            {invoice}98
+            {invoice}
           </span>
         </div>
         <div className="flex flex-col">
           <small className="text-xs w-24">Total</small>
           <span className=" bg-emerald-800 bg-opacity-50 rounded-md text-center text-black font-bold">
-            {total}78
+            {total}
           </span>
         </div>
       </td>

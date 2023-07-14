@@ -22,6 +22,8 @@ export default async function handler(req, res) {
   }
 
   if (req.method === "GET") {
+    const perPage = req.query.limit;
+    const page = req.query.page;
     const id = req.query.id;
 
     if (id) {
@@ -29,10 +31,13 @@ export default async function handler(req, res) {
       return res.json({ body: result });
     }
 
+    const total = await Driver.count({});
     const result = await Driver.find({})
+      .limit(perPage)
+      .skip(perPage * page);
 
-    return res.json({ body: { data: result } });
-  }
+      return res.json({ body: { data: result, total: total } });
+    }
 
   if (req.method === "PUT") {
     const id = req.query.id;

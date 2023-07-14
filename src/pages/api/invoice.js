@@ -9,14 +9,18 @@ export default async function handler(req, res) {
   await dbConnect();
 
   if (req.method === "GET") {
+    const perPage = req.query.limit;
+    const page = req.query.page;
     const id = req.query.id;
 
     if (id) {
       const result = await Invoice.findById(id);
       return res.json({ body: result });
     }
-
+    const total = await Invoice.count({});
     let invoices = await Invoice.find({})
+      .limit(perPage)
+      .skip(perPage * page);
     // add client model to result
     invoices = await Promise.all(invoices.map(async (invoice) => {
         let cli = await findClient(invoice.client)
@@ -26,7 +30,7 @@ export default async function handler(req, res) {
             client: cli
         }
     }))
-    return res.json({ body: { data: invoices } });
+    return res.json({ body: { data: invoices, total: total } });
   }
 
   if (req.method === "PUT") {

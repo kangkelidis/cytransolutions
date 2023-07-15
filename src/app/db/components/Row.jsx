@@ -18,6 +18,8 @@ export default function Row({ entry, type, border }) {
         return <DriverRow entry={entry} tdClass={tdClass} trClass={trClass} tdId={tdId}/>;
     case "clients":
         return <ClientRow entry={entry} tdClass={tdClass} trClass={trClass} tdId={tdId}/>;
+    case "ridesInInvoice":
+        return <RideRow entry={entry} invoiceView tdClass={tdClass} trClass={trClass} tdId={tdId}/>;
 
   }
 }

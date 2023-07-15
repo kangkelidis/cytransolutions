@@ -21,11 +21,11 @@ export default function RideRow({
     invoice_code,
     notes,
   },
+  invoiceView,
   tdClass,
   trClass,
   tdId,
 }) {
-  console.log(invoice_code );
   const router = useRouter();
   const [driver, setDriver] = React.useState();
   const [client, setClient] = React.useState();
@@ -81,14 +81,16 @@ export default function RideRow({
         </div>
       </td>
 
+      {!invoiceView &&
       <td className={tdClass}>
         <span>{driver && driver.name}</span>
       </td>
-
+      }
+      {!invoiceView &&
       <td className={tdClass}>
         <span>{client && client.name}</span>
       </td>
-
+}
       <td className={tdClass}>
         <span>{passenger}</span>
       </td>
@@ -104,6 +106,9 @@ export default function RideRow({
         </div>
       </td>
 
+      {!invoiceView &&
+
+
       <td className={tdClass}>
         <div
           onClick={() => router.push(`/db/invoices/id=${invoice_id}`)}
@@ -115,6 +120,7 @@ export default function RideRow({
           </span>
         </div>
       </td>
+}
 
       <td className={tdClass}>{notes}</td>
 

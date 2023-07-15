@@ -5,6 +5,8 @@ import { BsFillPlusCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import DateDisplay from "../../components/DateDisplay";
 import StatusBox from "../../components/StatusBox";
+import {  toCurrency } from "../../../../../utils/utils";
+
 
 export default function InvoiceRow({
   entry: {
@@ -42,7 +44,7 @@ export default function InvoiceRow({
         {date ? <DateDisplay date={date} /> : "-"}
       </td>
       <td className={tdClass}>
-        <span className="font-bold">{total}</span>
+        <span className="font-bold">{toCurrency(total)}</span>
       </td>
       <td className={tdClass}>
         <StatusBox status={status}/>

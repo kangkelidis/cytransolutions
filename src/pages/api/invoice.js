@@ -15,7 +15,8 @@ export default async function handler(req, res) {
 
     if (id) {
       const result = await Invoice.findById(id);
-      return res.json({ body: result });
+      let cli = await findClient(result.client)
+      return res.json({ body: {data: result, clientName: cli.name} });
     }
     const total = await Invoice.count({});
     let invoices = await Invoice.find({})

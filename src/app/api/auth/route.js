@@ -10,8 +10,6 @@ export async function POST(req) {
 
   dbConnect();
 
-  console.log(data);
-
   const user = await User.create(data)
 
   return NextResponse.json({ message: 'Created user!' });

@@ -43,15 +43,18 @@ export default function Table({
         </tbody>
       </table>
       </div>
+      
+      { pages && 
+        <Pagination
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+          numOfEntries={numOfEntries}
+          limit={limit}
+          setLimit={setLimit}
+          pages={pages}
+        />
 
-      <Pagination
-        pageNo={pageNo}
-        setPageNo={setPageNo}
-        numOfEntries={numOfEntries}
-        limit={limit}
-        setLimit={setLimit}
-        pages={pages}
-      />
+      }
     </div>
   );
 }

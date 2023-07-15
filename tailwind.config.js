@@ -14,10 +14,10 @@ module.exports = {
       },
 
       backgroundColor : {
-        open: "#00BFFF",
-        closed: "#FF4500",
-        issued: "#FFD700",
-        paid: "#32CD32",
+        open: "#1a8cff",
+        closed: "#ff5733",
+        issued: "#ffb347",
+        paid: "#8abf7c",
       },
 
       fontSize: {

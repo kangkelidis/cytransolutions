@@ -14,7 +14,6 @@ export default async function handler(req, res) {
       Object.entries(data).filter(([_, v]) => v != "")
     );
     filteredData.count = total + 1;
-    console.log(filteredData);
     if (await Client.create(filteredData)) {
       const tables = Tables.find({})
       Tables.findOneAndUpdate({}, {clients: tables.clients + 1})

@@ -35,7 +35,6 @@ export default function RideForm() {
 
     const data = await response.json();
     setData(data.body);
-    console.log(data.body.date);
   }
 
   async function fetchClients() {
@@ -100,7 +99,6 @@ export default function RideForm() {
               value={data.date}
               onChange={(newVal) =>
                 {
-                  console.log(newVal);
                   changeSingleStateValue(setData, "date", newVal)
                 }
               }

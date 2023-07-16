@@ -18,6 +18,8 @@ module.exports = {
         closed: "#ff5733",
         issued: "#ffb347",
         paid: "#8abf7c",
+
+        
       },
 
       fontSize: {

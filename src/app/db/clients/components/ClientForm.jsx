@@ -43,14 +43,14 @@ export default function ClientForm() {
       });
     }
 
-    router.push("/db/clients");
+    router.back()
   }
 
   async function handleDelete() {
     await fetch(`/api/client?id=${id}`, {
       method: "DELETE",
     });
-    router.push("/db/clients");
+    router.back();
   }
 
   return (

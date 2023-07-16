@@ -12,6 +12,7 @@
     "autoprefixer": "10.4.14",
     "bcrypt": "^5.1.0",
     "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.31",
     "mongodb": "^5.6.0",
     "mongodb-client-encryption": "^2.8.0",
     "mongoose": "^7.3.1",

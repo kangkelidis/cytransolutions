@@ -2,8 +2,8 @@ import Invoice from "../../../models/invoices";
 import dbConnect from "../../../utils/dbConnect";
 import Tables from "../../../models/tables";
 import Client from "../../../models/client";
-import mongoose from "mongoose";
 import Ride from "../../../models/ride";
+import { zeroPad } from "../../../utils/utils";
 
 export default async function handler(req, res) {
   await dbConnect();
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     if (id) {
       const result = await Invoice.findById(id);
       let cli = await findClient(result.client)
-      return res.json({ body: {data: result, clientName: cli.name} });
+      return res.json({ body: {data: result, client: cli} });
     }
     const total = await Invoice.count({});
     let invoices = await Invoice.find({})
@@ -63,12 +63,13 @@ export async function findOpenInvoice(client_id) {
 
 export async function createNewInvoice(client_id) {
     const client = await Client.findById(client_id);
-    const total = client.invoicesCreated
-    const code = `${client.code} / ${total+1}`
+    const total = client.invoicesCreated +1
+    const code = `${zeroPad(client.code, 3)}/${total}`
 
     try {
       const result = await Promise.resolve(Invoice.create({client: client_id, code: code, }))
-
+      await Client.findByIdAndUpdate(client_id, {
+        invoicesCreated: total})
       return result._id
     } catch (error) {
       console.log(error);
@@ -114,7 +115,7 @@ export async function getInvoiceCode(inv_id) {
     
   } catch (error) {
     console.log(error);
-    console.log(inv_id);
+    console.log("Error inv_id " , inv_id);
   }
 }
 

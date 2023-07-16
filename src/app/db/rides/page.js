@@ -10,9 +10,10 @@ export default function Rides() {
     const [pageNo, setPageNo] = React.useState(0);
     const [limit, setLimit] = React.useState(10);
     const [pages, setPages] = React.useState([])
+    const [searchData, setSearchData] = React.useState()
 
     async function fetchRides() {
-      const response = await fetch(`/api/ride?page=${pageNo}&limit=${limit}`, {
+      const response = await fetch(`/api/ride?page=${pageNo}&limit=${limit}&sort=${"date"}`, {
         method: "GET",
         });
         const data = await response.json();
@@ -42,6 +43,6 @@ export default function Rides() {
         "Actions",
       ];
   return (
-    <Table titles={titles} data={rides} type={"rides"}  pageNo={pageNo} setPageNo={setPageNo} limit={limit} pages={pages} numOfEntries={numOfEntries} setLimit={setLimit}/>
+    <Table titles={titles} data={rides} type={"rides"} searchData={searchData} pageNo={pageNo} setPageNo={setPageNo} limit={limit} pages={pages} numOfEntries={numOfEntries} setLimit={setLimit}/>
   );
 }

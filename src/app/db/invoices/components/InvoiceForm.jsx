@@ -2,19 +2,19 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import React from "react";
-import { printInvoice, changeSingleStateValue, toCurrency } from "../../../../../utils/utils";
+import { changeSingleStateValue, toCurrency } from "../../../../../utils/utils";
+import { printInvoice } from "../../../../../utils/generatePDF";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
 import ChangeStatus from "./ChangeStatus";
 import Table from "../../components/Table";
 import Pill from "../../components/Pill";
-import { jsPDF } from "jspdf";
 
 export default function InvoiceForm() {
   const router = useRouter();
 
   const [invoice, setInvoice] = React.useState();
-  const [clientName, setClientName] = React.useState();
+  const [client, setClient] = React.useState();
   const [rides, setRides] = React.useState([]);
   const [dates, setDates] = React.useState({ from: null, till: null });
   const pathname = usePathname();
@@ -32,7 +32,7 @@ export default function InvoiceForm() {
 
     const data = await response.json();
     setInvoice(data.body.data);
-    setClientName(data.body.clientName);
+    setClient(data.body.client);
   }
 
   async function fetchRides() {
@@ -83,7 +83,7 @@ export default function InvoiceForm() {
   }
 
   function savePDF() {
-    printInvoice(invoice, clientName)
+    printInvoice(invoice, client, rides);
   }
 
   function Status() {
@@ -112,7 +112,7 @@ export default function InvoiceForm() {
               data-enable-time
               value={invoice.date}
               onChange={(newVal) =>
-                changeSingleStateValue(setData, "date", newVal.target.value)
+                changeSingleStateValue(setInvoice, "date", newVal)
               }
             />
           </div>
@@ -127,7 +127,7 @@ export default function InvoiceForm() {
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
               value={invoice ? invoice.notes : null}
               onChange={(newVal) =>
-                changeSingleStateValue(setData, "notes", newVal.target.value)
+                changeSingleStateValue(setInvoice, "notes", newVal.target.value)
               }
             />
           </div>
@@ -163,23 +163,28 @@ export default function InvoiceForm() {
 
   function Info() {
     return (
-      <div className="bg-slate-700 p-4 rounded-lg m-4 shadow-md min-w-fit w-1/2 
-      flex justify-between max-md:flex-col gap-3 max-md:w-full">
-
+      <div
+        className="bg-slate-700 p-4 rounded-lg m-4 shadow-md min-w-fit w-1/2 
+      flex justify-between max-md:flex-col gap-3 max-md:w-full"
+      >
         <div className="w-full">
-          <div className="flex flex-col gap-1" >
-            <Pill label={"Client:"} value={clientName} />
+          <div className="flex flex-col gap-1">
+            <div 
+            className="cursor-pointer"
+            onClick={() => router.push(`/db/clients/id=${client._id}`)}>
+              <Pill label={"Client:"} value={client.name} />
+            </div>
             <Pill label={"From:"} value={dates.from} />
             <Pill label={"Till:"} value={dates.till} />
           </div>
         </div>
 
-        <div className="flex flex-col text-lg font-bold"> 
+        <div className="flex flex-col text-lg font-bold">
           <small>Total</small>
           <span className="bg-green-800 w-[7rem] text-center px-4 py-1 rounded-lg">
-            {toCurrency(invoice.total)}</span>
+            {toCurrency(invoice.total)}
+          </span>
         </div>
-
       </div>
     );
   }
@@ -195,13 +200,18 @@ export default function InvoiceForm() {
   ];
 
   return (
-    <div>
+    <div className="">
       {invoice && (
         <div>
-          <h1 className="p-4 text-lg font-bold">INVOICE No: <span className="text-purple-400 pl-4 font-extrabold">{invoice.code}</span></h1>
-          
+          <h1 className="p-4 text-lg font-bold">
+            INVOICE No:{" "}
+            <span className="text-purple-400 pl-4 font-extrabold">
+              {invoice.code}
+            </span>
+          </h1>
+
           <button onClick={savePDF}>Save PDF</button>
-          
+
           <div className="flex w-full justify-between flex-wrap">
             <Info />
             <Status />
@@ -209,8 +219,7 @@ export default function InvoiceForm() {
           {rides && (
             <div className="bg-slate-700 p-4 rounded-lg m-4 shadow-md">
               <h4 className="text-lg font-bold">Rides: </h4>
-
-              <Table titles={titles} data={rides} type={"ridesInInvoice"} />
+              <Table titles={titles} data={rides} type={"ridesInInvoice"} noTitle />
             </div>
           )}
           <Form />

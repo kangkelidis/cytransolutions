@@ -12,9 +12,10 @@ export default function Clients() {
   const [pageNo, setPageNo] = React.useState(0);
   const [limit, setLimit] = React.useState(10);
   const [pages, setPages] = React.useState([])
+  const [sortBy, setSortBy] = React.useState("_id")
 
   async function fetchClients() {
-    const response = await fetch(`/api/client?page=${pageNo}&limit=${limit}`, {
+    const response = await fetch(`/api/client?page=${pageNo}&limit=${limit}&sort=${sortBy}`, {
       method: "GET",
     });
     const data = await response.json();
@@ -42,18 +43,19 @@ export default function Clients() {
 
   React.useEffect(() => {
     fetchClients();
-  }, [pageNo, limit, needsUpdate]);
+  }, [sortBy, pageNo, limit, needsUpdate]);
 
   const titles = [
-    "Id",
-    "Name",
-    "Address",
-    "Contact",
-    "Charges",
-    "Notes",
-    "Actions",
+    {"Id": "_id" },
+    {"Name": "name"},
+    {"Address": "address"},
+    {"Contact": null},
+    // TODO: add this to client?
+    {"Charges": null},
+    {"Notes": "notes"},
+    {"Actions": null},
   ];
   return (
-    <Table titles={titles} data={clients} type={"clients"} pageNo={pageNo} setPageNo={setPageNo} limit={limit} pages={pages} numOfEntries={numOfEntries} setLimit={setLimit}/>
+    <Table titles={titles} data={clients} type={"clients"} setSortBy={setSortBy} pageNo={pageNo} setPageNo={setPageNo} limit={limit} pages={pages} numOfEntries={numOfEntries} setLimit={setLimit}/>
   );
 }

@@ -1,4 +1,4 @@
-import * as jsPDF from "jspdf";
+
 
 export function changeSingleStateValue(setter, name, value) {
   setter((prev) => {
@@ -23,16 +23,9 @@ export function toCurrency(number, withoutCents) {
   });
 }
 
-export function printInvoice(invoice, clientName) {
-  // const doc = new jsPDF.jsPDF();
-
-  // let file = require("../public/logo.js");
-
-  // doc.addImage(file.logo, "png", 10, 10, 40, 50);
-
-  // doc.text("Bill To:", 10, 10);
-  // doc.text(clientName, 10, 20);
-  // doc.text(invoice.code, 10, 10);
-  // // create a temp pdf
-  // doc.save(`a4.pdf`);
+export function zeroPad(num, places) {
+  console.log(num);
+  return String(num).padStart(places, '0')
 }
+
+

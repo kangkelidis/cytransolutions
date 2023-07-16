@@ -9,22 +9,30 @@ export default async function handler(req, res) {
     const data = JSON.parse(req.body);
     // TODO:use a total created count. Stored in a table and update that
     // to avoid duplicated ids after delete 
-    const total = await Client.count({});
+    const tables = await Tables.findOne({})
+    const count = tables.clients + 1
+    data.code = count
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
     );
-    filteredData.count = total + 1;
-    if (await Client.create(filteredData)) {
-      const tables = Tables.find({})
-      Tables.findOneAndUpdate({}, {clients: tables.clients + 1})
-    };
-    return res.json({ message: "ok" });
+
+    try {
+      const client = await Client.create(filteredData)
+      if (client) {
+        await Tables.findOneAndUpdate({}, {clients: count})
+      }
+      return res.json({ message: "ok" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send("Error")
+    }
   }
 
   if (req.method === "GET") {
     const perPage = req.query.limit;
     const page = req.query.page;
     const id = req.query.id;
+    const sort = req.query.sort
 
     if (id) {
       const result = await Client.findById(id);
@@ -33,9 +41,9 @@ export default async function handler(req, res) {
 
     const total = await Client.count({});
     const result = await Client.find({})
+      .sort({ [sort]: 1})
       .limit(perPage)
-      .skip(perPage * page);
-
+      .skip(perPage * page)
     return res.json({ body: { data: result, total: total } });
   }
 

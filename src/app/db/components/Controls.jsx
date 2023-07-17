@@ -21,21 +21,21 @@ export default function Controls({ data, filters, setFilters }) {
     );
   }
 
-  const filtersItems = filters.map((filter, i) => {
+  // const filtersItems = filters.map((filter, i) => {
 
-    return (
-      <div className="flex gap-2">
-        <label className="flex gap-3 border-[0.5px] rounded-md pr-3 pl-1 py-1 w-[10rem]">
-          {Object.keys(filter)}
-        </label>
-        <input 
-        type="date"
-        value={Object.values(filter)[0].value}
-        onChange={(newVal) => changeSingleStateValue(setFilters, filter, {active: true, value: newVal})}
-        ></input>
-      </div>
-    );
-  });
+  //   return (
+  //     <div className="flex gap-2">
+  //       <label className="flex gap-3 border-[0.5px] rounded-md pr-3 pl-1 py-1 w-[10rem]">
+  //         {Object.keys(filter)}
+  //       </label>
+  //       <input 
+  //       type="date"
+  //       value={Object.values(filter)[0].value}
+  //       onChange={(newVal) => changeSingleStateValue(setFilters, filter, {active: true, value: newVal})}
+  //       ></input>
+  //     </div>
+  //   );
+  // });
 
   return (
     <div className="flex flex-col">
@@ -68,7 +68,7 @@ export default function Controls({ data, filters, setFilters }) {
       </div>
       {showFilters &&
        <div className="flex flex-col gap-2">
-        {filtersItems}
+        {/* {filtersItems} */}
         </div>
         }
     </div>

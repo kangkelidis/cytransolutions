@@ -10,15 +10,14 @@ export default function RideRow({
     count: id,
     _id,
     date,
-    client: client_id,
-    driver: driver_id,
+    client,
+    driver,
     passenger,
     from,
     to,
     cash,
     credit,
-    invoice: invoice_id,
-    invoice_code,
+    invoice,
     notes,
   },
   invoiceView,
@@ -27,36 +26,11 @@ export default function RideRow({
   tdId,
 }) {
   const router = useRouter();
-  const [driver, setDriver] = React.useState();
-  const [client, setClient] = React.useState();
-  const [needsUpdate, setNeedsUpdate] = React.useState(true);
 
   function handleEdit() {
     router.push(`/db/rides/id=${_id}`);
   }
 
-  React.useEffect(() => {
-    fetchClient(client_id);
-    fetchDriver(driver_id);
-  }, [needsUpdate]);
-
-  async function fetchDriver(id) {
-    const response = await fetch(`/api/driver?id=${id}`, {
-      method: "GET",
-    });
-    const data = await response.json();
-    setDriver(data.body);
-    setNeedsUpdate(false);
-  }
-
-  async function fetchClient(id) {
-    const response = await fetch(`/api/client?id=${id}`, {
-      method: "GET",
-    });
-    const data = await response.json();
-    setClient(data.body);
-    setNeedsUpdate(false);
-  }
 
   return (
     <tr className={trClass}>
@@ -83,7 +57,7 @@ export default function RideRow({
 
       {!invoiceView &&
       <td className={tdClass}>
-        <span>{driver && driver.name}</span>
+        <span>{driver.name}</span>
       </td>
       }
       {!invoiceView &&
@@ -111,12 +85,12 @@ export default function RideRow({
 
       <td className={tdClass}>
         <div
-          onClick={() => router.push(`/db/invoices/id=${invoice_id}`)}
+          onClick={() => router.push(`/db/invoices/id=${invoice._id}`)}
           className="flex flex-col gap-3 "
           >
         <small className="whitespace-nowrap">Open Invoice</small>
-          <span className={`${invoice_code ? "cursor-pointer hover:bg-opacity-100 hover:text-white " : ""} bg-purple-400 bg-opacity-20 rounded-md text-center text-black font-bold`}>
-            {invoice_code}
+          <span className={`${invoice && invoice.code ? "cursor-pointer hover:bg-opacity-100 hover:text-white " : ""} bg-purple-400 bg-opacity-20 rounded-md text-center text-black font-bold`}>
+            {invoice && invoice.code}
           </span>
         </div>
       </td>

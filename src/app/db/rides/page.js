@@ -1,48 +1,39 @@
-'use client'
+"use client";
 
 import React from "react";
-import Table from "../components/Table";
+import DbPage from "../components/DbPage";
 
 export default function Rides() {
-    const [rides, setRides] = React.useState([]);
-    
-    const [numOfEntries, setNumOfEntries] = React.useState(0);
-    const [pageNo, setPageNo] = React.useState(0);
-    const [limit, setLimit] = React.useState(10);
-    const [pages, setPages] = React.useState([])
-    const [searchData, setSearchData] = React.useState()
+  const [filters, setFilters] = React.useState([
 
-    async function fetchRides() {
-      const response = await fetch(`/api/ride?page=${pageNo}&limit=${limit}&sort=${"date"}`, {
-        method: "GET",
-        });
-        const data = await response.json();
-        setRides(data.body.data);
-        setNumOfEntries(data.body.total);
-        const arr = Array(Math.ceil(numOfEntries/limit))
-        for (let index = 0; index < arr.length; index++) {
-          arr[index] = index +1
-        }
-        setPages(arr)
-      }
+    {
+    "Date From" : {
+      active: false,
+      value: -Infinity,
+    }
+  },
 
-    React.useEffect(() => {
-      fetchRides();
-    }, []);
+  {
+    "Date Till" : {
+      active: false,
+      value: Infinity
+    }
+  },
+  
+]);
 
-    const titles = [
-        "Id",
-        "Date",
-        "Itinerary",
-        "Driver",
-        "Client",
-        "Passenger",
-        "Price",
-        "Invoice",
-        "Notes",
-        "Actions",
-      ];
-  return (
-    <Table titles={titles} data={rides} type={"rides"} searchData={searchData} pageNo={pageNo} setPageNo={setPageNo} limit={limit} pages={pages} numOfEntries={numOfEntries} setLimit={setLimit}/>
-  );
+  
+  const titles = [
+    { Id: "_id" },
+    { Date: "date" },
+    { Itinerary: "from" },
+    { Driver: "driver" },
+    { Client: "client" },
+    { Passenger: "passenger" },
+    { Price: "total" },
+    { Invoice: "invoice" },
+    { Notes: "notes" },
+    { Actions: null },
+  ];
+  return <DbPage page={"ride"} titles={titles} filters={filters} setFilters={setFilters} />;
 }

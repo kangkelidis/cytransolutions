@@ -10,13 +10,13 @@ export default function Row({ entry, type, border }) {
 
   switch (type) {
     // RIDE
-    case "rides":
+    case "ride":
       return <RideRow entry={entry} tdClass={tdClass} trClass={trClass} tdId={tdId}/>;
-    case "invoices":
+    case "invoice":
         return <InvoiceRow entry={entry} tdClass={tdClass} trClass={trClass} tdId={tdId}/>;
-    case "drivers":
+    case "driver":
         return <DriverRow entry={entry} tdClass={tdClass} trClass={trClass} tdId={tdId}/>;
-    case "clients":
+    case "client":
         return <ClientRow entry={entry} tdClass={tdClass} trClass={trClass} tdId={tdId}/>;
     case "ridesInInvoice":
         return <RideRow entry={entry} invoiceView tdClass={tdClass} trClass={trClass} tdId={tdId}/>;

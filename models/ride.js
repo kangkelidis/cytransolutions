@@ -30,12 +30,19 @@ const rideSchema = new mongoose.Schema({
     },
     cash: {
         type: Number,
+        default: 0
     },
     credit: {
-        type: Number
+        type: Number,
+        default: 0
+    },
+    total: {
+        type: Number,
+        default: 0
     },
     invoice: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Invoices"
     },
     count: {
         type: Number,
@@ -44,6 +51,10 @@ const rideSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true }} )
+
+rideSchema.post("validate", function(doc) {
+    doc.total = doc.credit + doc.cash
 })
 
 export default mongoose.models.Ride || mongoose.model('Ride', rideSchema)

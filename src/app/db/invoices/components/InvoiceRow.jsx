@@ -12,7 +12,7 @@ export default function InvoiceRow({
   entry: {
     _id,
     code,
-    client: { name: clientName },
+    client,
     status,
     date,
     total,
@@ -37,7 +37,7 @@ export default function InvoiceRow({
       </td>
 
       <td className={tdClass}>
-        <span className="font-bold">{clientName}</span>
+        <span className="font-bold">{client.name}</span>
       </td>
 
       <td className={tdClass}>

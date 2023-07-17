@@ -4,7 +4,7 @@ import { MdModeEditOutline } from "react-icons/md";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 
-export default function Card({
+export default function ClientRow({
   entry: {
     code,
     _id,

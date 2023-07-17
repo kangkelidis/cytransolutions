@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import InvoiceApi from "@/pages/api/invoice"
 
 const invoicesSchema = new mongoose.Schema({
     date: {
@@ -27,7 +26,7 @@ const invoicesSchema = new mongoose.Schema({
     },
     rides: [
         { type : mongoose.Schema.Types.ObjectId, 
-        ref: 'ride' }
+        ref: 'Ride' }
     ],
     total: {
         type: Number,
@@ -41,6 +40,7 @@ const invoicesSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-})
+},  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+)
 
 export default mongoose.models.Invoices || mongoose.model('Invoices', invoicesSchema)

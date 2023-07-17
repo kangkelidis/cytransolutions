@@ -1,4 +1,5 @@
 import Ride from "../../../models/ride";
+import Driver from "../../../models/driver";
 import dbConnect from "../../../utils/dbConnect";
 import mongoose from "mongoose";
 import Tables from "../../../models/tables";
@@ -13,9 +14,10 @@ export default async function handler(req, res) {
     const data = JSON.parse(req.body);
     const tables = await Tables.findOne({})
     const count = tables.rides + 1
-    let filteredData = Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v != "")
-    );
+    // let filteredData = Object.fromEntries(
+    //   Object.entries(data).filter(([_, v]) => v != "")
+    // );
+    let filteredData = data
     filteredData.count = count;
 
     if (belongsInAnInvoice(filteredData)) {
@@ -36,51 +38,61 @@ export default async function handler(req, res) {
       return res.json({ message: "ok" });
       
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       return res.status(500).send("Error")
     }
 
   }
+
+
+
+
+
+
+
+
+
 
   if (req.method === "GET") {
     const perPage = req.query.limit;
     const page = req.query.page;
     const id = req.query.id;
     const sort = req.query.sort
+    const rev = req.query.rev
 
+    try {
     if (id) {
-      try {
-        const result = await Ride.findById(id);
+        const result = await Ride.findById(id)
+        .populate("client").populate("driver").populate("invoice");
         return res.json({ body: result });
-        
+      }
+      
+      const total = await Ride.count({});
+      let result
+      if (perPage && page) {
+        result = await Ride.find({})
+        .limit(perPage).skip(perPage * page)      
+        .sort({ [sort]: rev === "false" ? 1 : -1})
+        .populate("client").populate("driver").populate("invoice");
+      } else {
+        // RIDES IN INVOICE
+        result = await Ride.find({})
+        .populate("client").populate("driver").populate("invoice")        
+        .sort({ [sort]: rev === "false" ? 1 : -1});
+        return res.json({ body: { data: result } });
+      }
+      return res.json({ body: { data: result, total: total } });
       } catch (error) {
-        console.log(error);
+        console.log(error.message);
+        return res.status(500).json({message: "Error"})
       }
     }
+    
+    
 
-    const total = await Ride.count({});
-    let result
-    if (perPage && page) {
-      result = await Ride.find({})
-        .limit(perPage)
-        .skip(perPage * page)
-        .sort({ [sort]: 1});
-    } else {
-      result = await Ride.find({})        
-      .sort({ [sort]: 1});
-      return res.json({ body: { data: result } });
-    }
 
-    // add invoice code
-    let results = await Promise.all(result.map(async res => {
-      let invoice_code = await invoiceApi.getInvoiceCode(res.invoice)
-      return {
-        ...res._doc,
-        invoice_code: invoice_code
-      }
-    }))
-    return res.json({ body: { data: results, total: total } });
-  }
+
+
 
   if (req.method === "PUT") {
     const id = req.query.id;

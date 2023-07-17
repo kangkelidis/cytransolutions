@@ -2,6 +2,7 @@ import Row from "./Row";
 import Pagination from "./Pagination";
 import Controls from "./Controls";
 import { usePathname } from "next/navigation";
+import { AiFillCaretDown, AiFillCaretUp } from "react-icons/ai";
 
 export default function Table({
   titles,
@@ -13,22 +14,24 @@ export default function Table({
   limit,
   setLimit,
   pages,
-  noTitle,
+  ridesInInvoice,
   searchData,
   sortBy,
   setSortBy,
+  filters,
+  setFilters,
 }) {
   const pathName = usePathname();
 
   return (
     <div className="h-[calc(100%-80px)]">
-      {!noTitle && (
+      {!ridesInInvoice && (
         <div>
           <h1 className="font-bold text-2xl capitalize">
             {pathName.split("/db/")[1] + " Overview"}
           </h1>
-          <div className="mt-3 h-20">
-            <Controls data={searchData}/>
+          <div className="mt-3 h-fit">
+            <Controls data={searchData} filters={filters} setFilters={setFilters}/>
           </div>
         </div>
       )}
@@ -40,9 +43,18 @@ export default function Table({
               {titles.map((title, i) => (
                 <th key={i} 
                 onClick={() => {
-                  if(Object.values(title) !== null) setSortBy(Object.values(title))}}
-                className="text-left px-4 cursor-pointer">
-                  {Object.keys(title)}
+                  if (ridesInInvoice || !Object.values(title)[0] ) return
+                  if(Object.values(title) !== null) setSortBy(prev => {
+                    return {
+                      col: Object.values(title)[0], 
+                      rev: !prev.rev
+                    }
+                  })}}
+                className={`text-left px-4 ${ridesInInvoice || !Object.values(title)[0] ? "cursor-default" : "cursor-pointer"} `}>
+                  <div className="flex">
+                    {Object.keys(title)}
+                    {(sortBy.col === Object.values(title)[0] && !ridesInInvoice) ? (sortBy.rev ? <AiFillCaretDown /> :  <AiFillCaretUp />) : ""}
+                  </div>
                 </th>
               ))}
             </tr>

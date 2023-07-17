@@ -25,17 +25,34 @@ export default async function handler(req, res) {
     const perPage = req.query.limit;
     const page = req.query.page;
     const id = req.query.id;
+    const query = req.query.query
+    const sort = req.query.sort
+    const rev = req.query.rev
 
     if (id) {
       const result = await Driver.findById(id);
       return res.json({ body: result });
     }
 
+    if (query) {
+      let mongooseQuery = Driver.find({name: new RegExp(`${query}.`, "ig")})
+      try {
+        
+        mongooseQuery.find({count: parseInt(query)})
+      } catch (error) {
+        
+      }
+
+      const result = await mongooseQuery.exec()
+      // .limit(perPage)
+      // .skip(perPage * page);
+      console.log("RES£" , result)
+      return res.json({ body: result })
+    }
     const total = await Driver.count({});
     const result = await Driver.find({})
       .limit(perPage)
-      .skip(perPage * page);
-
+      .skip(perPage * page).sort({ [sort]: rev === "false" ? 1 : -1});
       return res.json({ body: { data: result, total: total } });
     }
 

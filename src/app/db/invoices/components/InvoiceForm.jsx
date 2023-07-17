@@ -14,38 +14,25 @@ export default function InvoiceForm() {
   const router = useRouter();
 
   const [invoice, setInvoice] = React.useState();
-  const [client, setClient] = React.useState();
-  const [rides, setRides] = React.useState([]);
   const [dates, setDates] = React.useState({ from: null, till: null });
+  const [sortBy, setSortBy] = React.useState({col:"date", rev: false})
   const pathname = usePathname();
   const id = pathname.split("id=")[1];
 
   React.useEffect(() => {
-    if (!invoice) fetchInvoice();
-    invoice && fetchRides();
-  }, [invoice]);
+    fetchInvoice();
+  }, [sortBy]);
 
   async function fetchInvoice() {
-    const response = await fetch(`/api/invoice?id=${id}`, {
+    const response = await fetch(`/api/invoice?id=${id}&sort=${sortBy.col}&rev=${sortBy.rev}`, {
       method: "GET",
     });
 
     const data = await response.json();
     setInvoice(data.body.data);
-    setClient(data.body.client);
+    findDates(data.body.data.rides)
   }
 
-  async function fetchRides() {
-    const ri = await Promise.all(
-      invoice.rides.map(async (ride) => {
-        const response = await fetch(`/api/ride?id=${ride}`);
-        const data = await response.json();
-        return data.body;
-      })
-    );
-    setRides(ri);
-    findDates(ri);
-  }
 
   function findDates(rides) {
     let from = rides[0].date;
@@ -83,7 +70,7 @@ export default function InvoiceForm() {
   }
 
   function savePDF() {
-    printInvoice(invoice, client, rides);
+    printInvoice(invoice);
   }
 
   function Status() {
@@ -171,8 +158,8 @@ export default function InvoiceForm() {
           <div className="flex flex-col gap-1">
             <div 
             className="cursor-pointer"
-            onClick={() => router.push(`/db/clients/id=${client._id}`)}>
-              <Pill label={"Client:"} value={client.name} />
+            onClick={() => router.push(`/db/clients/id=${invoice.client._id}`)}>
+              <Pill label={"Client:"} value={invoice.client.name} />
             </div>
             <Pill label={"From:"} value={dates.from} />
             <Pill label={"Till:"} value={dates.till} />
@@ -190,13 +177,13 @@ export default function InvoiceForm() {
   }
 
   const titles = [
-    "Id",
-    "Date",
-    "Itinerary",
-    "Passenger",
-    "Price",
-    "Notes",
-    "Actions",
+    {"Id": "_id"},
+    {"Date": "date"},
+    {"Itinerary": "from"},
+    {"Passenger": "passenger"},
+    {"Price": "credit"},
+    {"Notes": "notes"},
+    {"Actions": null},
   ];
 
   return (
@@ -216,10 +203,10 @@ export default function InvoiceForm() {
             <Info />
             <Status />
           </div>
-          {rides && (
+          {invoice.rides && (
             <div className="bg-slate-700 p-4 rounded-lg m-4 shadow-md">
               <h4 className="text-lg font-bold">Rides: </h4>
-              <Table titles={titles} data={rides} type={"ridesInInvoice"} noTitle />
+              <Table titles={titles} data={invoice.rides} setSortBy={setSortBy} sortBy={sortBy} type={"ridesInInvoice"} ridesInInvoice />
             </div>
           )}
           <Form />

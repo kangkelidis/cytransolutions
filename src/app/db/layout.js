@@ -1,7 +1,7 @@
 
 export default function DatabaseLayout({ children }) {
   return (
-    <main className="w-full h-[calc(100%-0px)] bg-slate-800">
+    <main className="w-full h-[calc(100%-0px)] ">
       <div
         className="
       bg-black rounded-md p-8 m-5

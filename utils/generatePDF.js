@@ -4,7 +4,7 @@ import { toCurrency } from "./utils.js";
 
 // TODO: multiple pages when rides table does not fit in a single page
 // TODO: Check account 
-export function printInvoice(invoice, client, rides) {
+export function printInvoice(invoice) {
     const doc = new jsPDF.jsPDF();
   
     let file = require("../public/logo.js");
@@ -36,17 +36,17 @@ export function printInvoice(invoice, client, rides) {
     doc.text("VAT no : 10361018V", 13, 50.2)
   
     doc.text("Bill To:", 13, 61.8);
-    if (client.email) {
-        doc.text(["Email: " , client.email], 13, 70.5);
+    if (invoice.client.email) {
+        doc.text(["Email: " , invoice.client.email], 13, 70.5);
     } 
-    if (client.tel) {
+    if (invoice.client.tel) {
         doc.text(["Tel: ", client.tel], 13, 76.5);
     }
   
   
     doc.setFontSize(11);
     doc.setFont("Helvetica", "bold");
-    doc.text(client.name, 13, 65.8);
+    doc.text(invoice.client.name, 13, 65.8);
   
   
     doc.autoTable({
@@ -57,7 +57,7 @@ export function printInvoice(invoice, client, rides) {
             fontSize: 9
           },
         head: [["Date", "Passenger", "Itinerary", "Notes", "Price" ]],
-        body: rides.map(ride => {
+        body: invoice.rides.map(ride => {
             return [new Date(ride.date).toLocaleDateString("en-UK"), ride.passenger, ride.from + " - " + ride.to, ride.notes, ride.credit ]})
     })
 

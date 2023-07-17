@@ -45,9 +45,9 @@ export default function Controls({ filters, setFilters, searchTerm, setSearchTer
     }
   }
 
-  const filtersItems = Object.keys(filters).map((key) => {
+  const filtersItems = Object.keys(filters).map((key,i) => {
     return (
-      <div className="flex gap-2">
+      <div className="flex gap-2" key={i}>
         <label className="flex gap-3 border-[0.5px] rounded-md px-3 py-1 w-[10rem] capitalize">
           {key}
         </label>

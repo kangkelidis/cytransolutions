@@ -4,25 +4,16 @@ import React from "react";
 import DbPage from "../components/DbPage";
 
 export default function Rides() {
-  const [filters, setFilters] = React.useState([
+  const [filters, setFilters] = React.useState({
+    from: {value: undefined, type: "date"},
+    till: {value: undefined, type: "date"},
+    client: {value: undefined, type: "select"},
+    cash: {value: undefined, type: "select"},
+    credit: {value: undefined, type: "select"},
+    invoice: {value: undefined, type: "select"},
+  });
 
-    {
-    "Date From" : {
-      active: false,
-      value: -Infinity,
-    }
-  },
 
-  {
-    "Date Till" : {
-      active: false,
-      value: Infinity
-    }
-  },
-  
-]);
-
-  
   const titles = [
     { Id: "_id" },
     { Date: "date" },
@@ -35,5 +26,12 @@ export default function Rides() {
     { Notes: "notes" },
     { Actions: null },
   ];
-  return <DbPage page={"ride"} titles={titles} filters={filters} setFilters={setFilters} />;
+  return (
+    <DbPage
+      page={"ride"}
+      titles={titles}
+      filters={filters}
+      setFilters={setFilters}
+    />
+  );
 }

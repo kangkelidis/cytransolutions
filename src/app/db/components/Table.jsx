@@ -20,6 +20,8 @@ export default function Table({
   setSortBy,
   filters,
   setFilters,
+  searchTerm,
+  setSearchTerm,
 }) {
   const pathName = usePathname();
 
@@ -31,7 +33,7 @@ export default function Table({
             {pathName.split("/db/")[1] + " Overview"}
           </h1>
           <div className="mt-3 h-fit">
-            <Controls data={searchData} filters={filters} setFilters={setFilters}/>
+            <Controls data={searchData} filters={filters} setFilters={setFilters} searchTerm={searchData} setSearchTerm={setSearchTerm}/>
           </div>
         </div>
       )}

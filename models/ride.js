@@ -57,4 +57,17 @@ rideSchema.post("validate", function(doc) {
     doc.total = doc.credit + doc.cash
 })
 
+rideSchema.statics.findWithFilters = function(filters) {
+    let query =  this.find({})    
+    if (filters.from !== undefined) query.find({"date": { $gte: filters.from }})
+    if (filters.till !== undefined) query.find({"date": {$lte: filters.till}})
+    if (filters.client !== undefined) query.find().exists('client', filters.client)
+    if (filters.cash !== undefined) query.find({"cash": {$gt: filters.cash}})
+    if (filters.credit !== undefined) query.find({"credit": {$gt: filters.credit}})
+    if (filters.invoice !== undefined) query.find().exists('invoice', filters.invoice)
+
+    return query
+
+}
+
 export default mongoose.models.Ride || mongoose.model('Ride', rideSchema)

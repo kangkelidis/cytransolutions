@@ -17,14 +17,11 @@ export default function Invoices() {
       const [filters, setFilters] = React.useState({
         from: {value: undefined, type: "date"},
         till: {value: undefined, type: "date"},
-        client: {value: undefined, type: "select"},
-        cash: {value: undefined, type: "select"},
-        credit: {value: undefined, type: "select"},
-        invoice: {value: undefined, type: "select"},
+        status: {value: undefined, type: "select", options: ["open", "closed", "paid", "issued"]},
       });
   return (
     <DbPage
-      page={"ride"}
+      page={"invoice"}
       titles={titles}
       filters={filters}
       setFilters={setFilters}

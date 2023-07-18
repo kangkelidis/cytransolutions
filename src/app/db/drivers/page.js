@@ -23,7 +23,7 @@ export default function Drivers() {
       });
   return (
     <DbPage
-      page={"ride"}
+      page={"driver"}
       titles={titles}
       filters={filters}
       setFilters={setFilters}

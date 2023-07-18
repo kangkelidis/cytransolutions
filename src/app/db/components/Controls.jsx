@@ -6,12 +6,18 @@ import { AiFillFilter } from "react-icons/ai";
 import ReactSearchBox from "react-search-box";
 import React from "react";
 
-export default function Controls({ filters, setFilters, searchTerm, setSearchTerm }) {
+export default function Controls({
+  filters,
+  setFilters,
+  searchTerm,
+  setSearchTerm,
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const modelName = pathname.split("/db/")[1].slice(0, -1);
 
   const [showFilters, setShowFilters] = React.useState(false);
+  const [numOfFilters, setNumOfFilters] = React.useState(0);
 
   async function handleSearch(event) {
     event.preventDefault();
@@ -20,48 +26,88 @@ export default function Controls({ filters, setFilters, searchTerm, setSearchTer
     );
   }
 
-  function Input({ type, value, onChange, className }) {
+  React.useEffect(() => {
+    setNumOfFilters(
+      Object.values(filters).reduce((acc, val) => {
+        if (val.value !== undefined) return acc + 1;
+        return acc;
+      }, 0)
+    );
+    console.log(numOfFilters);
+  }, [filters]);
+
+  function ResetFilters() {
+    return (
+      <button
+        onClick={() =>
+          setFilters((prev) => {
+            return Object.keys(prev).reduce((acc, key) => {
+              acc[key] = { value: undefined, type: prev[key].type };
+              return acc;
+            }, {});
+          })
+        }
+        className="flex gap-3 border-[0.5px] rounded-md px-3 py-1 w-[10rem] capitalize"
+      >
+        Clear Filters
+      </button>
+    );
+  }
+
+  function Input({ type, value, options, onChange, className }) {
     if (type === "select") {
-      return (
-        <select value={value} onChange={onChange} className={className}>
-          <option value={undefined}>Show All</option>
-          <option value={true}>Yes</option>
-          <option value={false}>No</option>
-        </select>
-      );
+      if (options) {
+        return (
+          <select multiple value={value} onChange={onChange} className={className}>
+            {options.map(option => <option value={option}>{option}</option>)}
+          </select>
+        );
+      } else {
+        return (
+          <select value={value} onChange={onChange} className={className}>
+            <option value={undefined}>Show All</option>
+            <option value={true}>Yes</option>
+            <option value={false}>No</option>
+          </select>
+        );
+      }
     } else {
       return (
-      <div>
-        <input
-          placeholder=""
-          className={className}
-          type={type}
-          value={value}
-          onChange={onChange}
-        ></input>
-        <button onClick={null}>x</button>
-      </div>
-      )
+        <div>
+          <input
+            placeholder=""
+            className={className}
+            type={type}
+            value={value}
+            onChange={onChange}
+          ></input>
+        </div>
+      );
     }
   }
 
-  const filtersItems = Object.keys(filters).map((key,i) => {
+  const filtersItems = Object.keys(filters).map((key, i) => {
     return (
-      <div className="flex gap-2" key={i}>
-        <label className="flex gap-3 border-[0.5px] rounded-md px-3 py-1 w-[10rem] capitalize">
+      <div className="flex" key={i}>
+        <label className="flex border-[0.5px] border-r-0 rounded-r-none rounded-md px-3 py-1 w-[8rem] capitalize bg-slate-900">
           {key}
         </label>
         <Input
-          className="text-black"
+          className="border-[0.5px] border-l-0 rounded-l-none rounded-md px-3 py-1 w-[10rem] capitalize bg-black text-white"
           type={filters[key].type}
           value={filters[key].value}
+          options={filters[key].options}
           onChange={(event) => {
             let newVal =
               event.target.value == "Show All" ? undefined : event.target.value;
             setFilters((prev) => {
               return {
                 ...prev,
-                [key]: { value: newVal, type: prev[key].type },
+                [key]: {
+                  value: newVal,
+                  type: prev[key].type,
+                  options: prev[key].options,
+                },
               };
             });
           }}
@@ -79,7 +125,9 @@ export default function Controls({ filters, setFilters, searchTerm, setSearchTer
             className="rounded-md bg-black border-[0.5px] h-[2rem] p-4 text-white"
             type="text"
             value={searchTerm}
-            onChange={(event) => {setSearchTerm(event.target.value)}}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+            }}
           ></input>
         </form>
 
@@ -88,8 +136,13 @@ export default function Controls({ filters, setFilters, searchTerm, setSearchTer
           className="flex gap-3  border-[0.5px] rounded-md pr-3 pl-1 py-1"
         >
           <AiFillFilter />
-          <span>Filter</span>
+          <span>Filters</span>
+          <span className="text-sm bg-purple-500 rounded-full px-[0.4rem]">
+            {numOfFilters > 0 && numOfFilters}
+          </span>
         </button>
+
+        {showFilters && <ResetFilters />}
 
         {!pathname.includes("invoice") && (
           <button
@@ -101,7 +154,11 @@ export default function Controls({ filters, setFilters, searchTerm, setSearchTer
           </button>
         )}
       </div>
-      {showFilters && <div className="flex flex-col gap-2">{filtersItems}</div>}
+      {showFilters && (
+        <div className="flex flex-wrap gap-2 p-4 py-10 justify-center">
+          {filtersItems}
+        </div>
+      )}
     </div>
   );
 }

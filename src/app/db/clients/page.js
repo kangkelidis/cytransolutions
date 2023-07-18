@@ -27,7 +27,7 @@ export default function Clients() {
 
   return (
     <DbPage
-      page={"ride"}
+      page={"client"}
       titles={titles}
       filters={filters}
       setFilters={setFilters}

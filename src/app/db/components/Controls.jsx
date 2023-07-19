@@ -3,7 +3,6 @@
 import { useRouter, usePathname } from "next/navigation";
 import { BiPlus } from "react-icons/bi";
 import { AiFillFilter } from "react-icons/ai";
-import ReactSearchBox from "react-search-box";
 import React from "react";
 
 export default function Controls({

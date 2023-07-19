@@ -2,7 +2,8 @@ import Ride from "../../../models/ride";
 import Driver from "../../../models/driver";
 import dbConnect from "../../../utils/dbConnect";
 import mongoose from "mongoose";
-import Tables from "../../../models/tables";
+// import Tables from "../../../models/tables";
+import Locations from "../../../models/locations";
 
 const invoiceApi = await import("../api/invoice");
 
@@ -11,25 +12,18 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     const data = JSON.parse(req.body);
-    const tables = await Tables.findOne({});
-    const count = tables.rides + 1;
-    // let filteredData = Object.fromEntries(
-    //   Object.entries(data).filter(([_, v]) => v != "")
-    // );
-    let filteredData = data;
-    filteredData.count = count;
+    // const tables = await Tables.findOne({});
+    // const count = tables.rides + 1;
+    // data.count = count;
 
-    if (belongsInAnInvoice(filteredData)) {
-      filteredData.invoice = await generateInvoiceId(filteredData);
+    if (belongsInAnInvoice(data)) {
+      data.invoice = await generateInvoiceId(data);
     }
 
     try {
-      const ride = await Ride.create(filteredData);
+      const ride = await Ride.create(data);
       if (ride) {
-        const tables = await Tables.findOne({});
-        const rides_num = tables.rides + 1;
-        await Tables.findOneAndUpdate({}, { rides: rides_num });
-        if (belongsInAnInvoice(filteredData)) {
+        if (belongsInAnInvoice(data)) {
           await invoiceApi.addRideId(
             ride.invoice,
             new mongoose.Types.ObjectId(ride._id)
@@ -60,16 +54,28 @@ export default async function handler(req, res) {
 
     const term = req.query.term
 
+    const locations = req.query.locations
+
     const filters = {
       from: from ? new Date(from) : undefined,
       till: till ? new Date(till) : undefined,
       client: client,
-      cash: cash,
-      credit: credit,
+      cash: cash === "true" ? 1 : cash === "false" ? 0 : undefined,
+      credit: credit === "true" ? 1 : credit === "false" ? 0 : undefined,
       invoice: invoice
     }
 
     try {
+
+      if (locations) {
+        // const allRides = await Ride.find({})
+        // let allLocations = new Set()
+        // allRides.map(ride => {allLocations.add(ride.from); allLocations.add(ride.to)})
+        // const result = Array.from(allLocations).filter(loc => loc !== undefined)
+        const result =  await Locations.find({})
+        return res.json({ body: result });
+      }
+
       if (id) {
         const result = await Ride.findById(id)
           .populate("client")
@@ -78,20 +84,17 @@ export default async function handler(req, res) {
         return res.json({ body: result });
       }
 
-      const total = await Ride.count({});
+      const total = await Ride.countDocuments({});
       let result;
       if (perPage && page) {
-        result = await Ride.findWithFilters(filters)
-          .limit(perPage)
-          .skip(perPage * page)
-          .sort({ [sort]: rev === "false" ? 1 : -1 })
+        if (term !== "") {
+          let allResults = await Ride.find({})
           .populate("client")
           .populate("driver")
           .populate("invoice");
-
           let pattern = new RegExp(`\w*${term}\w*`, "gi");
           let filteredResults = new Set()
-          result.forEach(res => {
+          allResults.forEach(res => {
             if (res.client && pattern.test(res.client.name)) filteredResults.add(res)
             if (res.driver && pattern.test(res.driver.name)) filteredResults.add(res)
             if (pattern.test(res.passenger)) filteredResults.add(res)
@@ -100,7 +103,28 @@ export default async function handler(req, res) {
             if (pattern.test(res.notes)) filteredResults.add(res)
             if (pattern.test(res.count)) filteredResults.add(res)
           });
-          result = Array.from(filteredResults)
+          allResults = Array.from(filteredResults)
+
+          const idsToFind = allResults.map(res => res._id)
+          result = await Ride.find({ _id: {$in: idsToFind}})
+          .limit(perPage)
+          .skip(perPage * page)
+          .sort({ [sort]: rev === "false" ? 1 : -1 })
+          .populate("client")
+          .populate("driver")
+          .populate("invoice");
+
+          if (!Array.isArray(result)) result = Array.from(result)
+        } else {
+          result = await Ride.findWithFilters(filters)
+            .limit(perPage)
+            .skip(perPage * page)
+            .sort({ [sort]: rev === "false" ? 1 : -1 })
+            .populate("client")
+            .populate("driver")
+            .populate("invoice");
+        }
+
 
       } else {
         // RIDES IN INVOICE

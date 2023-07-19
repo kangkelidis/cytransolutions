@@ -5,6 +5,9 @@ import React from "react";
 import { changeSingleStateValue } from "../../../../../utils/utils";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
+import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
+import { last } from "pdf-lib";
 
 export default function RideForm() {
   const router = useRouter();
@@ -17,10 +20,12 @@ export default function RideForm() {
   const id = pathname.split("id=")[1];
   const [drivers, setDrivers] = React.useState([]);
   const [clients, setClients] = React.useState([]);
+  const [locations, setLocations] = React.useState([]);
 
   React.useEffect(() => {
     fetchClients();
     fetchDrivers();
+    fetchLocations();
 
     if (id) {
       fetchRide();
@@ -55,6 +60,19 @@ export default function RideForm() {
     setDrivers(data.body.data);
   }
 
+  async function fetchLocations() {
+    const response = await fetch(`/api/ride?locations=true`, {
+      method: "GET",
+    });
+
+    const data = await response.json();
+    const locs = data.body.map((location) => ({
+      value: location.name,
+      label: location.name,
+    }));
+    setLocations(locs);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -80,6 +98,35 @@ export default function RideForm() {
     router.push("/db/rides");
   }
 
+  const selectStyles = {
+    control: (baseStyles, state) => ({
+      ...baseStyles,
+      backgroundColor: "#202937",
+      color: "white",
+      borderColor: "#757575",
+      borderWidth: "0.1px",
+    }),
+    input: (baseStyles, state) => ({
+      ...baseStyles,
+      color: "white",
+    }),
+    singleValue: (baseStyles, state) => ({
+      ...baseStyles,
+      color: "white",
+    }),
+    menu: (baseStyles, state) => ({
+      ...baseStyles,
+      backgroundColor: "#202937",
+    }),
+    option: (baseStyles, state) => ({
+      ...baseStyles,
+      backgroundColor: state.isSelected ? "#9C27B0" : "#202937",
+      "&:hover": {
+        backgroundColor: "#4a5568",
+      },
+    }),
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
@@ -92,16 +139,14 @@ export default function RideForm() {
               options={{
                 altInput: true,
                 altFormat: "d-m-y -- H:i",
-                time_24hr: true
+                time_24hr: true,
               }}
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
               data-enable-time
               value={data.date}
-              onChange={(newVal) =>
-                {
-                  changeSingleStateValue(setData, "date", newVal)
-                }
-              }
+              onChange={(newVal) => {
+                changeSingleStateValue(setData, "date", newVal);
+              }}
             />
           </div>
 
@@ -112,19 +157,32 @@ export default function RideForm() {
             >
               Driver*
             </label>
-            <select
+            <Select
               required
               id="driver"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-              value={data.driver}
-              onChange={(newVal) =>
-                changeSingleStateValue(setData, "driver", newVal.target.value)
+              captureMenuScroll
+              closeMenuOnScroll
+              blurInputOnSelect
+              options={
+                drivers.length > 0 &&
+                drivers.map((driver) => ({
+                  value: driver._id,
+                  label: driver.count +". "+ driver.name,
+                }))
               }
-            >
-              {drivers.map((driver) => (
-                <option value={driver._id}>{driver.name}</option>
-              ))}
-            </select>
+              styles={selectStyles}
+              value={
+                data.driver
+                  ? { value: data.driver._id, label: data.driver.count +". "+ data.driver.name }
+                  : { value: null, label: "" }
+              }
+              onChange={(newVal) => {
+                const selected = drivers.filter((driver) => {
+                  return driver._id === newVal.value;
+                })[0];
+                changeSingleStateValue(setData, "driver", selected);
+              }}
+            />
           </div>
 
           <div>
@@ -134,34 +192,62 @@ export default function RideForm() {
             >
               Client
             </label>
-            <select
+            <Select
               id="client"
-              type="text"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-              value={data.client}
-              onChange={(newVal) =>
-                changeSingleStateValue(setData, "client", newVal.target.value)
+              isClearable
+              captureMenuScroll
+              closeMenuOnScroll
+              blurInputOnSelect
+              options={clients.map((client) => ({
+                value: client._id,
+                label: client.code +". "+ client.name,
+              }))}
+              styles={selectStyles}
+              value={
+                data.client
+                  ? { value: data.client._id, label: data.client.code +". "+ data.client.name }
+                  : { value: null, label: "" }
               }
-            >
-              <option value={null}></option>
-              {clients.map((client) => (
-                <option value={client._id}>{client.name}</option>
-              ))}
-            </select>
+              onChange={(newVal) => {
+                const selected =
+                  newVal === null
+                    ? null
+                    : clients.filter((client) => {
+                        return client._id === newVal.value;
+                      })[0];
+                changeSingleStateValue(setData, "client", selected);
+              }}
+            />
           </div>
 
           <div>
             <label className="text-gray-700 dark:text-gray-200" htmlFor="from">
               From
             </label>
-            <input
+            <CreatableSelect
+              isClearable
+              options={locations}
+              styles={selectStyles}
               id="from"
-              type="text"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-              value={data.from}
-              onChange={(newVal) =>
-                changeSingleStateValue(setData, "from", newVal.target.value)
+              value={
+                data.from
+                  ? { value: data.from, label: data.from }
+                  : { value: null, label: "" }
               }
+              onChange={(newVal) => {
+                let selected = newVal === null
+                    ? undefined
+                    : locations.filter((loc) => {
+                        return loc.value === newVal.value;
+                      })[0];
+                if (selected) selected = selected.value
+                changeSingleStateValue(setData, "from", selected);
+              }}
+              onCreateOption={(newVal) => {
+                console.log(newVal);
+                changeSingleStateValue(setData, "from", newVal);
+
+              }}
             />
           </div>
 
@@ -169,15 +255,32 @@ export default function RideForm() {
             <label className="text-gray-700 dark:text-gray-200" htmlFor="to">
               To
             </label>
-            <input
+            <CreatableSelect
+              isClearable
+              options={locations}
+              styles={selectStyles}
               id="to"
-              type="text"
-              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-              value={data.to}
-              onChange={(newVal) =>
-                changeSingleStateValue(setData, "to", newVal.target.value)
+              value={
+                data.to
+                  ? { value: data.to, label: data.to }
+                  : { value: null, label: "" }
               }
+              onChange={(newVal) => {
+                let selected = newVal === null
+                    ? undefined
+                    : locations.filter((loc) => {
+                        return loc.value === newVal.value;
+                      })[0];
+                if (selected) selected = selected.value
+                changeSingleStateValue(setData, "to", selected);
+              }}
+              onCreateOption={(newVal) => {
+                console.log(newVal);
+                changeSingleStateValue(setData, "to", newVal);
+
+              }}
             />
+
           </div>
 
           <div>

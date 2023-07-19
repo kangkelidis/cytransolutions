@@ -2,14 +2,21 @@ import mongoose from "mongoose";
 
 const tablesSchema = new mongoose.Schema({
     clients: {
-        type: Number
+        type: Number,
+        default: 0
     },
     drivers: {
-        type: Number
+        type: Number,
+        default: 0
     },
     rides: {
-        type: Number
+        type: Number,
+        default: 0
     },
+    locations: {
+        type: Number,
+        default: 0
+    }
 
 })
 

@@ -100,8 +100,6 @@ export async function addRideId(inv_id, ride_id) {
 
 // to be called when a new ride is inserted and when updated and deleted
 export async function findTotal(inv_id) {
-  // TODO: need to refresh cache
-  // TODO: have array of ride objects
   const invoice = await Invoice.findById(inv_id);
   let total = 0;
   await Promise.all(

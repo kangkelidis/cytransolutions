@@ -43,4 +43,25 @@ const invoicesSchema = new mongoose.Schema({
 },  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 )
 
+invoicesSchema.pre('find', function(next) {
+    if (this.rides) {
+        this.total = this.rides.reduce((acc, ride) => {return acc + ride.credit}, 0)
+    }
+
+    console.log('Middleware on parent document'); // Will be executed
+    next()
+});
+
+invoicesSchema.methods.calculateTotal = function() {
+    if (this.rides) {
+        this.total = this.rides.reduce((acc, ride) => {return acc + ride.credit}, 0)
+    }}
+
+invoicesSchema.post('validate', function(doc) {
+    if (this.rides) {
+        this.total = this.rides.reduce((acc, ride) => {return acc + ride.credit}, 0)
+    } 
+    console.log('%s has been validated (but not saved yet)', doc._id);
+  });
+
 export default mongoose.models.Invoices || mongoose.model('Invoices', invoicesSchema)

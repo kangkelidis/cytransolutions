@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Locations from "./locations";
 import Tables from "./tables";
+import Invoices from "./invoices"
 
 const rideSchema = new mongoose.Schema({
     date: {
@@ -67,13 +68,36 @@ rideSchema.post("validate", async function(doc) {
 
 rideSchema.post("save", async function(doc) {
     try {
+        if (doc.invoice) {
+            const inv = await Invoices.findById(doc.invoice)
+            inv.calculateTotal()
+        }
+
         await Locations.create({name: doc.from})
-        await Locations.create({name: doc.to})
- 
+        if (doc.to && doc.from != doc.to) {
+            await Locations.create({name: doc.to})
+        }
+
+
     } catch(e) {
         console.log("ride model post save: ", e.message);
     }
 })
+
+
+
+rideSchema.post('findByIdAndDelete', async function(doc) {
+    if (doc.invoice) {
+        const inv = await Invoices.findById(doc.invoice)
+        inv.rides.filter((ride) => {
+            console.log(ride);
+            console.log(doc._id);
+            return ride !== doc._id})
+        inv.calculateTotal()
+        await inv.save();
+    }
+    console.log('%s has been removed', doc._id);
+  });
 
 
 rideSchema.statics.findWithFilters = function(filters) {

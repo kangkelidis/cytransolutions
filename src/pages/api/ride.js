@@ -2,9 +2,8 @@ import Ride from "../../../models/ride";
 import Driver from "../../../models/driver";
 import dbConnect from "../../../utils/dbConnect";
 import mongoose from "mongoose";
-// import Tables from "../../../models/tables";
 import Locations from "../../../models/locations";
-
+import Invoices from "../../../models/invoices";
 const invoiceApi = await import("../api/invoice");
 
 export default async function handler(req, res) {
@@ -12,9 +11,6 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     const data = JSON.parse(req.body);
-    // const tables = await Tables.findOne({});
-    // const count = tables.rides + 1;
-    // data.count = count;
 
     if (belongsInAnInvoice(data)) {
       data.invoice = await generateInvoiceId(data);
@@ -68,10 +64,6 @@ export default async function handler(req, res) {
     try {
 
       if (locations) {
-        // const allRides = await Ride.find({})
-        // let allLocations = new Set()
-        // allRides.map(ride => {allLocations.add(ride.from); allLocations.add(ride.to)})
-        // const result = Array.from(allLocations).filter(loc => loc !== undefined)
         const result =  await Locations.find({})
         return res.json({ body: result });
       }
@@ -172,7 +164,15 @@ export default async function handler(req, res) {
 
   if (req.method === "DELETE") {
     const id = req.query.id;
-    await Ride.findByIdAndDelete(id);
+    const ride = await Ride.findByIdAndDelete(id);
+    if (ride.invoice) {
+      const inv = await Invoices.findById(ride.invoice)
+      inv.rides = inv.rides.filter((invRide) => {
+        return ride._id.toString() !== invRide.toString()})
+      await invoiceApi.findTotal(ride.invoice);
+      await inv.save();
+  }
+    
     return res.json({ message: "ok" });
   }
 }
@@ -183,7 +183,7 @@ function belongsInAnInvoice(data) {
 }
 
 async function generateInvoiceId(data) {
-  const client_id = new mongoose.Types.ObjectId(data.client);
+  const client_id = new mongoose.Types.ObjectId(data.client._id);
   // logic to find or create the invoice the ride belongs to
   const openInvoice = await invoiceApi.findOpenInvoice(client_id);
 
@@ -198,4 +198,3 @@ async function generateInvoiceId(data) {
   return invoice_id;
 }
 
-function filter() {}

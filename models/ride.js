@@ -84,8 +84,6 @@ rideSchema.post("save", async function(doc) {
     }
 })
 
-
-
 rideSchema.post('findByIdAndDelete', async function(doc) {
     if (doc.invoice) {
         const inv = await Invoices.findById(doc.invoice)
@@ -99,14 +97,13 @@ rideSchema.post('findByIdAndDelete', async function(doc) {
     console.log('%s has been removed', doc._id);
   });
 
-
 rideSchema.statics.findWithFilters = function(filters) {
     let query =  this.find({})    
     if (filters.from !== undefined) query.find({"date": { $gte: filters.from }})
     if (filters.till !== undefined) query.find({"date": {$lte: filters.till}})
     if (filters.client !== undefined) query.find().exists('client', filters.client)
-    if (filters.cash !== undefined) filters.cash > 0 ? query.find({"cash": {$gt: filters.cash}}) : query.find({"cash": 0})
-    if (filters.credit !== undefined) filters.credit > 0 ? query.find({"credit": {$gt: filters.credit}}) : query.find({"credit": 0})
+    if (filters.cash !== undefined) filters.cash > 0 ? query.find({"cash": {$gte: filters.cash}}) : query.find({"cash": 0})
+    if (filters.credit !== undefined) filters.credit > 0 ? query.find({"credit": {$gte: filters.credit}}) : query.find({"credit": 0})
     if (filters.invoice !== undefined) query.find().exists('invoice', filters.invoice)
 
     return query

@@ -79,7 +79,8 @@ export default async function handler(req, res) {
       const total = await Ride.countDocuments({});
       let result;
       if (perPage && page) {
-        if (term !== "") {
+        console.log("api get term ", term);
+        if (term !== "undefined") {
           let allResults = await Ride.find({})
           .populate("client")
           .populate("driver")
@@ -115,8 +116,10 @@ export default async function handler(req, res) {
             .populate("client")
             .populate("driver")
             .populate("invoice");
-        }
 
+
+            console.log("find with filters, ", filters);
+        }
 
       } else {
         // RIDES IN INVOICE

@@ -38,10 +38,10 @@ export default function Table({
         </div>
       )}
 
-      <div className="no-scrollbar overflow-x-scroll h-5/6 rounded-md">
+      <div className="no-scrollbar overflow-x-scroll mt-4 h-5/6 rounded-md">
         <table className="w-full">
           <thead className="">
-            <tr className="border-b-[0.5px]">
+            <tr className="border-b-[1px]">
               {titles.map((title, i) => (
                 <th key={i} 
                 onClick={() => {

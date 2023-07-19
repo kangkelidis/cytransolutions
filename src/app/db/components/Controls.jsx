@@ -18,6 +18,8 @@ export default function Controls({
   const [showFilters, setShowFilters] = React.useState(false);
   const [numOfFilters, setNumOfFilters] = React.useState(0);
 
+  const searchRef = React.useRef()
+
   async function handleSearch(event) {
     event.preventDefault();
     const res = await fetch(
@@ -32,20 +34,21 @@ export default function Controls({
         return acc;
       }, 0)
     );
-    console.log(numOfFilters);
   }, [filters]);
 
   function ResetFilters() {
     return (
       <button
-        onClick={() =>
+        onClick={() => {
           setFilters((prev) => {
             return Object.keys(prev).reduce((acc, key) => {
               acc[key] = { value: undefined, type: prev[key].type };
               return acc;
             }, {});
           })
-        }
+          setSearchTerm("")
+          searchRef.current.value = ""
+        }}
         className="flex gap-3 border-[0.5px] rounded-md px-3 py-1 w-[10rem] capitalize"
       >
         Clear Filters
@@ -117,16 +120,17 @@ export default function Controls({
 
   return (
     <div className="flex flex-col">
-      <div className="flex justify-between flex-wrap">
-        <form onSubmit={handleSearch} className="w-[20rem] max-sm:w-full">
+      <div className="flex justify-between flex-wrap gap-3">
+        <form onSubmit={handleSearch} className="w-[20rem] max-md:w-full">
           <input
             placeholder="Search"
-            className="rounded-md bg-black border-[0.5px] h-[2rem] p-4 text-white"
+            className="rounded-md w-full bg-black border-[0.5px] h-[2rem] p-4 text-white"
             type="text"
             value={searchTerm}
             onChange={(event) => {
               setSearchTerm(event.target.value);
             }}
+            ref={searchRef}
           ></input>
         </form>
 

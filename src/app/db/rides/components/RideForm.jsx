@@ -7,7 +7,6 @@ import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
-import { last } from "pdf-lib";
 
 export default function RideForm() {
   const router = useRouter();
@@ -21,16 +20,17 @@ export default function RideForm() {
   const [drivers, setDrivers] = React.useState([]);
   const [clients, setClients] = React.useState([]);
   const [locations, setLocations] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true)
 
   React.useEffect(() => {
-    fetchClients();
-    fetchDrivers();
-    fetchLocations();
-
+    setIsLoading(true)
     if (id) {
       fetchRide();
       setEditMode(true);
     }
+    fetchClients();
+    fetchDrivers();
+    fetchLocations();
   }, []);
 
   async function fetchRide() {
@@ -71,11 +71,14 @@ export default function RideForm() {
       label: location.name,
     }));
     setLocations(locs);
+
+    setIsLoading(false)
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
 
+    setIsLoading(true)
     if (editMode) {
       await fetch(`/api/ride?id=${id}`, {
         method: "PUT",
@@ -129,8 +132,10 @@ export default function RideForm() {
 
   return (
     <div>
+      <h1 className="text-2xl p-4 m-4 bg-slate-800">{editMode ? <span>Edit Ride no. <span className="text-purple-500">{data.count}</span></span> : "Add a new Ride"}</h1>
+      {!isLoading &&
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
+        <div className="flex flex-col m-4 gap-4 md:grid md:grid-cols-2">
           <div>
             <label className="text-gray-700 dark:text-gray-200" htmlFor="Name">
               Date*
@@ -193,6 +198,7 @@ export default function RideForm() {
             >
               Client
             </label>
+
             <Select
               id="client"
               isClearable
@@ -219,8 +225,26 @@ export default function RideForm() {
                 changeSingleStateValue(setData, "client", selected);
               }}
             />
+
           </div>
 
+          <div>
+          <label
+              className="text-gray-700 dark:text-gray-200"
+              htmlFor="passenger"
+            >
+              Passenger
+            </label>
+            <input
+              id="passenger"
+              type="text"
+              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+              value={data.passenger}
+              onChange={(newVal) =>
+                changeSingleStateValue(setData, "passenger", newVal.target.value)
+              }
+            />
+          </div>
           <div>
             <label className="text-gray-700 dark:text-gray-200" htmlFor="from">
               From
@@ -335,7 +359,7 @@ export default function RideForm() {
           </div>
         </div>
 
-        <div className="flex justify-end mt-6 gap-4">
+        <div className="flex justify-around m-4 mt-8 gap-4">
           <button
             type="button"
             className=" px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
@@ -360,6 +384,7 @@ export default function RideForm() {
           </button>
         </div>
       </form>
+}
     </div>
   );
 }

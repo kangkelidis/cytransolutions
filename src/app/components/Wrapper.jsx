@@ -9,17 +9,21 @@ export default function Wrapper({ children }) {
 
   return (
     <body
-      className=""
+      className="flex flex-col "
       onClick={() => {
         if (sidebarOpen) {
           setSidebarOpen(false);
         }
       }}
     >
+
       <TopBar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      <div className="flex h-[calc(100dvh-40px)]">
+      <div className="flex h-[calc(100dvh-54px)] overflow-clip">
         <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <div className="overflow-y-scroll w-full no-scrollbar"> 
         {children}
+
+        </div>
       </div>
     </body>
   );

@@ -18,7 +18,7 @@ export default function Controls({
   const [showFilters, setShowFilters] = React.useState(false);
   const [numOfFilters, setNumOfFilters] = React.useState(0);
 
-  const searchRef = React.useRef()
+  const searchRef = React.useRef();
 
   async function handleSearch(event) {
     event.preventDefault();
@@ -45,9 +45,9 @@ export default function Controls({
               acc[key] = { value: undefined, type: prev[key].type };
               return acc;
             }, {});
-          })
-          setSearchTerm("")
-          searchRef.current.value = ""
+          });
+          setSearchTerm("");
+          searchRef.current.value = "";
         }}
         className="flex gap-3 border-[0.5px] rounded-md px-3 py-1 w-[10rem] capitalize"
       >
@@ -60,8 +60,15 @@ export default function Controls({
     if (type === "select") {
       if (options) {
         return (
-          <select multiple value={value} onChange={onChange} className={className}>
-            {options.map(option => <option value={option}>{option}</option>)}
+          <select
+            multiple
+            value={value}
+            onChange={onChange}
+            className={className}
+          >
+            {options.map((option) => (
+              <option value={option}>{option}</option>
+            ))}
           </select>
         );
       } else {
@@ -134,18 +141,21 @@ export default function Controls({
           ></input>
         </form>
 
-        <button
-          onClick={() => setShowFilters((prev) => !prev)}
-          className="flex gap-3  border-[0.5px] rounded-md pr-3 pl-1 py-1"
-        >
-          <AiFillFilter />
-          <span>Filters</span>
-          <span className="text-sm bg-purple-500 rounded-full px-[0.4rem]">
-            {numOfFilters > 0 && numOfFilters}
-          </span>
-        </button>
+        <div className="flex">
+          <button
+            onClick={() => setShowFilters((prev) => !prev)}
+            className="flex gap-3  border-[0.5px] rounded-md pr-3 pl-1 py-1"
+          >
+            <AiFillFilter />
+            <span>Filters</span>
+            <span className="text-sm bg-purple-500 rounded-full px-[0.4rem]">
+              {numOfFilters > 0 && numOfFilters}
+            </span>
+          </button>
 
-        {showFilters && <ResetFilters />}
+          {showFilters && <ResetFilters />}
+
+        </div>
 
         {!pathname.includes("invoice") && (
           <button

@@ -43,12 +43,12 @@ export default async function handler(req, res) {
     const data = JSON.parse(req.body);
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
-    );
-    await Invoice.findByIdAndUpdate(id, {
-      date: filteredData.date,
-      status: filteredData.status,
-      notes: filteredData.notes,
-    });
+      );
+      await Invoice.findByIdAndUpdate(id, {
+        date: filteredData.date,
+        status: filteredData.status,
+        notes: filteredData.notes,
+      });
     return res.json({ message: "ok" });
   }
 

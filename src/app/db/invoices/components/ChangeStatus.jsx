@@ -1,18 +1,20 @@
 import { changeSingleStateValue } from "../../../../../utils/utils";
 import React from "react";
 
-export default function ChangeStatus({ invoice, setInvoice }) {
+export default function ChangeStatus({ invoice, setInvoice, handleSubmit, id }) {
   const statusArr = ["open", "closed", "issued", "paid"];
   const [currentStateIndex, setCurrentStateIndex] = React.useState(
     statusArr.indexOf(invoice.status)
   );
 
-  function handleClick(value) {
+  async function handleClick(event) {
+    const value = event.target.innerHTML
     // allow only one step at a time
     const indx = statusArr.indexOf(value);
     if (Math.abs(indx - currentStateIndex) !== 1) return;
     setCurrentStateIndex(indx);
     changeSingleStateValue(setInvoice, "status", value);
+    await handleSubmit(event, id, value)
   }
 
   return (
@@ -20,7 +22,7 @@ export default function ChangeStatus({ invoice, setInvoice }) {
       <div className="flex gap-2 capitalize">
         {statusArr.map((item, indx) => (
           <div
-            onClick={(event) => handleClick(event.target.innerHTML)}
+            onClick={async (event) => await handleClick(event)}
             className={` rounded-lg p-2 w-16 text-center text-sm 
                 ${
                   Math.abs(indx - currentStateIndex) === 1

@@ -22,6 +22,7 @@ export default function Table({
   setFilters,
   searchTerm,
   setSearchTerm,
+  setReload
 }) {
   const pathName = usePathname();
 
@@ -68,6 +69,8 @@ export default function Table({
                 entry={entry}
                 type={type}
                 border={key !== data.length - 1}
+                ridesInInvoice={ridesInInvoice}
+                setReload={setReload}
               />
             ))}
           </tbody>

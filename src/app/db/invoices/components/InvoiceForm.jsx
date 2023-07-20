@@ -18,10 +18,14 @@ export default function InvoiceForm() {
   const [sortBy, setSortBy] = React.useState({col:"date", rev: false})
   const pathname = usePathname();
   const id = pathname.split("id=")[1];
+  const [reload, setReload] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
+
 
   React.useEffect(() => {
+    setIsLoading(true);
     fetchInvoice();
-  }, [sortBy]);
+  }, [sortBy, reload]);
 
   async function fetchInvoice() {
     const response = await fetch(`/api/invoice?id=${id}&sort=${sortBy.col}&rev=${sortBy.rev}`, {
@@ -31,6 +35,8 @@ export default function InvoiceForm() {
     const data = await response.json();
     setInvoice(data.body.data);
     findDates(data.body.data.rides)
+    setIsLoading(false);
+
   }
 
 
@@ -51,24 +57,33 @@ export default function InvoiceForm() {
     });
   }
 
-  async function handleSubmit(event) {
+  async function handleSubmit(event, id, value) {
     event.preventDefault();
+    setIsLoading(true)
+
+    const b = value ? 
+      JSON.stringify({ ...invoice, status:value }) :
+      JSON.stringify({ ...invoice })
 
     await fetch(`/api/invoice?id=${id}`, {
       method: "PUT",
-      body: JSON.stringify({ ...invoice }),
+      body: b,
     });
 
-    router.back();
+    router.refresh();
+    setIsLoading(false)
   }
 
   async function handleDelete() {
+    setIsLoading(true)
     await fetch(`/api/invoice?id=${id}`, {
       method: "DELETE",
     });
     router.push("/db/invoices");
+    setIsLoading(false)
   }
 
+  // TODO try catch and async
   function savePDF() {
     printInvoice(invoice);
   }
@@ -77,14 +92,14 @@ export default function InvoiceForm() {
     return (
       <div className="flex flex-col gap-3 p-4 m-4 rounded-lg bg-slate-700 w-fit shadow-md">
         <h4 className="text-lg font-bold">Status: </h4>
-        <ChangeStatus invoice={invoice} setInvoice={setInvoice} />
+        <ChangeStatus invoice={invoice} setInvoice={setInvoice} handleSubmit={handleSubmit} id={id}/>
       </div>
     );
   }
 
   function Form() {
     return (
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={async (event) => await handleSubmit(event, id)}>
         <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 bg-slate-700 p-4 rounded-lg m-4 shadow-md">
           <div>
             <label className="text-gray-700 dark:text-gray-200" htmlFor="Name">
@@ -188,7 +203,7 @@ export default function InvoiceForm() {
 
   return (
     <div className="">
-      {invoice && (
+      {(invoice && !isLoading) && (
         <div>
           <h1 className="p-4 text-lg font-bold">
             INVOICE No:{" "}
@@ -206,7 +221,8 @@ export default function InvoiceForm() {
           {invoice.rides && (
             <div className="bg-slate-700 p-4 rounded-lg m-4 shadow-md">
               <h4 className="text-lg font-bold">Rides: </h4>
-              <Table titles={titles} data={invoice.rides} setSortBy={setSortBy} sortBy={sortBy} type={"ridesInInvoice"} ridesInInvoice />
+              <Table titles={titles} data={invoice.rides} setSortBy={setSortBy} sortBy={sortBy} type={"ridesInInvoice"} ridesInInvoice={invoice.status} setReload={setReload}
+/>
             </div>
           )}
           <Form />

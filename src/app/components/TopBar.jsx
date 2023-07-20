@@ -6,7 +6,9 @@ import Image from "next/image";
 
 export default function TopBar({ sidebarOpen, setSidebarOpen }) {
   return (
-    <div className="bg-gray-900 w-screen h-10 sticky flex gap-4 justify-between">
+    <div className="bg-gray-900 w-[calc(100%)] h-[50px] sticky flex justify-between ">
+      <div className={`flex flex-row ${sidebarOpen ? "gap-[7.2rem]" : "gap-5"}`}>
+
       <button className="m-2" onClick={() => setSidebarOpen((prev) => !prev)}>
         {sidebarOpen ? (
           <MdClose style={{ width: "32px", height: "32px" }} />
@@ -19,7 +21,8 @@ export default function TopBar({ sidebarOpen, setSidebarOpen }) {
           />
         )}
       </button>
-      <h1>CYTRANSOLUTIONS</h1>
+      <h1 className="text-xl font-bold p-4">CYTRANSOLUTIONS</h1>
+      </div>
       <div className=" mt-auto mb-5 cursor-pointer w-[10rem]">
           <a
             className={`flex items-center w-full h-12 px-3 mt-2 rounded hover:bg-gray-700 hover:text-gray-300`}

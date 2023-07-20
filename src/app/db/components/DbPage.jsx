@@ -11,10 +11,13 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
   const [pages, setPages] = React.useState([]);
   const [sortBy, setSortBy] = React.useState({ col: "_id", rev: false });
   const [searchTerm, setSearchTerm] = React.useState();
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [reload, setReload] = React.useState(false);
 
   React.useEffect(() => {
+    setIsLoading(true);
     fetchData();
-  }, [sortBy, pageNo, limit, filters, searchTerm]);
+  }, [sortBy, pageNo, limit, filters, searchTerm, reload]);
 
   function buildQuery() {
     let query = "";
@@ -39,6 +42,8 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
     setDbData(data.body.data);
     setNumOfEntries(data.body.total);
     findAndSetPages(data.body.total);
+
+    setIsLoading(false);
   }
 
   function findAndSetPages(total) {
@@ -50,22 +55,29 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
   }
 
   return (
-    <Table
-      titles={titles}
-      data={dbData}
-      type={page}
-      setSortBy={setSortBy}
-      sortBy={sortBy}
-      pageNo={pageNo}
-      setPageNo={setPageNo}
-      limit={limit}
-      pages={pages}
-      numOfEntries={numOfEntries}
-      setLimit={setLimit}
-      filters={filters}
-      setFilters={setFilters}
-      searchTerm={searchTerm}
-      setSearchTerm={setSearchTerm}
-    />
+    <>
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : (
+        <Table
+          titles={titles}
+          data={dbData}
+          type={page}
+          setSortBy={setSortBy}
+          sortBy={sortBy}
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+          limit={limit}
+          pages={pages}
+          numOfEntries={numOfEntries}
+          setLimit={setLimit}
+          filters={filters}
+          setFilters={setFilters}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          setReload={setReload}
+        />
+      )}
+    </>
   );
 }

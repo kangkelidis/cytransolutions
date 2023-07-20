@@ -47,19 +47,23 @@ export default async function handler(req, res) {
     const cash = req.query.cash
     const credit = req.query.credit
     const invoice = req.query.invoice
+    const inv_status = req.query.inv_status
 
     const term = req.query.term
 
     const locations = req.query.locations
 
+    console.log("ride api query ", req.query);
     const filters = {
       from: from ? new Date(from) : undefined,
       till: till ? new Date(till) : undefined,
       client: client,
       cash: cash === "true" ? 1 : cash === "false" ? 0 : undefined,
       credit: credit === "true" ? 1 : credit === "false" ? 0 : undefined,
-      invoice: invoice
+      invoice: invoice,
+      inv_status: inv_status && inv_status.split("-")
     }
+    console.log("ride api filters ", filters);
 
     try {
 
@@ -76,11 +80,11 @@ export default async function handler(req, res) {
         return res.json({ body: result });
       }
 
-      const total = await Ride.countDocuments({});
+      let total = await Ride.countDocuments({});
       let result;
       if (perPage && page) {
         console.log("api get term ", term);
-        if (term !== "undefined") {
+        if (term !== "undefined" && term != "") {
           let allResults = await Ride.find({})
           .populate("client")
           .populate("driver")
@@ -109,16 +113,24 @@ export default async function handler(req, res) {
 
           if (!Array.isArray(result)) result = Array.from(result)
         } else {
-          result = await Ride.findWithFilters(filters)
-            .limit(perPage)
-            .skip(perPage * page)
+          if (filters.invoice === "true" && inv_status) {
+            result = await Ride.findWithFilters(filters)
             .sort({ [sort]: rev === "false" ? 1 : -1 })
             .populate("client")
             .populate("driver")
             .populate("invoice");
-
-
-            console.log("find with filters, ", filters);
+            result = result.filter(res => {return filters.inv_status.indexOf(res.invoice.status) != -1 })
+            total = result.length
+            result = result.slice(perPage * page, perPage * page + perPage)
+          } else {
+            result = await Ride.findWithFilters(filters)
+            .sort({ [sort]: rev === "false" ? 1 : -1 })
+            .limit(perPage)
+            .skip(perPage * page)
+            .populate("client")
+            .populate("driver")
+            .populate("invoice");
+          }
         }
 
       } else {

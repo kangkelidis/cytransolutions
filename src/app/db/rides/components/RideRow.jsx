@@ -88,15 +88,16 @@ export default function RideRow({
         </div>
       </td>
 
-      {!invoiceView && invoice && (
+      {!invoiceView && (
         <td className={tdClass + " min-w-[7rem]"}>
           <div
-            onClick={() => router.push(`/db/invoices/id=${invoice._id}`)}
+            onClick={() => {invoice && router.push(`/db/invoices/id=${invoice._id}`)}}
             className="flex flex-col gap-1 "
           >
             <small className="whitespace-nowrap text-center">
-              {invoice.status} invoice
+              {invoice ? invoice.status + " invoice" : "no invoice"}
             </small>
+            {invoice &&
             <span
               className={`cursor-pointer hover:bg-opacity-100 hover:px-3 hover:bg-purple-500 hover:text-white duration-300
               ${invoice.status == "open" ? "bg-open" : invoice.status === "closed" ? "bg-closed" : invoice.status === "issued" ? "bg-issued" : "bg-paid"}  
@@ -104,6 +105,7 @@ export default function RideRow({
             >
               {invoice.code}
             </span>
+            }
           </div>
         </td>
       )}

@@ -18,6 +18,7 @@ export default function Controls({
 
   const [showFilters, setShowFilters] = React.useState(false);
   const [numOfFilters, setNumOfFilters] = React.useState(0);
+  const [selectedDateRange, setSelectedDateRange] = React.useState()
 
   const searchRef = React.useRef();
 
@@ -47,8 +48,9 @@ export default function Controls({
               return acc;
             }, {});
           });
-          setSearchTerm("");
-          searchRef.current.value = "";
+          setSearchTerm(undefined);
+          searchRef.current.value = null;
+          setSelectedDateRange(null)
         }}
         className="flex gap-3 border-[0.5px] rounded-md px-3 py-1 w-[10rem] capitalize"
       >
@@ -97,6 +99,7 @@ export default function Controls({
   }
 
   const filtersItems = Object.keys(filters).map((key, i) => {
+    if (key === "inv_status") return null;
     return (
       <div className="flex" key={i}>
         <label className="flex border-[0.5px] border-r-0 rounded-r-none rounded-md px-3 py-1 w-[8rem] capitalize bg-slate-900">
@@ -126,6 +129,72 @@ export default function Controls({
     );
   });
 
+  function DateControls() {
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+    const startOfWeek = new Date();
+    startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+    const endOfWeek = new Date();
+    endOfWeek.setDate(startOfWeek.getDate() + 7);
+    const startOfMOnth = new Date();
+    startOfMOnth.setDate(1)
+    const endOfMonth = new Date();
+    endOfMonth.setDate(31);
+    return (
+      <div className="flex gap-3">
+        <button
+          className={`bg-blue-900 px-4 py-2 rounded-lg ${selectedDateRange === "day" ? "!bg-purple-500" : "" }`}
+          onClick={() =>{
+            setSelectedDateRange("day")            
+            setFilters((prev) => {
+              return {
+                ...prev,
+                from: { value: today.toLocaleDateString() },
+                till: { value: tomorrow.toLocaleDateString() },
+              };
+            })
+          }
+          }
+        >
+          Day
+        </button>
+        <button
+          className={`bg-blue-900 px-4 py-2 rounded-lg ${selectedDateRange === "week" ? "!bg-purple-500" : "" }`}
+          onClick={() =>{
+            setSelectedDateRange("week")
+            setFilters((prev) => {
+              return {
+                ...prev,
+                from: { value: startOfWeek.toLocaleDateString() },
+                till: { value: endOfWeek.toLocaleDateString() },
+              };
+            })
+          }
+          }
+        >
+          Week
+        </button>
+        <button
+          onClick={() => {
+            setSelectedDateRange("month")
+            setFilters((prev) => {
+              return {
+                ...prev,
+                from: { value: startOfMOnth.toLocaleDateString() },
+                till: { value: endOfMonth.toLocaleDateString() },
+              };
+            })
+          }
+          }
+          className={`bg-blue-900 px-4 py-2 rounded-lg ${selectedDateRange === "month" ? "!bg-purple-500" : "" }`}
+        >
+          Month
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col">
       <div className="flex justify-between flex-wrap gap-3">
@@ -154,26 +223,27 @@ export default function Controls({
             </span>
           </button>
 
-          {showFilters && <ResetFilters />}
-
+          <ResetFilters />
         </div>
 
         {!pathname.includes("invoice") && (
-          <button
-            onClick={() => router.push(pathname + "/create")}
-            className="flex w-fit h-fit text-black bg-purple-500 rounded-2xl pr-3 pl-1 gap-2 py-1"
-          >
-            <BiPlus className="self-center" />
-            NEW
-          </button>
+          <div className="flex gap-10">
+            <button
+              onClick={() => router.push(pathname + "/create")}
+              className="flex w-fit h-fit text-black bg-purple-500 rounded-2xl pr-3 pl-1 gap-2 py-1"
+            >
+              <BiPlus className="self-center" />
+              NEW
+            </button>
+            <DateControls />
+          </div>
         )}
       </div>
       {showFilters && (
         <div className="flex flex-wrap gap-2 p-4 py-10 justify-center">
           {filtersItems}
-          <InvoiceStatusFilter setFilters={setFilters}/>
+          <InvoiceStatusFilter filters={filters} setFilters={setFilters} />
         </div>
-        
       )}
     </div>
   );

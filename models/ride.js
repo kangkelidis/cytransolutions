@@ -97,7 +97,7 @@ rideSchema.post('findByIdAndDelete', async function(doc) {
     console.log('%s has been removed', doc._id);
   });
 
-rideSchema.statics.findWithFilters = function(filters) {
+rideSchema.statics.findWithFilters = async function(filters) {
     let query =  this.find({})    
     if (filters.from !== undefined) query.find({"date": { $gte: filters.from }})
     if (filters.till !== undefined) query.find({"date": {$lte: filters.till}})

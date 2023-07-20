@@ -1,6 +1,6 @@
 import Select from "react-select";
 
-export default function InvoiceStatusFilter({setFilters}) {
+export default function InvoiceStatusFilter({ filters, setFilters}) {
     
   const selectStyles = {
     control: (baseStyles, state) => ({
@@ -31,33 +31,46 @@ export default function InvoiceStatusFilter({setFilters}) {
     }),
   };
     function handleChange(values) {
-        console.log(values);
+        let string = ""
+        values.map(val => {string = string + "-"+ val.value})
+        string = string.slice(1)
+        setFilters(prev => {
+            return {
+            ...prev,
+            inv_status: {value: string},
+        }})
     }
-    // setFilters(prev => {
-    //     return {
-    //     ...prev,
-    //     status: {value: undefined, type: "select", options: ["open", "closed", "paid", "issued"]},
-    // }})
 
     return (
-        <div className="flex">
-        <label className="flex border-[0.5px] border-r-0 rounded-r-none rounded-md px-3 py-1 w-[8rem] capitalize bg-slate-900"
-              htmlFor="status"
-            >
-              Client
-            </label>
-            <Select 
-            id="status"
-            styles={selectStyles}
-            isMulti
-            options={[
-                {value: "open", label: "open"},
-                {value: "closed", label: "closed"},
-                {value: "issued", label: "issued"},
-                {value: "paid", label: "paid"},
-            ]}
-            onChange={(newVals) => handleChange(newVals)}
-            />
+        <div>
+            {filters.invoice.value === 'true' && 
+                <div className="flex">
+                <label className="flex border-[0.5px] border-r-0 rounded-r-none rounded-md px-3 py-1 w-[8rem] capitalize bg-slate-900"
+                    htmlFor="status"
+                    >
+                    Invoice Status
+                    </label>
+                    <Select 
+                    id="status"
+                    styles={selectStyles}
+                    isMulti
+                    defaultValue={[
+                        {value: "open", label: "open"},
+                        {value: "closed", label: "closed"},
+                        {value: "issued", label: "issued"},
+                        {value: "paid", label: "paid"},
+                    ]}
+                    options={[
+                        {value: "open", label: "open"},
+                        {value: "closed", label: "closed"},
+                        {value: "issued", label: "issued"},
+                        {value: "paid", label: "paid"},
+                    ]}
+                    onChange={(newVals) => handleChange(newVals)}
+                    />
+                </div>
+
+            }
         </div>
     )
 }

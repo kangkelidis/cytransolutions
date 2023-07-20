@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { BiPlus } from "react-icons/bi";
 import { AiFillFilter } from "react-icons/ai";
 import React from "react";
+import InvoiceStatusFilter from "./InvoiceStatusFilter";
 
 export default function Controls({
   filters,
@@ -170,7 +171,9 @@ export default function Controls({
       {showFilters && (
         <div className="flex flex-wrap gap-2 p-4 py-10 justify-center">
           {filtersItems}
+          <InvoiceStatusFilter setFilters={setFilters}/>
         </div>
+        
       )}
     </div>
   );

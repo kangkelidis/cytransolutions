@@ -22,7 +22,8 @@ export default function Table({
   setFilters,
   searchTerm,
   setSearchTerm,
-  setReload
+  setReload,
+  isLoading
 }) {
   const pathName = usePathname();
 
@@ -40,6 +41,8 @@ export default function Table({
       )}
 
       <div className="no-scrollbar overflow-x-scroll mt-4 h-5/6 rounded-md">
+        {isLoading ? <p>Loading...</p> :
+        
         <table className="w-full">
           <thead className="">
             <tr className="border-b-[1px] border-solid">
@@ -75,6 +78,7 @@ export default function Table({
             ))}
           </tbody>
         </table>
+}
       </div>
 
       {pages && (

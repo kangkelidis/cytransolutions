@@ -56,9 +56,7 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
 
   return (
     <>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
+
         <Table
           titles={titles}
           data={dbData}
@@ -76,8 +74,9 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           setReload={setReload}
+          isLoading={isLoading}
         />
-      )}
+      
     </>
   );
 }

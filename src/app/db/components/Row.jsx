@@ -4,8 +4,8 @@ import DriverRow from "../drivers/components/DriverRow";
 import ClientRow from "../clients/components/ClientRow";
 
 export default function Row({ entry, type, border }) {
-  const trClass = "bg-gray-800 hover:bg-gray-700 w-full";
-  const tdClass = `align-top px-4 pt-2 pb-2 ${border && "border-b-[0.5px]"} h-[10]`;
+  const trClass = "bg-gray-800 hover:bg-gray-700 w-full ";
+  const tdClass = `align-top px-4 pt-2 pb-2 ${border && "border-b-[1px] border-solid"} h-[10] tracking-tight leading-4 `;
   const tdId = "font-bold text-purple-400 cursor-pointer hover:text-white hover:underline whitespace-nowrap"
 
   switch (type) {

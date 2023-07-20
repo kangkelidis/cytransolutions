@@ -44,7 +44,7 @@ export default function RideRow({
         <DateDisplay date={date} />
       </td>
 
-      <td className={tdClass}>
+      <td className={tdClass + " min-w-[16rem] "}>
         <div className="flex flex-col">
           <small>From</small>
           <span>{from ? from : "-"}</span>
@@ -56,20 +56,20 @@ export default function RideRow({
       </td>
 
       {!invoiceView &&
-      <td className={tdClass}>
+      <td className={tdClass + " min-w-[8rem]"}>
         <span>{driver.name}</span>
       </td>
       }
       {!invoiceView &&
-      <td className={tdClass}>
+      <td className={tdClass + " min-w-[8rem]"}>
         <span>{client && client.name}</span>
       </td>
 }
-      <td className={tdClass}>
+      <td className={tdClass + " min-w-[8rem]"}>
         <span>{passenger}</span>
       </td>
 
-      <td className={tdClass}>
+      <td className={tdClass + " min-w-[5rem]"}>
         <div className="flex flex-col">
           <small>Cash</small>
           <span>{cash ? cash : "-"}</span>
@@ -96,7 +96,7 @@ export default function RideRow({
       </td>
 }
 
-      <td className={tdClass}>{notes}</td>
+      <td className={tdClass + " min-w-[8rem]"}>{notes}</td>
 
       <td className={tdClass}>
         <button onClick={handleEdit} className="flex gap-2">

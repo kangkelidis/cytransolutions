@@ -8,6 +8,9 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
   const pathname = usePathname();
   const [activeLink, setActiveLink] = React.useState(pathname);
 
+  React.useEffect(() => {
+    setActiveLink(pathname)
+  }, [pathname])
   return (
       <nav
         className={`${

@@ -41,7 +41,7 @@ export default function Table({
       <div className="no-scrollbar overflow-x-scroll mt-4 h-5/6 rounded-md">
         <table className="w-full">
           <thead className="">
-            <tr className="border-b-[1px]">
+            <tr className="border-b-[1px] border-solid">
               {titles.map((title, i) => (
                 <th key={i} 
                 onClick={() => {

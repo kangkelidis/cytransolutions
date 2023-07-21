@@ -1,22 +1,26 @@
 'use client'
 
 import InvoiceForm from "../components/InvoiceForm";
-import { useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import React from "react";
 
 export default function EditInvoice() {
-    const { data: session } = useSession();
+    async function fetchUser() {
+        const session = await getSession()
+        setUser(session.user)
+      }
 
-    let role
+    const [user, setUser] = React.useState()
+
     React.useEffect(() => {
-        if (!session) return
-        role = session.user.role
-    
-      }, [session]);
+        fetchUser()
+      }, []);
+
+      console.log(user);
 
     return (
         <div>
-            {role === "admin" || role === "manager" ? <InvoiceForm /> : <></> }
+            {user && (user.role === "admin" || user.role === "manager") ? <InvoiceForm /> : <></> }
         </div>
     )
 }

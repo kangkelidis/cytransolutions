@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     const filters = {
       from: from ? new Date(from) : undefined,
       till: till ? new Date(till) : undefined,
-      inv_status: inv_status.split("-"),
+      inv_status: inv_status && inv_status.split("-"),
     };
     console.log("invoice api filters ", filters);
 

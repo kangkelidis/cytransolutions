@@ -2,17 +2,22 @@
 
 import { SessionProvider } from "next-auth/react";
 import React from "react";
+const checkUser = import("../../utils/checkUser");
 
-export default function AuthContext({ children, session }) {
 
-    const [searchData, setSearchData] = React.useState()
+ 
+
+export default function AuthContext({ children }) {
+
 
     async function fetchData() {
-        const response = await fetch(`/api/ride`, {
-          method: "GET",
-          });
-          const data = await response.json();
-          setSearchData(data.body.data);
+        // const response = await fetch(`/api/ride`, {
+        //   method: "GET",
+        //   });
+        //   const data = await response.json();
+        //   setSearchData(data.body.data);
+        // const an = await (await checkUser).hasToken()
+        //   console.log(an);
         }
   
     React.useEffect(() => {
@@ -20,7 +25,7 @@ export default function AuthContext({ children, session }) {
       }, []);
 
     return (
-        <SessionProvider session={session}>
+        <SessionProvider>
             {children}
         </SessionProvider>
     )

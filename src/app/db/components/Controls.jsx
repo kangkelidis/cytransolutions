@@ -38,20 +38,22 @@ export default function Controls({
     );
   }, [filters]);
 
+  function handleResetFilters() {
+    setFilters((prev) => {
+      return Object.keys(prev).reduce((acc, key) => {
+        acc[key] = { value: undefined, type: prev[key].type };
+        return acc;
+      }, {});
+    });
+    setSearchTerm(undefined);
+    searchRef.current.value = null;
+    setSelectedDateRange(null)
+  }
+
   function ResetFilters() {
     return (
       <button
-        onClick={() => {
-          setFilters((prev) => {
-            return Object.keys(prev).reduce((acc, key) => {
-              acc[key] = { value: undefined, type: prev[key].type };
-              return acc;
-            }, {});
-          });
-          setSearchTerm(undefined);
-          searchRef.current.value = null;
-          setSelectedDateRange(null)
-        }}
+        onClick={handleResetFilters}
         className="flex gap-3 border-[0.5px] rounded-md px-3 py-1 w-[10rem] capitalize"
       >
         Clear Filters
@@ -98,8 +100,9 @@ export default function Controls({
     }
   }
 
-  const filtersItems = Object.keys(filters).map((key, i) => {
+  let filtersItems = Object.keys(filters).map((key, i) => {
     if (key === "inv_status") return null;
+    if (filters[key].type === "hidden") return
     return (
       <div className="flex" key={i}>
         <label className="flex border-[0.5px] border-r-0 rounded-r-none rounded-md px-3 py-1 w-[8rem] capitalize bg-slate-900">
@@ -129,6 +132,7 @@ export default function Controls({
     );
   });
 
+
   function DateControls() {
     const today = new Date();
     const tomorrow = new Date();
@@ -146,28 +150,36 @@ export default function Controls({
         <button
           className={`bg-blue-900 px-4 py-2 rounded-lg ${selectedDateRange === "day" ? "!bg-purple-500" : "" }`}
           onClick={() =>{
+            if (selectedDateRange === "day") {
+              handleResetFilters()
+              return
+            }
             setSelectedDateRange("day")            
             setFilters((prev) => {
               return {
                 ...prev,
-                from: { value: today.toLocaleDateString() },
-                till: { value: tomorrow.toLocaleDateString() },
+                from: { value: today.toLocaleDateString(), type: "date" },
+                till: { value: tomorrow.toLocaleDateString(), type: "date" },
               };
             })
           }
           }
         >
-          Day
+          Today
         </button>
         <button
           className={`bg-blue-900 px-4 py-2 rounded-lg ${selectedDateRange === "week" ? "!bg-purple-500" : "" }`}
           onClick={() =>{
+            if (selectedDateRange === "week") {
+              handleResetFilters()
+              return
+            }
             setSelectedDateRange("week")
             setFilters((prev) => {
               return {
                 ...prev,
-                from: { value: startOfWeek.toLocaleDateString() },
-                till: { value: endOfWeek.toLocaleDateString() },
+                from: { value: startOfWeek.toLocaleDateString(), type: "date"  },
+                till: { value: endOfWeek.toLocaleDateString(), type: "date"  },
               };
             })
           }
@@ -177,12 +189,16 @@ export default function Controls({
         </button>
         <button
           onClick={() => {
+            if (selectedDateRange === "month") {
+              handleResetFilters()
+              return
+            }
             setSelectedDateRange("month")
             setFilters((prev) => {
               return {
                 ...prev,
-                from: { value: startOfMOnth.toLocaleDateString() },
-                till: { value: endOfMonth.toLocaleDateString() },
+                from: { value: startOfMOnth.toLocaleDateString(), type: "date"  },
+                till: { value: endOfMonth.toLocaleDateString(), type: "date"  },
               };
             })
           }

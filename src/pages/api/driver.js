@@ -28,6 +28,12 @@ export default async function handler(req, res) {
     const query = req.query.query
     const sort = req.query.sort
     const rev = req.query.rev
+    const name = req.query.name
+
+    if (name) {
+      const result = await Driver.findOne({name: name});
+      return res.json({ body: {data: result} });
+    }
 
     if (id) {
       const result = await Driver.findById(id);

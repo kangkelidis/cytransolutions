@@ -1,10 +1,12 @@
 "use client";
 
 import { MdModeEditOutline } from "react-icons/md";
-import { TiDelete } from "react-icons/ti"
+import { TiDelete } from "react-icons/ti";
 import { useRouter } from "next/navigation";
 import React from "react";
 import DateDisplay from "../../components/DateDisplay";
+import { confirmAlert } from "react-confirm-alert";
+import "react-confirm-alert/src/react-confirm-alert.css";
 
 export default function RideRow({
   entry: {
@@ -32,13 +34,28 @@ export default function RideRow({
   function handleEdit() {
     router.push(`/db/rides/id=${_id}`);
   }
-  
+
   async function handleDelete() {
-    await fetch(`/api/ride?id=${_id}`, {
-    method: "DELETE",
-  });
-  setReload(prev => !prev)
-}
+    confirmAlert({
+      title: "Are you sure?",
+      message: "You want to delete this?",
+      buttons: [
+        {
+          label: "No",
+          onClick: () => {},
+        },
+        {
+          label: "Yes, Delete it.",
+          onClick: async () => {
+            await fetch(`/api/ride?id=${_id}`, {
+              method: "DELETE",
+            });
+            setReload((prev) => !prev);
+          },
+        },
+      ],
+    });
+  }
 
   return (
     <tr className={trClass}>
@@ -91,21 +108,31 @@ export default function RideRow({
       {!invoiceView && (
         <td className={tdClass + " min-w-[7rem]"}>
           <div
-            onClick={() => {invoice && router.push(`/db/invoices/id=${invoice._id}`)}}
+            onClick={() => {
+              invoice && router.push(`/db/invoices/id=${invoice._id}`);
+            }}
             className="flex flex-col gap-1 "
           >
             <small className="whitespace-nowrap text-center">
               {invoice ? invoice.status + " invoice" : "no invoice"}
             </small>
-            {invoice &&
-            <span
-              className={`cursor-pointer hover:bg-opacity-100 hover:px-3 hover:bg-purple-500 hover:text-white duration-300
-              ${invoice.status == "open" ? "bg-open" : invoice.status === "closed" ? "bg-closed" : invoice.status === "issued" ? "bg-issued" : "bg-paid"}  
+            {invoice && (
+              <span
+                className={`cursor-pointer hover:bg-opacity-100 hover:px-3 hover:bg-purple-500 hover:text-white duration-300
+              ${
+                invoice.status == "open"
+                  ? "bg-open"
+                  : invoice.status === "closed"
+                  ? "bg-closed"
+                  : invoice.status === "issued"
+                  ? "bg-issued"
+                  : "bg-paid"
+              }  
               bg-opacity-70 rounded-md text-center text-black font-bold p-2 w-fit m-auto`}
-            >
-              {invoice.code}
-            </span>
-            }
+              >
+                {invoice.code}
+              </span>
+            )}
           </div>
         </td>
       )}
@@ -116,7 +143,14 @@ export default function RideRow({
           <MdModeEditOutline />
           Edit
         </button>
-        <button onClick={handleDelete} className={`flex gap-2 text-red-600 ${((invoice && invoice.status !== "open" && invoice.status) || (invoiceView && invoiceView !== "open")) && "hidden"}`}>
+        <button
+          onClick={handleDelete}
+          className={`flex gap-2 text-red-600 ${
+            ((invoice && invoice.status !== "open" && invoice.status) ||
+              (invoiceView && invoiceView !== "open")) &&
+            "hidden"
+          }`}
+        >
           <TiDelete />
           Delete
         </button>

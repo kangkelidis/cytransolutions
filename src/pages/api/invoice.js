@@ -4,11 +4,6 @@ import Client from "../../../models/client";
 import Ride from "../../../models/ride";
 import { zeroPad } from "../../../utils/utils";
 
-
-
-
-
-
 export default async function handler(req, res) {
   await dbConnect();
 

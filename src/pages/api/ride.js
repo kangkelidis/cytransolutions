@@ -11,6 +11,7 @@ export default async function handler(req, res) {
 
   if (req.method === "POST") {
     const data = JSON.parse(req.body);
+    console.log("RIDE / POST - DATA: ", data);
 
     if (belongsInAnInvoice(data)) {
       data.invoice = await generateInvoiceId(data);
@@ -48,6 +49,7 @@ export default async function handler(req, res) {
     const credit = req.query.credit
     const invoice = req.query.invoice
     const inv_status = req.query.inv_status
+    const driver = req.query.driver
 
     const term = req.query.term
 
@@ -61,7 +63,8 @@ export default async function handler(req, res) {
       cash: cash === "true" ? 1 : cash === "false" ? 0 : undefined,
       credit: credit === "true" ? 1 : credit === "false" ? 0 : undefined,
       invoice: invoice,
-      inv_status: inv_status && inv_status.split("-")
+      inv_status: inv_status && inv_status.split("-"),
+      driver: driver
     }
     console.log("ride api filters ", filters);
 
@@ -99,13 +102,12 @@ export default async function handler(req, res) {
             if (pattern.test(res.to)) filteredResults.add(res)
             if (pattern.test(res.notes)) filteredResults.add(res)
             if (pattern.test(res.count)) filteredResults.add(res)
+            if (pattern.test(res.date.toLocaleDateString())) filteredResults.add(res)
           });
           allResults = Array.from(filteredResults)
 
           const idsToFind = allResults.map(res => res._id)
           result = await Ride.find({ _id: {$in: idsToFind}})
-          .limit(perPage)
-          .skip(perPage * page)
           .sort({ [sort]: rev === "false" ? 1 : -1 })
           .populate("client")
           .populate("driver")
@@ -114,23 +116,40 @@ export default async function handler(req, res) {
           if (!Array.isArray(result)) result = Array.from(result)
         } else {
           if (filters.invoice === "true" && inv_status) {
-            result = await Ride.findWithFilters(filters)
-            .sort({ [sort]: rev === "false" ? 1 : -1 })
+            let query =  Ride.find({})    
+            if (filters.from !== undefined) query.find({"date": { $gte: filters.from }})
+            if (filters.till !== undefined) query.find({"date": {$lte: filters.till}})
+            if (filters.client !== undefined) query.find().exists('client', filters.client)
+            if (filters.cash !== undefined) filters.cash > 0 ? query.find({"cash": {$gte: filters.cash}}) : query.find({"cash": 0})
+            if (filters.credit !== undefined) filters.credit > 0 ? query.find({"credit": {$gte: filters.credit}}) : query.find({"credit": 0})
+            if (filters.invoice !== undefined) query.find().exists('invoice', filters.invoice)
+
+            result = await query
             .populate("client")
             .populate("driver")
-            .populate("invoice");
-            result = result.filter(res => {return filters.inv_status.indexOf(res.invoice.status) != -1 })
+            .populate("invoice")
+            .sort({ [sort]: rev === "false" ? 1 : -1 })
+            result = result.filter(res => {
+              return (filters.inv_status.indexOf(res.invoice.status) != -1) &&
+              (res.driver.name === filters.driver)
+            })
             total = result.length
             result = result.slice(perPage * page, perPage * page + perPage)
           } else {
-            result = await Ride.findWithFilters(filters)
-            .sort({ [sort]: rev === "false" ? 1 : -1 })
-            .limit(perPage)
-            .skip(perPage * page)
-            .populate("client")
-            .populate("driver")
-            .populate("invoice");
-          }
+            let query =  Ride.find({})    
+            if (filters.from !== undefined) query.find({"date": { $gte: filters.from }})
+            if (filters.till !== undefined) query.find({"date": {$lte: filters.till}})
+            if (filters.client !== undefined) query.find().exists('client', filters.client)
+            if (filters.cash !== undefined) filters.cash > 0 ? query.find({"cash": {$gte: filters.cash}}) : query.find({"cash": 0})
+            if (filters.credit !== undefined) filters.credit > 0 ? query.find({"credit": {$gte: filters.credit}}) : query.find({"credit": 0})
+            if (filters.invoice !== undefined) query.find().exists('invoice', filters.invoice)
+        
+             result = await query.populate("client")
+              .populate("driver")
+              .populate("invoice")
+              .sort({ [sort]: rev === "false" ? 1 : -1 })
+              .exec()
+            }
         }
 
       } else {
@@ -142,6 +161,16 @@ export default async function handler(req, res) {
           .sort({ [sort]: rev === "false" ? 1 : -1 });
         return res.json({ body: { data: result } });
       }
+
+      result = result.filter(res => {
+        console.log(res);
+        return ((filters.driver === "")  || (res.driver.name === filters.driver))
+      })
+
+      total = result.length
+      result = result.slice(perPage * page, perPage * page + perPage)
+
+
       return res.json({ body: { data: result, total: total } });
     } catch (error) {
       console.log(error.message);

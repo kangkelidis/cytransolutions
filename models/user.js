@@ -15,9 +15,12 @@ const userSchema = new mongoose.Schema({
         minLength: [6, "Your password must be at least 6 characters long"],
         select: false, //don't send back password after request
     },
+    name: {
+        type: String,
+    },
     role: {
         type: String,
-        default: 'manager',
+        default: 'driver',
         enum: {
             values: [
                 'admin',

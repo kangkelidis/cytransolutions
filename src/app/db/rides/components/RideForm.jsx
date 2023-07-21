@@ -7,13 +7,12 @@ import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
+import { getSession } from "next-auth/react";
+
 
 export default function RideForm() {
   const router = useRouter();
-
-  const [data, setData] = React.useState({
-    date: Date.now(),
-  });
+  
   const [editMode, setEditMode] = React.useState(false);
   const pathname = usePathname();
   const id = pathname.split("id=")[1];
@@ -21,7 +20,10 @@ export default function RideForm() {
   const [clients, setClients] = React.useState([]);
   const [locations, setLocations] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true)
-
+  const [data, setData] = React.useState({
+    date: Date.now(),
+  });
+  
   React.useEffect(() => {
     setIsLoading(true)
     if (id) {
@@ -32,12 +34,17 @@ export default function RideForm() {
     fetchDrivers();
     fetchLocations();
   }, []);
+  
+  async function fetchUser() {
+    const session = await getSession()
+    return session.user
+  }
 
   async function fetchRide() {
     const response = await fetch(`/api/ride?id=${id}`, {
       method: "GET",
     });
-
+    
     const data = await response.json();
     setData(data.body);
   }
@@ -52,12 +59,23 @@ export default function RideForm() {
   }
 
   async function fetchDrivers() {
-    const response = await fetch(`/api/driver`, {
-      method: "GET",
-    });
+    const user = await fetchUser()
+    let response
+    if (user.role === "driver") {
+      response = await fetch(`/api/driver?name=${user.name}`, {
+        method: "GET",
+      });
+      const data = await response.json();
+      setDrivers([data.body.data]);
+      changeSingleStateValue(setData, "driver", data.body.data);
+    } else {
+      response = await fetch(`/api/driver`, {
+        method: "GET",
+      });
+      const data = await response.json();
+      setDrivers(data.body.data);
+    }
 
-    const data = await response.json();
-    setDrivers(data.body.data);
   }
 
   async function fetchLocations() {
@@ -165,6 +183,7 @@ export default function RideForm() {
             </label>
             <Select
               required
+              isDisabled={drivers.length === 1}
               id="driver"
               captureMenuScroll
               closeMenuOnScroll
@@ -180,7 +199,9 @@ export default function RideForm() {
               value={
                 data.driver
                   ? { value: data.driver._id, label: data.driver.count +". "+ data.driver.name }
-                  : { value: null, label: "" }
+                  : drivers.length === 1 ?
+                  {value: drivers[0]._id, label: drivers[0].count +". "+ drivers[0].name,} :
+                    { value: null, label: "" }
               }
               onChange={(newVal) => {
                 const selected = drivers.filter((driver) => {
@@ -269,7 +290,6 @@ export default function RideForm() {
                 changeSingleStateValue(setData, "from", selected);
               }}
               onCreateOption={(newVal) => {
-                console.log(newVal);
                 changeSingleStateValue(setData, "from", newVal);
 
               }}
@@ -300,7 +320,6 @@ export default function RideForm() {
                 changeSingleStateValue(setData, "to", selected);
               }}
               onCreateOption={(newVal) => {
-                console.log(newVal);
                 changeSingleStateValue(setData, "to", newVal);
 
               }}
@@ -388,3 +407,6 @@ export default function RideForm() {
     </div>
   );
 }
+RideForm.auth = true
+
+

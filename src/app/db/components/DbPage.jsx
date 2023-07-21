@@ -2,6 +2,8 @@
 
 import React from "react";
 import Table from "./Table";
+import { useSession } from "next-auth/react";
+
 
 export default function DbPAge({ page, titles, filters, setFilters }) {
   const [dbData, setDbData] = React.useState([]);
@@ -13,11 +15,22 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
   const [searchTerm, setSearchTerm] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
   const [reload, setReload] = React.useState(false);
+  const { data: session } = useSession();
 
+
+  
+    let diverName
   React.useEffect(() => {
+    
     setIsLoading(true);
+    if (!session) return
+    const role = session.user.role
+    diverName = role === "driver" ? session.user.name : ""
+
     fetchData();
-  }, [sortBy, pageNo, limit, filters, searchTerm, reload]);
+  }, [sortBy, pageNo, limit, filters, searchTerm, reload, session]);
+
+
 
   function buildQuery() {
     let query = "";
@@ -31,7 +44,7 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
   async function fetchData() {
     let f = buildQuery();
     const response = await fetch(
-      `/api/${page}?page=${pageNo}&limit=${limit}&sort=${sortBy.col}&rev=${sortBy.rev}&term=${searchTerm}` +
+      `/api/${page}?page=${pageNo}&limit=${limit}&sort=${sortBy.col}&rev=${sortBy.rev}&term=${searchTerm}&driver=${diverName}` +
         f,
       {
         method: "GET",
@@ -54,9 +67,13 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
     setPages(arr);
   }
 
+  const restrictedPages = ["invoice", "driver"]
   return (
     <>
-
+      {session && session.user.role === "driver" && restrictedPages.indexOf(page) !== -1 ?
+      <></> 
+      :
+      
         <Table
           titles={titles}
           data={dbData}
@@ -76,6 +93,8 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
           setReload={setReload}
           isLoading={isLoading}
         />
+      }
+
       
     </>
   );

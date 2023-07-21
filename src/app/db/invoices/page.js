@@ -17,7 +17,9 @@ export default function Invoices() {
       const [filters, setFilters] = React.useState({
         from: {value: undefined, type: "date"},
         till: {value: undefined, type: "date"},
-        status: {value: undefined, type: "select", options: ["open", "closed", "paid", "issued"]},
+        invoice: {value: "true", type: "hidden"},
+        inv_status: {value: [], type: "hidden"},
+
       });
   return (
     <DbPage

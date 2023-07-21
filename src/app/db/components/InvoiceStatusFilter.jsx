@@ -69,7 +69,6 @@ export default function InvoiceStatusFilter({ filters, setFilters}) {
                     onChange={(newVals) => handleChange(newVals)}
                     />
                 </div>
-
             }
         </div>
     )

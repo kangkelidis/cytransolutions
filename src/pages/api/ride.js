@@ -163,13 +163,11 @@ export default async function handler(req, res) {
       }
 
       result = result.filter(res => {
-        console.log(res);
         return ((filters.driver === "")  || (res.driver.name === filters.driver))
       })
 
       total = result.length
       result = result.slice(perPage * page, perPage * page + perPage)
-
 
       return res.json({ body: { data: result, total: total } });
     } catch (error) {

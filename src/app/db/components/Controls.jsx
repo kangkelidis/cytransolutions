@@ -32,7 +32,7 @@ export default function Controls({
   React.useEffect(() => {
     setNumOfFilters(
       Object.values(filters).reduce((acc, val) => {
-        if (val.value !== undefined) return acc + 1;
+        if (val.value !== undefined && val.type !== "hidden") return acc + 1;
         return acc;
       }, 0)
     );
@@ -41,7 +41,7 @@ export default function Controls({
   function handleResetFilters() {
     setFilters((prev) => {
       return Object.keys(prev).reduce((acc, key) => {
-        acc[key] = { value: undefined, type: prev[key].type };
+        acc[key] = { value: prev[key].type === "hidden" ? prev[key].value : undefined, type: prev[key].type };
         return acc;
       }, {});
     });

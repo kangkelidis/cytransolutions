@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         .populate("rides")
         .sort({ [sort]: rev === "false" ? 1 : -1 });
 
-        if (filters.inv_status[0] !== "") {
+        if (filters.inv_status !== "" && filters.inv_status[0] !== "") {
           result = result.filter((res) => {
             return (filters.inv_status.indexOf(res.status) != -1);
           });

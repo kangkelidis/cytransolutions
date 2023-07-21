@@ -12,38 +12,75 @@ export default async function handler(req, res) {
     const page = req.query.page;
     const id = req.query.id;
 
+    const sort = req.query.sort;
+    const rev = req.query.rev;
+
+    const from = req.query.from;
+    const till = req.query.till;
+    const inv_status = req.query.inv_status;
+
+    const term = req.query.term;
+
+    console.log("GET INVOICE QUERY: ", req.query);
+
+    const filters = {
+      from: from ? new Date(from) : undefined,
+      till: till ? new Date(till) : undefined,
+      inv_status: inv_status.split("-"),
+    };
+    console.log("invoice api filters ", filters);
+
     try {
       if (id) {
         const result = await Invoice.findById(id)
-          .populate("client").populate("rides");
+          .populate("client")
+          .populate("rides");
         return res.json({ body: { data: result } });
       }
-      const total = await Invoice.count({});
-      let invoices = await Invoice.find({})
-        .limit(perPage).skip(perPage * page)
-        .populate("client");
-      return res.json({ body: { data: invoices, total: total } });
+
+      let query = Invoice.find({});
+      if (filters.from !== undefined)
+        query.find({ date: { $gte: filters.from } });
+      if (filters.till !== undefined)
+        query.find({ date: { $lte: filters.till } });
+
+      let result = await query
+        .populate("client")
+        .populate("rides")
+        .sort({ [sort]: rev === "false" ? 1 : -1 });
+
+        if (filters.inv_status[0] !== "") {
+          result = result.filter((res) => {
+            return (filters.inv_status.indexOf(res.status) != -1);
+          });
+
+        }
+      const total = result.length;
+
+      result = result.slice(perPage * page, perPage * page + perPage);
+
+      // const total = await Invoice.countDocuments({});
+      // let invoices = await Invoice.find({})
+      //   .limit(perPage).skip(perPage * page)
+      //   .populate("client");
+      return res.json({ body: { data: result, total: total } });
     } catch (e) {
       console.log(e.message);
       return res.status(500).json({ message: "error" });
     }
   }
 
-
-
-
-
   if (req.method === "PUT") {
     const id = req.query.id;
     const data = JSON.parse(req.body);
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
-      );
-      await Invoice.findByIdAndUpdate(id, {
-        date: filteredData.date,
-        status: filteredData.status,
-        notes: filteredData.notes,
-      });
+    );
+    await Invoice.findByIdAndUpdate(id, {
+      date: filteredData.date,
+      status: filteredData.status,
+      notes: filteredData.notes,
+    });
     return res.json({ message: "ok" });
   }
 

@@ -42,18 +42,18 @@ export default async function handler(req, res) {
     const sort = req.query.sort;
     const rev = req.query.rev;
 
-    const from = req.query.from
-    const till = req.query.till
-    const client = req.query.client
-    const cash = req.query.cash
-    const credit = req.query.credit
-    const invoice = req.query.invoice
-    const inv_status = req.query.inv_status
-    const driver = req.query.driver
+    const from = req.query.from;
+    const till = req.query.till;
+    const client = req.query.client;
+    const cash = req.query.cash;
+    const credit = req.query.credit;
+    const invoice = req.query.invoice;
+    const inv_status = req.query.inv_status;
+    const driver = req.query.driver;
 
-    const term = req.query.term
+    const term = req.query.term;
 
-    const locations = req.query.locations
+    const locations = req.query.locations;
 
     console.log("ride api query ", req.query);
     const filters = {
@@ -64,14 +64,13 @@ export default async function handler(req, res) {
       credit: credit === "true" ? 1 : credit === "false" ? 0 : undefined,
       invoice: invoice,
       inv_status: inv_status && inv_status.split("-"),
-      driver: driver
-    }
+      driver: driver,
+    };
     console.log("ride api filters ", filters);
 
     try {
-
       if (locations) {
-        const result =  await Locations.find({})
+        const result = await Locations.find({});
         return res.json({ body: result });
       }
 
@@ -87,71 +86,32 @@ export default async function handler(req, res) {
       let result;
       if (perPage && page) {
         console.log("api get term ", term);
-        if (term !== "undefined" && term != "") {
-          let allResults = await Ride.find({})
-          .populate("client")
-          .populate("driver")
-          .populate("invoice");
-          let pattern = new RegExp(`\w*${term}\w*`, "gi");
-          let filteredResults = new Set()
-          allResults.forEach(res => {
-            if (res.client && pattern.test(res.client.name)) filteredResults.add(res)
-            if (res.driver && pattern.test(res.driver.name)) filteredResults.add(res)
-            if (pattern.test(res.passenger)) filteredResults.add(res)
-            if (pattern.test(res.from)) filteredResults.add(res)
-            if (pattern.test(res.to)) filteredResults.add(res)
-            if (pattern.test(res.notes)) filteredResults.add(res)
-            if (pattern.test(res.count)) filteredResults.add(res)
-            if (pattern.test(res.date.toLocaleDateString())) filteredResults.add(res)
+
+        if (filters.invoice === "true" && inv_status) {
+          result = await useFilter(filters, sort, rev);
+          result = result.filter((res) => {
+            return (
+              filters.inv_status.indexOf(res.invoice.status) != -1 &&
+              (filters.driver === "" || res.driver.name === filters.driver)
+            );
           });
-          allResults = Array.from(filteredResults)
 
-          const idsToFind = allResults.map(res => res._id)
-          result = await Ride.find({ _id: {$in: idsToFind}})
-          .sort({ [sort]: rev === "false" ? 1 : -1 })
-          .populate("client")
-          .populate("driver")
-          .populate("invoice");
-
-          if (!Array.isArray(result)) result = Array.from(result)
-        } else {
-          if (filters.invoice === "true" && inv_status) {
-            let query =  Ride.find({})    
-            if (filters.from !== undefined) query.find({"date": { $gte: filters.from }})
-            if (filters.till !== undefined) query.find({"date": {$lte: filters.till}})
-            if (filters.client !== undefined) query.find().exists('client', filters.client)
-            if (filters.cash !== undefined) filters.cash > 0 ? query.find({"cash": {$gte: filters.cash}}) : query.find({"cash": 0})
-            if (filters.credit !== undefined) filters.credit > 0 ? query.find({"credit": {$gte: filters.credit}}) : query.find({"credit": 0})
-            if (filters.invoice !== undefined) query.find().exists('invoice', filters.invoice)
-
-            result = await query
-            .populate("client")
-            .populate("driver")
-            .populate("invoice")
-            .sort({ [sort]: rev === "false" ? 1 : -1 })
-            result = result.filter(res => {
-              return (filters.inv_status.indexOf(res.invoice.status) != -1) &&
-              (res.driver.name === filters.driver)
-            })
-            total = result.length
-            result = result.slice(perPage * page, perPage * page + perPage)
-          } else {
-            let query =  Ride.find({})    
-            if (filters.from !== undefined) query.find({"date": { $gte: filters.from }})
-            if (filters.till !== undefined) query.find({"date": {$lte: filters.till}})
-            if (filters.client !== undefined) query.find().exists('client', filters.client)
-            if (filters.cash !== undefined) filters.cash > 0 ? query.find({"cash": {$gte: filters.cash}}) : query.find({"cash": 0})
-            if (filters.credit !== undefined) filters.credit > 0 ? query.find({"credit": {$gte: filters.credit}}) : query.find({"credit": 0})
-            if (filters.invoice !== undefined) query.find().exists('invoice', filters.invoice)
-        
-             result = await query.populate("client")
-              .populate("driver")
-              .populate("invoice")
-              .sort({ [sort]: rev === "false" ? 1 : -1 })
-              .exec()
+          result.sort((a, b) => {
+            if (a.invoice.status < b.invoice.status) {
+              return -1;
+            } else if (a.invoice.status > b.invoice.status) {
+              return 1;
+            } else {
+              return 0;
             }
+          });
+        } else {
+          result = await useFilter(filters, sort, rev);
         }
 
+        if (term !== "undefined" && term != "") {
+          result = await searchUsingTerm(term, sort, rev, result);
+        }
       } else {
         // RIDES IN INVOICE
         result = await Ride.find({})
@@ -162,13 +122,12 @@ export default async function handler(req, res) {
         return res.json({ body: { data: result } });
       }
 
-      result = result.filter(res => {
-        return ((filters.driver === "")  || (res.driver.name === filters.driver))
-      })
+      result = result.filter((res) => {
+        return filters.driver === "" || res.driver.name === filters.driver;
+      });
 
-      total = result.length
-      result = result.slice(perPage * page, perPage * page + perPage)
-
+      total = result.length;
+      result = result.slice(perPage * page, perPage * page + perPage);
       return res.json({ body: { data: result, total: total } });
     } catch (error) {
       console.log(error.message);
@@ -189,6 +148,7 @@ export default async function handler(req, res) {
       date: filteredData.date,
       client: filteredData.client,
       driver: filteredData.driver,
+      passenger: filteredData.passenger,
       from: filteredData.from,
       to: filteredData.to,
       cash: filteredData.cash,
@@ -208,13 +168,14 @@ export default async function handler(req, res) {
     const id = req.query.id;
     const ride = await Ride.findByIdAndDelete(id);
     if (ride.invoice) {
-      const inv = await Invoices.findById(ride.invoice)
+      const inv = await Invoices.findById(ride.invoice);
       inv.rides = inv.rides.filter((invRide) => {
-        return ride._id.toString() !== invRide.toString()})
+        return ride._id.toString() !== invRide.toString();
+      });
       await invoiceApi.findTotal(ride.invoice);
       await inv.save();
-  }
-    
+    }
+
     return res.json({ message: "ok" });
   }
 }
@@ -240,3 +201,54 @@ async function generateInvoiceId(data) {
   return invoice_id;
 }
 
+async function searchUsingTerm(term, sort, rev, allResults) {
+  let pattern = new RegExp(`\w*${term}\w*`, "gi");
+  let filteredResults = new Set();
+  allResults.forEach((res) => {
+    if (res.client && pattern.test(res.client.name)) filteredResults.add(res);
+    if (res.driver && pattern.test(res.driver.name)) filteredResults.add(res);
+    if (pattern.test(res.passenger)) filteredResults.add(res);
+    if (pattern.test(res.from)) filteredResults.add(res);
+    if (pattern.test(res.to)) filteredResults.add(res);
+    if (pattern.test(res.notes)) filteredResults.add(res);
+    if (pattern.test(res.count)) filteredResults.add(res);
+    if (pattern.test(res.date.toLocaleDateString())) filteredResults.add(res);
+  });
+  allResults = Array.from(filteredResults);
+
+  const idsToFind = allResults.map((res) => res._id);
+  let result = await Ride.find({ _id: { $in: idsToFind } })
+    .sort({ [sort]: rev === "false" ? 1 : -1 })
+    .populate("client")
+    .populate("driver")
+    .populate("invoice");
+
+  if (!Array.isArray(result)) result = Array.from(result);
+  return result
+}
+
+async function useFilter(filters, sort, rev) {
+  console.log(sort);
+  let query = Ride.find({});
+  if (filters.from !== undefined) query.find({ date: { $gte: filters.from } });
+  if (filters.till !== undefined) query.find({ date: { $lte: filters.till } });
+  if (filters.client !== undefined)
+    query.find().exists("client", filters.client);
+  if (filters.cash !== undefined)
+    filters.cash > 0
+      ? query.find({ cash: { $gte: filters.cash } })
+      : query.find({ cash: 0 });
+  if (filters.credit !== undefined)
+    filters.credit > 0
+      ? query.find({ credit: { $gte: filters.credit } })
+      : query.find({ credit: 0 });
+  if (filters.invoice !== undefined)
+    query.find().exists("invoice", filters.invoice);
+
+  return query
+    .populate("client")
+    .populate("driver")
+    .populate("invoice")
+    .sort({ [sort]: rev === "false" ? 1 : -1, "invoice.status": 1 })
+    .exec();
+}

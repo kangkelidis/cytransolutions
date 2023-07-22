@@ -39,30 +39,26 @@ export default async function handler(req, res) {
       }
 
       let query = Invoice.find({});
-      if (filters.from !== undefined)
-        query.find({ date: { $gte: filters.from } });
-      if (filters.till !== undefined)
-        query.find({ date: { $lte: filters.till } });
+      if (filters.from !== undefined) query.find({ date: { $gte: filters.from } });
+      if (filters.till !== undefined) query.find({ date: { $lte: filters.till } });
 
       let result = await query
         .populate("client")
         .populate("rides")
         .sort({ [sort]: rev === "false" ? 1 : -1 });
 
-        if (filters.inv_status !== "" && filters.inv_status[0] !== "") {
-          result = result.filter((res) => {
-            return (filters.inv_status.indexOf(res.status) != -1);
-          });
+      if (filters.inv_status !== "" && filters.inv_status !== undefined) {
+        result = result.filter((res) => {
+          return (filters.inv_status.indexOf(res.status) != -1);
+        });}
 
-        }
+      // SEARCH TERM
+      if (term !== "undefined" && term != "") {
+        result = await searchUsingTerm(term, sort, rev, result);
+      }
+
       const total = result.length;
-
       result = result.slice(perPage * page, perPage * page + perPage);
-
-      // const total = await Invoice.countDocuments({});
-      // let invoices = await Invoice.find({})
-      //   .limit(perPage).skip(perPage * page)
-      //   .populate("client");
       return res.json({ body: { data: result, total: total } });
     } catch (e) {
       console.log(e.message);
@@ -73,6 +69,7 @@ export default async function handler(req, res) {
   if (req.method === "PUT") {
     const id = req.query.id;
     const data = JSON.parse(req.body);
+    console.log(data);
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
     );
@@ -154,4 +151,30 @@ export async function getInvoiceCode(inv_id) {
     console.log(error);
     console.log("Error inv_id ", inv_id);
   }
+}
+
+
+async function searchUsingTerm(term, sort, rev, allResults) {
+  console.log("SEARCH USING TERMS");
+  let pattern = new RegExp(`\w*${term}\w*`, "gi");
+  let filteredResults = new Set();
+  allResults.forEach((res) => {
+    console.log(res.code, term);
+    if (pattern.test(res.code)) filteredResults.add(res);
+    if (pattern.test(res.client.name)) filteredResults.add(res);
+    if (pattern.test(res.status)) filteredResults.add(res);
+    if (res.date && pattern.test(res.date)) filteredResults.add(res);
+    if (pattern.test(res.notes)) filteredResults.add(res);
+  });
+  allResults = Array.from(filteredResults);
+
+  const idsToFind = allResults.map((res) => res._id);
+  let result = await Invoice.find({ _id: { $in: idsToFind } })
+    .sort({ [sort]: rev === "false" ? 1 : -1 })
+    .populate("client")
+    .populate("rides")
+
+  if (!Array.isArray(result)) result = Array.from(result);
+
+  return result
 }

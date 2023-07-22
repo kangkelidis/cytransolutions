@@ -23,7 +23,10 @@ export default function Table({
   searchTerm,
   setSearchTerm,
   setReload,
-  isLoading
+  isLoading,
+  selection,
+  setSelection,
+  dbData
 }) {
   const pathName = usePathname();
 
@@ -35,7 +38,7 @@ export default function Table({
             {pathName.split("/db/")[1] + " Overview"}
           </h1>
           <div className="mt-3 h-fit">
-            <Controls data={searchData} filters={filters} setFilters={setFilters} searchTerm={searchData} setSearchTerm={setSearchTerm}/>
+            <Controls data={searchData} filters={filters} setFilters={setFilters} searchTerm={searchData} setSearchTerm={setSearchTerm} selection={selection} setSelection={setSelection} dbData={dbData}/>
           </div>
         </div>
       )}
@@ -74,6 +77,8 @@ export default function Table({
                 border={key !== data.length - 1}
                 ridesInInvoice={ridesInInvoice}
                 setReload={setReload}
+                selection={selection}
+                setSelection={setSelection}
               />
             ))}
           </tbody>

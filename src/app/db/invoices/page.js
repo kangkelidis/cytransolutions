@@ -6,6 +6,7 @@ import DbPage from "../components/DbPage";
 export default function Invoices() {
 
     const titles = [
+        {"": null},
         {"Id": "_id"},
         {"Client": "client"},
         {"Date": "date"},
@@ -18,7 +19,7 @@ export default function Invoices() {
         from: {value: undefined, type: "date"},
         till: {value: undefined, type: "date"},
         invoice: {value: "true", type: "hidden"},
-        inv_status: {value: [], type: "hidden"},
+        inv_status: {value: ["open"], type: "hidden"},
 
       });
   return (

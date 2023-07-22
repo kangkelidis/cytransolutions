@@ -4,7 +4,6 @@ import React from "react";
 import Table from "./Table";
 import { useSession } from "next-auth/react";
 
-
 export default function DbPAge({ page, titles, filters, setFilters }) {
   const [dbData, setDbData] = React.useState([]);
   const [numOfEntries, setNumOfEntries] = React.useState(0);
@@ -15,22 +14,20 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
   const [searchTerm, setSearchTerm] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
   const [reload, setReload] = React.useState(false);
+  const [selection, setSelection] = React.useState([]);
   const { data: session } = useSession();
 
+  console.log(selection);
 
-  
-    let diverName
+  let diverName;
   React.useEffect(() => {
-    
     setIsLoading(true);
-    if (!session) return
-    const role = session.user.role
-    diverName = role === "driver" ? session.user.name : ""
+    if (!session) return;
+    const role = session.user.role;
+    diverName = role === "driver" ? session.user.name : "";
 
     fetchData();
   }, [sortBy, pageNo, limit, filters, searchTerm, reload, session]);
-
-
 
   function buildQuery() {
     let query = "";
@@ -67,13 +64,14 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
     setPages(arr);
   }
 
-  const restrictedPages = ["invoice", "driver"]
+  const restrictedPages = ["invoice", "driver"];
   return (
     <>
-      {session && session.user.role === "driver" && restrictedPages.indexOf(page) !== -1 ?
-      <></> 
-      :
-      
+      {session &&
+      session.user.role === "driver" &&
+      restrictedPages.indexOf(page) !== -1 ? (
+        <></>
+      ) : (
         <Table
           titles={titles}
           data={dbData}
@@ -92,10 +90,11 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
           setSearchTerm={setSearchTerm}
           setReload={setReload}
           isLoading={isLoading}
+          selection={selection}
+          setSelection={setSelection}
+          dbData={dbData}
         />
-      }
-
-      
+      )}
     </>
   );
 }

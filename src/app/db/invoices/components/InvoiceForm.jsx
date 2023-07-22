@@ -9,18 +9,18 @@ import "flatpickr/dist/themes/dark.css";
 import ChangeStatus from "./ChangeStatus";
 import Table from "../../components/Table";
 import Pill from "../../components/Pill";
+import { confirmAlert } from "react-confirm-alert";
 
 export default function InvoiceForm() {
   const router = useRouter();
 
   const [invoice, setInvoice] = React.useState();
   const [dates, setDates] = React.useState({ from: null, till: null });
-  const [sortBy, setSortBy] = React.useState({col:"date", rev: false})
+  const [sortBy, setSortBy] = React.useState({ col: "date", rev: false });
   const pathname = usePathname();
   const id = pathname.split("id=")[1];
   const [reload, setReload] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
-
 
   React.useEffect(() => {
     setIsLoading(true);
@@ -28,17 +28,18 @@ export default function InvoiceForm() {
   }, [sortBy, reload]);
 
   async function fetchInvoice() {
-    const response = await fetch(`/api/invoice?id=${id}&sort=${sortBy.col}&rev=${sortBy.rev}`, {
-      method: "GET",
-    });
+    const response = await fetch(
+      `/api/invoice?id=${id}&sort=${sortBy.col}&rev=${sortBy.rev}`,
+      {
+        method: "GET",
+      }
+    );
 
     const data = await response.json();
     setInvoice(data.body.data);
-    findDates(data.body.data.rides)
+    findDates(data.body.data.rides);
     setIsLoading(false);
-
   }
-
 
   function findDates(rides) {
     let from = rides[0].date;
@@ -57,13 +58,13 @@ export default function InvoiceForm() {
     });
   }
 
-  async function handleSubmit(event, id, value) {
+  async function handleSubmit(event, id, value, date) {
     event.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
 
-    const b = value ? 
-      JSON.stringify({ ...invoice, status:value }) :
-      JSON.stringify({ ...invoice })
+    const b = value
+      ? JSON.stringify({ ...invoice, status: value, date: date })
+      : JSON.stringify({ ...invoice, date: date });
 
     await fetch(`/api/invoice?id=${id}`, {
       method: "PUT",
@@ -71,28 +72,137 @@ export default function InvoiceForm() {
     });
 
     router.refresh();
-    setIsLoading(false)
+    setIsLoading(false);
   }
 
   async function handleDelete() {
-    setIsLoading(true)
+    setIsLoading(true);
     await fetch(`/api/invoice?id=${id}`, {
       method: "DELETE",
     });
     router.push("/db/invoices");
-    setIsLoading(false)
+    setIsLoading(false);
   }
 
   // TODO try catch and async
   function savePDF() {
-    printInvoice(invoice);
+    if (invoice.status === "open") {
+      confirmAlert({
+        title: "Invoice is OPEN",
+        message: "Do you want to CLOSE the invoice with today's Date?",
+        buttons: [
+          {
+            label: "Cancel",
+            onClick: () => {},
+          },
+          {
+            label: "No. Print Draft",
+            onClick: () => {
+              printInvoice(invoice);
+            },
+          },
+          {
+            label: "Yes, Close it.",
+            onClick: async () => {
+              changeSingleStateValue(setInvoice, "status", "closed");
+              changeSingleStateValue(setInvoice, "date", new Date());
+              await fetch(`/api/invoice?id=${invoice._id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                  ...invoice,
+                  status: "closed",
+                  date: new Date(),
+                }),
+              });
+              printInvoice({ ...invoice, status: "closed", date: new Date() });
+            },
+          },
+        ],
+      });
+    } else {
+      printInvoice(invoice);
+    }
+  }
+
+  async function emailPDF() {
+    if (invoice.status === "open") return
+
+    if (!invoice.email) {
+      alert("Client has no email. Add email in client settings")
+      return
+    }
+    if (invoice.status === "closed") {
+      confirmAlert({
+        title: "Invoice is CLOSED",
+        message: "Do you want to set status to ISSUED?",
+        buttons: [
+          {
+            label: "Cancel",
+            onClick: () => {},
+          },
+          {
+            label: "Yes, set it to ISSUED.",
+            onClick: async () => {
+              changeSingleStateValue(setInvoice, "status", "issued");
+              await fetch(`/api/invoice?id=${invoice._id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                  ...invoice,
+                  status: "issued",
+                }),
+              });
+              printInvoice({ ...invoice, status: "closed" });
+            },
+          },
+        ],
+      });
+    }
+    if (invoice.status === "paid") {
+      confirmAlert({
+        title: "Invoice is already PAID",
+        message: "Do you want send an email anyway?",
+        buttons: [
+          {
+            label: "Cancel",
+            onClick: () => {},
+          },
+          {
+            label: "Yes, and set status to ISSUED",
+            onClick:async () => {
+              changeSingleStateValue(setInvoice, "status", "issued");
+              await fetch(`/api/invoice?id=${invoice._id}`, {
+                method: "PUT",
+                body: JSON.stringify({
+                  ...invoice,
+                  status: "issued",
+                }),
+              });
+
+              printInvoice(invoice);
+            },
+          },
+          {
+            label: "Yes, and leave status as PAID.",
+            onClick: () => {
+              printInvoice(invoice);
+            },
+          },
+        ],
+      });
+    }
+
   }
 
   function Status() {
     return (
       <div className="flex flex-col gap-3 p-4 m-4 rounded-lg bg-slate-700 w-fit shadow-md">
         <h4 className="text-lg font-bold">Status: </h4>
-        <ChangeStatus invoice={invoice} setInvoice={setInvoice} handleSubmit={handleSubmit} id={id}/>
+        <ChangeStatus
+          invoice={invoice}
+          setInvoice={setInvoice}
+          handleSubmit={handleSubmit}
+          id={id}
+        />
       </div>
     );
   }
@@ -171,9 +281,12 @@ export default function InvoiceForm() {
       >
         <div className="w-full">
           <div className="flex flex-col gap-1">
-            <div 
-            className="cursor-pointer"
-            onClick={() => router.push(`/db/clients/id=${invoice.client._id}`)}>
+            <div
+              className="cursor-pointer"
+              onClick={() =>
+                router.push(`/db/clients/id=${invoice.client._id}`)
+              }
+            >
               <Pill label={"Client:"} value={invoice.client.name} />
             </div>
             <Pill label={"From:"} value={dates.from} />
@@ -192,18 +305,18 @@ export default function InvoiceForm() {
   }
 
   const titles = [
-    {"Id": "_id"},
-    {"Date": "date"},
-    {"Itinerary": "from"},
-    {"Passenger": "passenger"},
-    {"Price": "credit"},
-    {"Notes": "notes"},
-    {"Actions": null},
+    { Id: "_id" },
+    { Date: "date" },
+    { Itinerary: "from" },
+    { Passenger: "passenger" },
+    { Price: "credit" },
+    { Notes: "notes" },
+    { Actions: null },
   ];
 
   return (
     <div className="">
-      {(invoice && !isLoading) && (
+      {invoice && !isLoading && (
         <div>
           <h1 className="p-4 text-lg font-bold">
             INVOICE No:{" "}
@@ -212,7 +325,22 @@ export default function InvoiceForm() {
             </span>
           </h1>
 
-          <button onClick={savePDF}>Save PDF</button>
+          <div className="flex flex-row gap-3">
+            <button
+              className={`border-[0.5px] rounded-md px-3 py-1 w-[7rem] hover:bg-purple-400`}
+              onClick={savePDF}
+            >
+              Save PDF
+            </button>
+
+            <button
+              className={`border-[0.5px] rounded-md px-3 py-1 w-[7rem] hover:bg-purple-400 disabled:bg-slate-600 disabled:text-gray-400 disabled:border-0`}
+              disabled={invoice.status === "open"}
+              onClick={emailPDF}
+            >
+              Send Email
+            </button>
+          </div>
 
           <div className="flex w-full justify-between flex-wrap">
             <Info />
@@ -221,8 +349,15 @@ export default function InvoiceForm() {
           {invoice.rides && (
             <div className="bg-slate-700 p-4 rounded-lg m-4 shadow-md">
               <h4 className="text-lg font-bold">Rides: </h4>
-              <Table titles={titles} data={invoice.rides} setSortBy={setSortBy} sortBy={sortBy} type={"ridesInInvoice"} ridesInInvoice={invoice.status} setReload={setReload}
-/>
+              <Table
+                titles={titles}
+                data={invoice.rides}
+                setSortBy={setSortBy}
+                sortBy={sortBy}
+                type={"ridesInInvoice"}
+                ridesInInvoice={invoice.status}
+                setReload={setReload}
+              />
             </div>
           )}
           <Form />

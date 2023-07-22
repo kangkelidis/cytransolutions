@@ -56,9 +56,9 @@ export default function InvoiceStatusFilter({ filters, setFilters}) {
                     isMulti
                     defaultValue={[
                         {value: "open", label: "open"},
-                        {value: "closed", label: "closed"},
-                        {value: "issued", label: "issued"},
-                        {value: "paid", label: "paid"},
+                        // {value: "closed", label: "closed"},
+                        // {value: "issued", label: "issued"},
+                        // {value: "paid", label: "paid"},
                     ]}
                     options={[
                         {value: "open", label: "open"},

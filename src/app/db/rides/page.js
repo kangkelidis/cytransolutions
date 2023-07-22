@@ -12,6 +12,7 @@ export default function Rides() {
     cash: {value: undefined, type: "select"},
     credit: {value: undefined, type: "select"},
     invoice: {value: undefined, type: "select"},
+    inv_status: {value: ["open"], type: "hidden"}
   });
 
 

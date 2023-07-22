@@ -11,6 +11,9 @@ export default function Controls({
   setFilters,
   searchTerm,
   setSearchTerm,
+  selection,
+  setSelection,
+  dbData,
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -18,7 +21,7 @@ export default function Controls({
 
   const [showFilters, setShowFilters] = React.useState(false);
   const [numOfFilters, setNumOfFilters] = React.useState(0);
-  const [selectedDateRange, setSelectedDateRange] = React.useState()
+  const [selectedDateRange, setSelectedDateRange] = React.useState();
 
   const searchRef = React.useRef();
 
@@ -41,13 +44,16 @@ export default function Controls({
   function handleResetFilters() {
     setFilters((prev) => {
       return Object.keys(prev).reduce((acc, key) => {
-        acc[key] = { value: prev[key].type === "hidden" ? prev[key].value : undefined, type: prev[key].type };
+        acc[key] = {
+          value: prev[key].type === "hidden" ? prev[key].value : undefined,
+          type: prev[key].type,
+        };
         return acc;
       }, {});
     });
     setSearchTerm(undefined);
     searchRef.current.value = null;
-    setSelectedDateRange(null)
+    setSelectedDateRange(null);
   }
 
   function ResetFilters() {
@@ -102,7 +108,7 @@ export default function Controls({
 
   let filtersItems = Object.keys(filters).map((key, i) => {
     if (key === "inv_status") return null;
-    if (filters[key].type === "hidden") return
+    if (filters[key].type === "hidden") return;
     return (
       <div className="flex" key={i}>
         <label className="flex border-[0.5px] border-r-0 rounded-r-none rounded-md px-3 py-1 w-[8rem] capitalize bg-slate-900">
@@ -132,7 +138,6 @@ export default function Controls({
     );
   });
 
-
   function DateControls() {
     const today = new Date();
     const tomorrow = new Date();
@@ -142,70 +147,92 @@ export default function Controls({
     const endOfWeek = new Date();
     endOfWeek.setDate(startOfWeek.getDate() + 7);
     const startOfMOnth = new Date();
-    startOfMOnth.setDate(1)
+    startOfMOnth.setDate(1);
     const endOfMonth = new Date();
     endOfMonth.setDate(31);
     return (
       <div className="flex gap-3">
         <button
-          className={`bg-blue-900 px-4 py-2 rounded-lg ${selectedDateRange === "day" ? "!bg-purple-500" : "" }`}
-          onClick={() =>{
+          className={`bg-blue-900 px-4 py-2 rounded-lg ${
+            selectedDateRange === "day" ? "!bg-purple-500" : ""
+          }`}
+          onClick={() => {
             if (selectedDateRange === "day") {
-              handleResetFilters()
-              return
+              handleResetFilters();
+              return;
             }
-            setSelectedDateRange("day")            
+            setSelectedDateRange("day");
             setFilters((prev) => {
               return {
                 ...prev,
                 from: { value: today.toLocaleDateString(), type: "date" },
                 till: { value: tomorrow.toLocaleDateString(), type: "date" },
               };
-            })
-          }
-          }
+            });
+          }}
         >
           Today
         </button>
         <button
-          className={`bg-blue-900 px-4 py-2 rounded-lg ${selectedDateRange === "week" ? "!bg-purple-500" : "" }`}
-          onClick={() =>{
+          className={`bg-blue-900 px-4 py-2 rounded-lg ${
+            selectedDateRange === "week" ? "!bg-purple-500" : ""
+          }`}
+          onClick={() => {
             if (selectedDateRange === "week") {
-              handleResetFilters()
-              return
+              handleResetFilters();
+              return;
             }
-            setSelectedDateRange("week")
+            setSelectedDateRange("week");
             setFilters((prev) => {
               return {
                 ...prev,
-                from: { value: startOfWeek.toLocaleDateString(), type: "date"  },
-                till: { value: endOfWeek.toLocaleDateString(), type: "date"  },
+                from: { value: startOfWeek.toLocaleDateString(), type: "date" },
+                till: { value: endOfWeek.toLocaleDateString(), type: "date" },
               };
-            })
-          }
-          }
+            });
+          }}
         >
           Week
         </button>
         <button
           onClick={() => {
             if (selectedDateRange === "month") {
-              handleResetFilters()
-              return
+              handleResetFilters();
+              return;
             }
-            setSelectedDateRange("month")
+            setSelectedDateRange("month");
             setFilters((prev) => {
               return {
                 ...prev,
-                from: { value: startOfMOnth.toLocaleDateString(), type: "date"  },
-                till: { value: endOfMonth.toLocaleDateString(), type: "date"  },
+                from: {
+                  value: startOfMOnth.toLocaleDateString(),
+                  type: "date",
+                },
+                till: { value: endOfMonth.toLocaleDateString(), type: "date" },
               };
-            })
-          }
-          }
-          className={`bg-blue-900 px-4 py-2 rounded-lg ${selectedDateRange === "month" ? "!bg-purple-500" : "" }`}
+            });
+          }}
+          className={`bg-blue-900 px-4 py-2 rounded-lg ${
+            selectedDateRange === "month" ? "!bg-purple-500" : ""
+          }`}
         >
           Month
+        </button>
+      </div>
+    );
+  }
+
+  function SelectToggle() {
+    return (
+      <div>
+        <button
+          className={`flex gap-3 border-[0.5px] rounded-md pr-3 pl-1 py-1 w-[7rem] ${selection.length !== 0 && ""}`}
+          onClick={() => {
+            const ids = dbData.map((data) => data._id);
+            selection.length === 0 ? setSelection(ids) : setSelection([]);
+          }}
+        >
+          {selection.length === 0 ? "Select All" : "Deselect All"}
         </button>
       </div>
     );
@@ -242,7 +269,7 @@ export default function Controls({
           <ResetFilters />
         </div>
 
-        {!pathname.includes("invoice") && (
+        {!pathname.includes("invoice") ? (
           <div className="flex gap-10">
             <button
               onClick={() => router.push(pathname + "/create")}
@@ -253,6 +280,8 @@ export default function Controls({
             </button>
             <DateControls />
           </div>
+        ) : (
+          <SelectToggle />
         )}
       </div>
       {showFilters && (

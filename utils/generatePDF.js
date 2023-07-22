@@ -7,6 +7,16 @@ import { toCurrency } from "./utils.js";
 export function printInvoice(invoice) {
     const doc = new jsPDF.jsPDF();
   
+    if (!invoice.date) {
+        doc.setFontSize(19);
+        doc.setFont("Helvetica", "bold");
+        doc.setTextColor(255,0,0);
+
+        doc.text("DRAFT", 100, 20)
+        doc.setTextColor(0,0,0);
+
+
+    }
     let file = require("../public/logo.js");
     doc.addImage(file.logo, "png", 13, 13, 17.4, 14.4);
     doc.setFont("Helvetica", "bold");
@@ -15,7 +25,7 @@ export function printInvoice(invoice) {
     doc.text("CYTRANSOLUTIONS LTD", 13, 34.8)
   
     doc.setFontSize(19);
-  
+
     doc.text("Invoice", 197, 34.8, null,null, "right")
     doc.setFontSize(9);
     doc.setFont("Helvetica", "normal");

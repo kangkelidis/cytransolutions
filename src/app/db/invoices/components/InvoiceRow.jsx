@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import DateDisplay from "../../components/DateDisplay";
 import StatusBox from "../../components/StatusBox";
 import { toCurrency } from "../../../../../utils/utils";
+import { savePDF } from "../../../../../utils/savePDF"
 
 export default function InvoiceRow({
   entry: { _id, code, client, status, date, total, notes },
@@ -13,7 +14,7 @@ export default function InvoiceRow({
   trClass,
   tdId,
   selection,
-  setSelection
+  setSelection,
 }) {
   const router = useRouter();
 
@@ -73,7 +74,12 @@ export default function InvoiceRow({
           <MdModeEditOutline />
           Edit
         </button>
-        <button className="flex gap-2">
+        <button 
+        onClick={() => {
+          savePDF(_id)
+          router.refresh()
+        }}
+        className="flex gap-2">
           <BsFillPlusCircleFill />
           Save PDF
         </button>

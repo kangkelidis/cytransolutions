@@ -26,7 +26,7 @@ export default function Table({
   isLoading,
   selection,
   setSelection,
-  dbData
+  dbData,
 }) {
   const pathName = usePathname();
 

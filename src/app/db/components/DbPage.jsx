@@ -17,8 +17,6 @@ export default function DbPAge({ page, titles, filters, setFilters }) {
   const [selection, setSelection] = React.useState([]);
   const { data: session } = useSession();
 
-  console.log(selection);
-
   let diverName;
   React.useEffect(() => {
     setIsLoading(true);

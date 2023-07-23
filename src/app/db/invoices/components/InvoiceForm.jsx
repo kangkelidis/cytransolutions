@@ -36,6 +36,11 @@ export default function InvoiceForm() {
     );
 
     const data = await response.json();
+    if (!data.body.data) {
+      router.push("/db/invoices")
+      setIsLoading(false);
+      return
+    }
     setInvoice(data.body.data);
     findDates(data.body.data.rides);
     setIsLoading(false);
@@ -75,14 +80,6 @@ export default function InvoiceForm() {
     setIsLoading(false);
   }
 
-  async function handleDelete() {
-    setIsLoading(true);
-    await fetch(`/api/invoice?id=${id}`, {
-      method: "DELETE",
-    });
-    router.push("/db/invoices");
-    setIsLoading(false);
-  }
 
   // TODO try catch and async
   function savePDF() {
@@ -253,15 +250,7 @@ export default function InvoiceForm() {
           >
             Back
           </button>
-          {
-            <button
-              type="button"
-              className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-red-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
-              onClick={handleDelete}
-            >
-              DELETE
-            </button>
-          }
+
           <button
             type="submit"
             className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"

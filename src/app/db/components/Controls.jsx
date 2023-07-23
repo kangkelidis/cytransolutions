@@ -5,7 +5,7 @@ import { BiPlus } from "react-icons/bi";
 import { AiFillFilter } from "react-icons/ai";
 import React from "react";
 import InvoiceStatusFilter from "./InvoiceStatusFilter";
-
+import { savePDF } from "../../../../utils/savePDF";
 export default function Controls({
   filters,
   setFilters,
@@ -22,6 +22,8 @@ export default function Controls({
   const [showFilters, setShowFilters] = React.useState(false);
   const [numOfFilters, setNumOfFilters] = React.useState(0);
   const [selectedDateRange, setSelectedDateRange] = React.useState();
+
+  const [showSavePdfsInfo, setSavePdfsInfo] = React.useState(false);
 
   const searchRef = React.useRef();
 
@@ -226,7 +228,9 @@ export default function Controls({
     return (
       <div>
         <button
-          className={`flex gap-3 border-[0.5px] rounded-md pr-3 pl-1 py-1 w-[7rem] ${selection.length !== 0 && ""}`}
+          className={`flex gap-3 border-[0.5px] rounded-md pr-3 pl-1 py-1 w-[7rem] ${
+            selection.length !== 0 && ""
+          }`}
           onClick={() => {
             const ids = dbData.map((data) => data._id);
             selection.length === 0 ? setSelection(ids) : setSelection([]);
@@ -234,6 +238,29 @@ export default function Controls({
         >
           {selection.length === 0 ? "Select All" : "Deselect All"}
         </button>
+        {selection.length > 0 && (
+          <div
+            onMouseEnter={() => setSavePdfsInfo(true)}
+            onMouseLeave={() => setSavePdfsInfo(false)}
+          >
+            <button
+              className={`border-[0.5px] rounded-md px-3 py-1 w-[7rem]`}
+              onClick={() => {
+                selection.map((sel) => {
+                  savePDF(sel, true);
+                });
+              }}
+            >
+              Save PDFs
+            </button>
+            <div
+              className={`${!showSavePdfsInfo && "hidden"} w-[9rem] absolute bg-purple-500 rounded-md text-center`}
+            >
+              Save PDFs for selected invoices. Closes all open invoices, with
+              todays date.
+            </div>
+          </div>
+        )}
       </div>
     );
   }

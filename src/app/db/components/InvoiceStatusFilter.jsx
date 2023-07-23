@@ -1,7 +1,30 @@
 import Select from "react-select";
+import React from "react";
 
 export default function InvoiceStatusFilter({ filters, setFilters}) {
+  
+  const options = [
+    {value: "open", label: "open"},
+    {value: "closed", label: "closed"},
+    {value: "issued", label: "issued"},
+    {value: "paid", label: "paid"},
+]
+
+  const [selectedOptions, setSelectedOptions] = React.useState(findSelectedOptions())
+
+  function findSelectedOptions() {
+    if (filters.inv_status.value) {
+      if (Array.isArray(filters.inv_status.value)) {
+        return {value: "open", label: "open"}
+      } else {
+        return filters.inv_status.value.split("-").map(i => {return {value: i, label: i}})
+      }
+    } else {
+      return null
+    }
     
+  }
+
   const selectStyles = {
     control: (baseStyles, state) => ({
       ...baseStyles,
@@ -39,7 +62,9 @@ export default function InvoiceStatusFilter({ filters, setFilters}) {
             ...prev,
             inv_status: {value: string},
         }})
+        setSelectedOptions(values)
     }
+
 
     return (
         <div>
@@ -54,18 +79,9 @@ export default function InvoiceStatusFilter({ filters, setFilters}) {
                     id="status"
                     styles={selectStyles}
                     isMulti
-                    defaultValue={[
-                        {value: "open", label: "open"},
-                        // {value: "closed", label: "closed"},
-                        // {value: "issued", label: "issued"},
-                        // {value: "paid", label: "paid"},
-                    ]}
-                    options={[
-                        {value: "open", label: "open"},
-                        {value: "closed", label: "closed"},
-                        {value: "issued", label: "issued"},
-                        {value: "paid", label: "paid"},
-                    ]}
+                    defaultValue={options[0]}
+                    value={selectedOptions}
+                    options={options}
                     onChange={(newVals) => handleChange(newVals)}
                     />
                 </div>

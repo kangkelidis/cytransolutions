@@ -61,7 +61,7 @@ export default async function handler(req, res) {
       result = result.slice(perPage * page, perPage * page + perPage);
       return res.json({ body: { data: result, total: total } });
     } catch (e) {
-      console.log(e.message);
+      console.log("ERROR INVOICE API GET", e.message);
       return res.status(500).json({ message: "error" });
     }
   }
@@ -81,11 +81,6 @@ export default async function handler(req, res) {
     return res.json({ message: "ok" });
   }
 
-  if (req.method === "DELETE") {
-    const id = req.query.id;
-    await Invoice.findByIdAndDelete(id);
-    return res.json({ message: "ok" });
-  }
 }
 
 export async function findOpenInvoice(client_id) {
@@ -111,35 +106,7 @@ export async function createNewInvoice(client_id) {
   }
 }
 
-async function findClient(client_id) {
-  let client;
-  try {
-    client = await Client.findById(client_id);
-    return client;
-  } catch (error) {
-    console.log(error);
-  }
-}
 
-export async function addRideId(inv_id, ride_id) {
-  const invoice = await Invoice.findById(inv_id);
-  invoice.rides.push(ride_id);
-  await Invoice.findByIdAndUpdate(inv_id, { rides: invoice.rides });
-}
-
-// to be called when a new ride is inserted and when updated and deleted
-export async function findTotal(inv_id) {
-  const invoice = await Invoice.findById(inv_id);
-  let total = 0;
-  await Promise.all(
-    invoice.rides.map(async (ride_id) => {
-      const ride = await Ride.findById(ride_id);
-      if (ride) total += ride.credit;
-    })
-  );
-
-  await Invoice.findByIdAndUpdate(inv_id, { total: total });
-}
 
 export async function getInvoiceCode(inv_id) {
   // does not belong to an invoice
@@ -178,3 +145,6 @@ async function searchUsingTerm(term, sort, rev, allResults) {
 
   return result
 }
+
+
+

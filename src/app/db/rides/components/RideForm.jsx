@@ -96,6 +96,8 @@ export default function RideForm() {
   async function handleSubmit(event) {
     event.preventDefault();
 
+    if (!validateForm()) return
+
     setIsLoading(true)
     if (editMode) {
       await fetch(`/api/ride?id=${id}`, {
@@ -110,6 +112,17 @@ export default function RideForm() {
     }
 
     router.back();
+  }
+
+  function validateForm() {
+    console.log(data)
+    // check client and credit
+    if ((data.credit && data.credit !== "0") && !data.client) {
+      alert("Must define a client to have credit")
+      return false
+    }
+
+    return true
   }
 
   async function handleDelete() {

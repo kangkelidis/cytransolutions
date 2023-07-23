@@ -4,6 +4,7 @@ import dbConnect from "../../../utils/dbConnect";
 import mongoose from "mongoose";
 import Locations from "../../../models/locations";
 import Invoices from "../../../models/invoices";
+import Client from "../../../models/client";
 const invoiceApi = await import("../api/invoice");
 
 export default async function handler(req, res) {
@@ -14,20 +15,21 @@ export default async function handler(req, res) {
     console.log("RIDE / POST - DATA: ", data);
 
     if (belongsInAnInvoice(data)) {
-      data.invoice = await generateInvoiceId(data);
+      // const client_id = new mongoose.Types.ObjectId(data.client._id);
+      data.invoice = await generateInvoiceId(data.client);
     }
 
     try {
       const ride = await Ride.create(data);
-      if (ride) {
-        if (belongsInAnInvoice(data)) {
-          await invoiceApi.addRideId(
-            ride.invoice,
-            new mongoose.Types.ObjectId(ride._id)
-          );
-          await invoiceApi.findTotal(ride.invoice);
-        }
-      }
+      // if (ride) {
+      //   if (belongsInAnInvoice(data)) {
+      //     await invoiceApi.addRideId(
+      //       ride.invoice,
+      //       new mongoose.Types.ObjectId(ride._id)
+      //     );
+      //     await invoiceApi.findTotal(ride.invoice);
+      //   }
+      // }
       return res.json({ message: "ok" });
     } catch (error) {
       console.log(error.message);
@@ -135,67 +137,78 @@ export default async function handler(req, res) {
     }
   }
 
+  // TODO use save
   if (req.method === "PUT") {
+    console.log("RIDE PUT-----------");
     const id = req.query.id;
     const data = JSON.parse(req.body);
     let filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != "")
     );
     // use this to find if invoice changed
-    const prevRide = await Ride.findById(id);
+    const ride = await Ride.findById(id);
+    const prev_inv = ride.invoice
 
-    const ride = await Ride.findByIdAndUpdate(id, {
-      date: filteredData.date,
-      client: filteredData.client,
-      driver: filteredData.driver,
-      passenger: filteredData.passenger,
-      from: filteredData.from,
-      to: filteredData.to,
-      cash: filteredData.cash,
-      credit: filteredData.credit,
-      invoice: filteredData.invoice,
-      notes: filteredData.notes,
-    });
+    ride.date = filteredData.date
+    ride.client = filteredData.client
+    ride.driver = filteredData.driver
+    ride.passenger = filteredData.passenger
+    ride.from = filteredData.from
+    ride.to = filteredData.to
+    ride.cash = filteredData.cash
+    ride.credit = filteredData.credit
+    ride.notes = filteredData.notes
+    ride.prev_inv = prev_inv
 
-    if (ride.invoice) {
-      await invoiceApi.findTotal(ride.invoice);
+    if (belongsInAnInvoice(filteredData)) {
+      // either find invoice id or create a new
+      ride.invoice = await generateInvoiceId(data.client);
+    } else {
+      // remove current invoice
+      ride.invoice = null
     }
+
+    await ride.save()
 
     return res.json({ message: "ok" });
   }
+
 
   if (req.method === "DELETE") {
     const id = req.query.id;
     const ride = await Ride.findByIdAndDelete(id);
     if (ride.invoice) {
       const inv = await Invoices.findById(ride.invoice);
-      inv.rides = inv.rides.filter((invRide) => {
-        return ride._id.toString() !== invRide.toString();
-      });
-      await invoiceApi.findTotal(ride.invoice);
-      await inv.save();
+      await inv.removeRide(ride._id)
+      const total = await inv.calculateTotal()
+      if (total === 0) {
+        const client = await Client.findById(inv.client);
+        client.invoicesCreated -= 1;
+        await client.save();
+        await Invoices.findByIdAndDelete(inv._id)
+      }
     }
-
+    
     return res.json({ message: "ok" });
   }
 }
 
 function belongsInAnInvoice(data) {
   // if credit amount and known client
-  return data.credit && data.client;
+  console.log("check if belongs in invoice ");
+  return (data.credit && data.credit !== "0") && data.client;
 }
 
-async function generateInvoiceId(data) {
-  const client_id = new mongoose.Types.ObjectId(data.client._id);
+async function generateInvoiceId(client) {
   // logic to find or create the invoice the ride belongs to
-  const openInvoice = await invoiceApi.findOpenInvoice(client_id);
+  const openInvoice = await invoiceApi.findOpenInvoice(client);
 
   let invoice_id;
   if (openInvoice) {
     invoice_id = openInvoice._id;
   } else {
     // create a new Invoice
-    invoice_id = await invoiceApi.createNewInvoice(data.client);
+    invoice_id = await invoiceApi.createNewInvoice(client);
   }
 
   return invoice_id;
@@ -224,7 +237,7 @@ async function searchUsingTerm(term, sort, rev, allResults) {
     .populate("invoice");
 
   if (!Array.isArray(result)) result = Array.from(result);
-  return result
+  return result;
 }
 
 async function useFilter(filters, sort, rev) {

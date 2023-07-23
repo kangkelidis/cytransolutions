@@ -50,7 +50,7 @@ export function printInvoice(invoice) {
         doc.text(["Email: " , invoice.client.email], 13, 70.5);
     } 
     if (invoice.client.tel) {
-        doc.text(["Tel: ", client.tel], 13, 76.5);
+        doc.text(["Tel: ", invoice.client.tel], 13, 76.5);
     }
   
   
@@ -95,5 +95,6 @@ export function printInvoice(invoice) {
     doc.text(["Account name: CYTRANSOLUTIONS LTD", "Account number: 357026026038", 
     "IBAN: CY470020001950000357026026038", "BIC: BCYPCY2N"], 13, 275)
 
-    doc.save(`a4.pdf`);
+    // console.log(`${invoice.date ? new Date(invoice.date).toLocaleDateString("en-US") : "DRAFT" }_${invoice.code.replace("/", "-")}_${invoice.client.name}.pdf`);
+    doc.save(`${invoice.date ? new Date(invoice.date).toLocaleDateString("en-UK") : "DRAFT" }_${invoice.code.replace("/", "-")}_${invoice.client.name}.pdf`);
   }

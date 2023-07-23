@@ -2,13 +2,13 @@
 
 import React from "react";
 import DbPage from "../components/DbPage";
-import { createContext, useContext, useState } from 'react';
+import { useContext } from 'react';
 import { FiltersContext } from "../layout";
 
 
 export default function Invoices() {
 
-  let  {filters, setFilters} = useContext(FiltersContext);
+  let {filters_inv, setFilters_inv, sortBy_inv, setSortBy_inv} = useContext(FiltersContext);
 
   const titles = [
     { "": null },
@@ -20,20 +20,15 @@ export default function Invoices() {
     { Notes: "notes" },
     { Actions: null },
   ];
-  // const [filters, setFilters] = React.useState({
-  //   from: { value: undefined, type: "date" },
-  //   till: { value: undefined, type: "date" },
-  //   invoice: { value: "true", type: "hidden" },
-  //   inv_status: { value: ["open"], type: "hidden" },
-  // });
-
 
   return (
     <DbPage
       page={"invoice"}
       titles={titles}
-      filters={filters}
-      setFilters={setFilters}
+      filters={filters_inv}
+      setFilters={setFilters_inv}
+      sortBy={sortBy_inv}
+      setSortBy={setSortBy_inv}
     />
   );
 }

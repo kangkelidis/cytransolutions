@@ -82,12 +82,11 @@ rideSchema.post("validate", async function (doc) {
       if (doc.prev_inv && !doc.invoice) {
         console.log("was in an invoice but does not belong to an invoice anymore");
         removeRideFrom(doc.prev_inv, this._id)
-        doc.invoice = null;
+        doc.invoice = undefined;
       }
     
       if (doc.prev_inv && doc.invoice && doc.prev_inv.toString() !== doc.invoice.toString()) {
         console.log("was in an invoice but changed clients");
-        console.log("COMONE", doc.prev_inv.toString(), doc.invoice.toString(), doc.invoice.toString() !== doc.prev_inv.toString());
         removeRideFrom(doc.prev_inv, this._id)
         const inv = await Invoices.findById(doc.invoice);
         inv.addRide(doc._id)
@@ -99,8 +98,6 @@ rideSchema.post("validate", async function (doc) {
         inv.addRide(doc._id)
       }
   }
-
-
 });
 
 rideSchema.pre("save", async function (next) {

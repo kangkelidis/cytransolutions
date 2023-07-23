@@ -2,19 +2,12 @@
 
 import React from "react";
 import DbPage from "../components/DbPage";
+import { useContext } from 'react';
+import { FiltersContext } from "../layout";
 
 export default function Rides() {
 
-  const [filters, setFilters] = React.useState({
-    from: {value: undefined, type: "date"},
-    till: {value: undefined, type: "date"},
-    client: {value: undefined, type: "select"},
-    cash: {value: undefined, type: "select"},
-    credit: {value: undefined, type: "select"},
-    invoice: {value: undefined, type: "select"},
-    inv_status: {value: ["open"], type: "hidden"}
-  });
-
+  let {filters_ride, setFilters_ride, sortBy_ride, setSortBy_ride} = useContext(FiltersContext);
 
   const titles = [
     { Id: "_id" },
@@ -32,8 +25,10 @@ export default function Rides() {
     <DbPage
       page={"ride"}
       titles={titles}
-      filters={filters}
-      setFilters={setFilters}
+      filters={filters_ride}
+      setFilters={setFilters_ride}
+      sortBy={sortBy_ride}
+      setSortBy={setSortBy_ride}
     />
   );
 }

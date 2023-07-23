@@ -21,15 +21,6 @@ export default async function handler(req, res) {
 
     try {
       const ride = await Ride.create(data);
-      // if (ride) {
-      //   if (belongsInAnInvoice(data)) {
-      //     await invoiceApi.addRideId(
-      //       ride.invoice,
-      //       new mongoose.Types.ObjectId(ride._id)
-      //     );
-      //     await invoiceApi.findTotal(ride.invoice);
-      //   }
-      // }
       return res.json({ message: "ok" });
     } catch (error) {
       console.log(error.message);
@@ -165,7 +156,7 @@ export default async function handler(req, res) {
       ride.invoice = await generateInvoiceId(data.client);
     } else {
       // remove current invoice
-      ride.invoice = null
+      ride.invoice = undefined
     }
 
     await ride.save()

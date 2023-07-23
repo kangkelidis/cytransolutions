@@ -50,20 +50,20 @@ export default function DriverRow({
         </div>
       </td>
 
-      <td className={tdClass}>
+      {/* <td className={tdClass}>
         <div className="flex flex-col">
           <small className="text-xs w-24">Open Invoice</small>
           <span className=" bg-green-400 bg-opacity-50 rounded-md text-center text-black font-bold">
-            {invoice}98
+            {invoice}
           </span>
         </div>
         <div className="flex flex-col">
           <small className="text-xs w-24">Total</small>
           <span className=" bg-emerald-800 bg-opacity-50 rounded-md text-center text-black font-bold">
-            {total}78
+            {total}
           </span>
         </div>
-      </td>
+      </td> */}
 
       <td className={tdClass}>
         <div className=" text-xs px-2 w-32 h-16">

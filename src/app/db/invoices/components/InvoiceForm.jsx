@@ -123,8 +123,7 @@ export default function InvoiceForm() {
 
   async function emailPDF() {
     if (invoice.status === "open") return
-
-    if (!invoice.email) {
+    if (!invoice.client.email) {
       alert("Client has no email. Add email in client settings")
       return
     }
@@ -148,7 +147,7 @@ export default function InvoiceForm() {
                   status: "issued",
                 }),
               });
-              printInvoice({ ...invoice, status: "closed" });
+              printInvoice({ invoice });
             },
           },
         ],
@@ -187,7 +186,10 @@ export default function InvoiceForm() {
         ],
       });
     }
-
+    if (invoice.status === "issued") {
+      printInvoice(invoice);
+ 
+    }
   }
 
   function Status() {

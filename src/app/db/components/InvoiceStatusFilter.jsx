@@ -13,7 +13,7 @@ export default function InvoiceStatusFilter({ filters, setFilters}) {
   const [selectedOptions, setSelectedOptions] = React.useState(findSelectedOptions())
 
   function findSelectedOptions() {
-    if (filters.inv_status.value) {
+    if (filters.inv_status && filters.inv_status.value) {
       if (Array.isArray(filters.inv_status.value)) {
         return {value: "open", label: "open"}
       } else {
@@ -22,7 +22,6 @@ export default function InvoiceStatusFilter({ filters, setFilters}) {
     } else {
       return null
     }
-    
   }
 
   const selectStyles = {

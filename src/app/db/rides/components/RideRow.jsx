@@ -32,6 +32,10 @@ export default function RideRow({
   const router = useRouter();
 
   function handleEdit() {
+    if (invoice.status !== "open" ) {
+      alert("Invoice is not OPEN")
+      return
+    }
     router.push(`/db/rides/id=${_id}`);
   }
 
@@ -82,12 +86,12 @@ export default function RideRow({
 
       {!invoiceView && (
         <td className={tdClass + " min-w-[8rem]"}>
-          <span>{driver.name}</span>
+          <span>{driver.count +". "+ driver.name}</span>
         </td>
       )}
       {!invoiceView && (
         <td className={tdClass + " min-w-[8rem]"}>
-          <span>{client && client.name}</span>
+          <span>{client && client.code +". "+ client.name}</span>
         </td>
       )}
       <td className={tdClass + " min-w-[8rem]"}>

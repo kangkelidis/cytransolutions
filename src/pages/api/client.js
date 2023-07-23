@@ -39,7 +39,7 @@ export default async function handler(req, res) {
       return res.json({ body: result });
     }
 
-    const total = await Client.count({});
+    const total = await Client.countDocuments({});
     const result = await Client.find({})
       .sort({ [sort]: 1})
       .limit(perPage)

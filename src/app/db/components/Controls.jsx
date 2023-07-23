@@ -296,7 +296,7 @@ export default function Controls({
           <ResetFilters />
         </div>
 
-        {!pathname.includes("invoice") ? (
+        {(pathname.includes("rides")) && (
           <div className="flex gap-10">
             <button
               onClick={() => router.push(pathname + "/create")}
@@ -307,14 +307,16 @@ export default function Controls({
             </button>
             <DateControls />
           </div>
-        ) : (
+        ) }
+        
+        { pathname.includes("invoices") && (
           <SelectToggle />
         )}
       </div>
       {showFilters && (
         <div className="flex flex-wrap gap-2 p-4 py-10 justify-center">
           {filtersItems}
-          <InvoiceStatusFilter filters={filters} setFilters={setFilters} />
+          {(pathname.includes("invoices") || pathname.includes("rides")) && <InvoiceStatusFilter filters={filters} setFilters={setFilters} />}
         </div>
       )}
     </div>

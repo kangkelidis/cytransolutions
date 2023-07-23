@@ -21,6 +21,7 @@ export default function ClientRow({
   tdId,
 }) {
 
+  console.log(invoice);
   const router = useRouter();
 
   function handleEdit() {
@@ -52,7 +53,7 @@ export default function ClientRow({
         </div>
       </td>
 
-      <td className={tdClass}>
+      {/* <td className={tdClass}>
         <div className="flex flex-col">
           <small className="text-xs w-24">Open Invoice</small>
           <span className=" bg-green-400 bg-opacity-50 rounded-md text-center text-black font-bold">
@@ -65,7 +66,7 @@ export default function ClientRow({
             {total}
           </span>
         </div>
-      </td>
+      </td> */}
 
       <td className={tdClass}>
           {notes}

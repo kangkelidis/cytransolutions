@@ -4,13 +4,12 @@ import React from "react";
 import Table from "./Table";
 import { useSession } from "next-auth/react";
 
-export default function DbPAge({ page, titles, filters, setFilters }) {
+export default function DbPAge({ page, titles, filters, setFilters, sortBy, setSortBy }) {
   const [dbData, setDbData] = React.useState([]);
   const [numOfEntries, setNumOfEntries] = React.useState(0);
   const [pageNo, setPageNo] = React.useState(0);
   const [limit, setLimit] = React.useState(10);
   const [pages, setPages] = React.useState([]);
-  const [sortBy, setSortBy] = React.useState({ col: "_id", rev: false });
   const [searchTerm, setSearchTerm] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);
   const [reload, setReload] = React.useState(false);

@@ -2,8 +2,12 @@
 
 import React from "react";
 import DbPage from "../components/DbPage";
+import { useContext } from 'react';
+import { FiltersContext } from "../layout";
 
 export default function Clients() {
+
+  let {filters_cli, setFilters_cli, sortBy_cli, setSortBy_cli} = useContext(FiltersContext);
 
   const titles = [
     {"Id": "_id" },
@@ -11,26 +15,19 @@ export default function Clients() {
     {"Address": "address"},
     {"Contact": null},
     // TODO: add this to client?
-    {"Charges": null},
+    // {"Charges": null},
     {"Notes": "notes"},
     {"Actions": null},
   ];
-
-  const [filters, setFilters] = React.useState({
-    from: {value: undefined, type: "date"},
-    till: {value: undefined, type: "date"},
-    client: {value: undefined, type: "select"},
-    cash: {value: undefined, type: "select"},
-    credit: {value: undefined, type: "select"},
-    invoice: {value: undefined, type: "select"},
-  });
 
   return (
     <DbPage
       page={"client"}
       titles={titles}
-      filters={filters}
-      setFilters={setFilters}
+      filters={filters_cli}
+      setFilters={setFilters_cli}
+      sortBy={sortBy_cli}
+      setSortBy={setSortBy_cli}
     />
   );
 }

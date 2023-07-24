@@ -23,6 +23,8 @@ export default function RideForm() {
   const [data, setData] = React.useState({
     date: Date.now(),
   });
+  const [locked, setLocked] = React.useState(false)
+
   
   React.useEffect(() => {
     setIsLoading(true)
@@ -46,6 +48,7 @@ export default function RideForm() {
     });
     
     const data = await response.json();
+    setLocked(!data.body.invoice ? false : data.body.invoice.status !== "open")
     setData(data.body);
   }
 
@@ -115,7 +118,7 @@ export default function RideForm() {
   }
 
   function validateForm() {
-    console.log(data)
+    if (locked) return false
     // check client and credit
     if ((data.credit && data.credit !== "0") && !data.client) {
       alert("Must define a client to have credit")
@@ -166,22 +169,28 @@ export default function RideForm() {
       <h1 className="text-2xl p-4 m-4 bg-slate-800">{editMode ? <span>Edit Ride no. <span className="text-purple-500">{data.count}</span></span> : "Add a new Ride"}</h1>
       {!isLoading &&
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-col m-4 gap-4 md:grid md:grid-cols-2">
+        <div className="flex flex-col m-4 gap-4 md:grid md:grid-cols-2 ">
           <div>
             <label className="text-gray-700 dark:text-gray-200" htmlFor="Name">
               Date*
             </label>
+
             <Flatpickr
               options={{
                 altInput: true,
                 altFormat: "d-m-y -- H:i",
                 time_24hr: true,
                 enableSeconds: false,
+                clickOpens: !locked,
               }}
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
               data-enable-time
               value={data.date}
               onChange={(newVal) => {
+                if (locked) {
+                  alert("Ride not in open invoice.")
+                  return
+                }
                 changeSingleStateValue(setData, "date", newVal);
               }}
             />
@@ -196,7 +205,7 @@ export default function RideForm() {
             </label>
             <Select
               required
-              isDisabled={drivers.length === 1}
+              isDisabled={drivers.length === 1 || locked}
               id="driver"
               captureMenuScroll
               closeMenuOnScroll
@@ -235,6 +244,7 @@ export default function RideForm() {
 
             <Select
               id="client"
+              isDisabled={locked}
               isClearable
               captureMenuScroll
               closeMenuOnScroll
@@ -270,6 +280,7 @@ export default function RideForm() {
               Passenger
             </label>
             <input
+            disabled={locked}
               id="passenger"
               type="text"
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
@@ -285,6 +296,7 @@ export default function RideForm() {
             </label>
             <CreatableSelect
               isClearable
+              isDisabled={locked}
               options={locations}
               styles={selectStyles}
               id="from"
@@ -315,6 +327,7 @@ export default function RideForm() {
             </label>
             <CreatableSelect
               isClearable
+              isDisabled={locked}
               options={locations}
               styles={selectStyles}
               id="to"
@@ -345,6 +358,7 @@ export default function RideForm() {
               Cash
             </label>
             <input
+            disabled={locked}
               id="cash"
               type="number"
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
@@ -364,6 +378,7 @@ export default function RideForm() {
               Credit
             </label>
             <input
+            disabled={locked}
               id="credit"
               type="number"
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
@@ -380,6 +395,7 @@ export default function RideForm() {
               Notes
             </label>
             <textarea
+            disabled={locked}
               id="notes"
               type="email"
               className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
@@ -399,7 +415,7 @@ export default function RideForm() {
           >
             Back
           </button>
-          {editMode && (
+          {editMode && !locked && (
             <button
               type="button"
               className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-red-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
@@ -409,8 +425,9 @@ export default function RideForm() {
             </button>
           )}
           <button
+          disabled={locked}
             type="submit"
-            className="px-8 py-2.5 leading-5 text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
+            className="px-8 py-2.5 leading-5 disabled:cursor-not-allowed text-white transition-colors duration-300 transform bg-gray-700 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-gray-600"
           >
             {editMode ? "Update" : "Add new Ride"}
           </button>

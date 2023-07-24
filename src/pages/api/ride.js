@@ -44,11 +44,37 @@ export default async function handler(req, res) {
     const inv_status = req.query.inv_status;
     const driver = req.query.driver;
 
+    const driverId = req.query.driverId;
+    const clientId = req.query.clientId;
+
     const term = req.query.term;
 
     const locations = req.query.locations;
 
     console.log("ride api query ", req.query);
+
+    // dashboard
+    if (driverId) {
+      let tillDate = till ? new Date(till) : undefined
+      if (tillDate) {
+        tillDate.setDate(tillDate.getDate() +1)
+      }
+      const filters = {
+        from: from ? new Date(from) : undefined,
+        till: tillDate,
+        driverId: driverId,
+        clientId: clientId,
+      };
+
+      const result = await useFilter(filters, "date", "false");
+      const count = result.length;
+      const total = result.reduce((acc, ride) => {
+        return acc + ride.total
+      }, 0)
+
+      return res.json({ body: { data: result, total: total, count: count } });
+    }
+
     const filters = {
       from: from ? new Date(from) : undefined,
       till: till ? new Date(till) : undefined,
@@ -101,6 +127,7 @@ export default async function handler(req, res) {
         } else {
           result = await useFilter(filters, sort, rev);
         }
+        console.log("res", result);
 
         if (term !== "undefined" && term != "") {
           result = await searchUsingTerm(term, sort, rev, result);
@@ -138,48 +165,47 @@ export default async function handler(req, res) {
     );
     // use this to find if invoice changed
     const ride = await Ride.findById(id);
-    const prev_inv = ride.invoice
+    const prev_inv = ride.invoice;
 
-    ride.date = filteredData.date
-    ride.client = filteredData.client
-    ride.driver = filteredData.driver
-    ride.passenger = filteredData.passenger
-    ride.from = filteredData.from
-    ride.to = filteredData.to
-    ride.cash = filteredData.cash
-    ride.credit = filteredData.credit
-    ride.notes = filteredData.notes
-    ride.prev_inv = prev_inv
+    ride.date = filteredData.date;
+    ride.client = filteredData.client;
+    ride.driver = filteredData.driver;
+    ride.passenger = filteredData.passenger;
+    ride.from = filteredData.from;
+    ride.to = filteredData.to;
+    ride.cash = filteredData.cash;
+    ride.credit = filteredData.credit;
+    ride.notes = filteredData.notes;
+    ride.prev_inv = prev_inv;
 
     if (belongsInAnInvoice(filteredData)) {
       // either find invoice id or create a new
       ride.invoice = await generateInvoiceId(data.client);
     } else {
       // remove current invoice
-      ride.invoice = undefined
+      ride.invoice = undefined;
     }
 
-    await ride.save()
+    await ride.save();
 
     return res.json({ message: "ok" });
   }
-
 
   if (req.method === "DELETE") {
     const id = req.query.id;
     const ride = await Ride.findByIdAndDelete(id);
     if (ride.invoice) {
       const inv = await Invoices.findById(ride.invoice);
-      await inv.removeRide(ride._id)
-      const total = await inv.calculateTotal()
+      await inv.removeRide(ride._id);
+      const total = await inv.calculateTotal();
       if (total === 0) {
         const client = await Client.findById(inv.client);
         client.invoicesCreated -= 1;
         await client.save();
-        await Invoices.findByIdAndDelete(inv._id)
+        await Invoices.findByIdAndDelete(inv._id);
       }
     }
-    
+
     return res.json({ message: "ok" });
   }
 }
@@ -187,7 +213,7 @@ export default async function handler(req, res) {
 function belongsInAnInvoice(data) {
   // if credit amount and known client
   console.log("check if belongs in invoice ");
-  return (data.credit && data.credit !== "0") && data.client;
+  return data.credit && data.credit !== "0" && data.client;
 }
 
 async function generateInvoiceId(client) {
@@ -232,7 +258,6 @@ async function searchUsingTerm(term, sort, rev, allResults) {
 }
 
 async function useFilter(filters, sort, rev) {
-  console.log(sort);
   let query = Ride.find({});
   if (filters.from !== undefined) query.find({ date: { $gte: filters.from } });
   if (filters.till !== undefined) query.find({ date: { $lte: filters.till } });
@@ -248,6 +273,9 @@ async function useFilter(filters, sort, rev) {
       : query.find({ credit: 0 });
   if (filters.invoice !== undefined)
     query.find().exists("invoice", filters.invoice);
+
+  if (filters.driverId && filters.driverId !== "undefined") query.find({ driver: filters.driverId });
+  if (filters.clientId && filters.clientId !== "undefined") query.find({ client: filters.clientId });
 
   return query
     .populate("client")

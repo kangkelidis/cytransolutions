@@ -32,7 +32,7 @@ export default function RideRow({
   const router = useRouter();
 
   function handleEdit() {
-    if (invoice.status !== "open" ) {
+    if (invoice && invoice.status !== "open" ) {
       alert("Invoice is not OPEN")
       return
     }
@@ -143,7 +143,7 @@ export default function RideRow({
       <td className={tdClass + " min-w-[8rem]"}>{notes}</td>
 
       <td className={tdClass + " "}>
-        <button onClick={handleEdit} className="flex gap-2 mb-3">
+        <button onClick={handleEdit} className="flex gap-2 mb-3 items-center">
           <MdModeEditOutline />
           Edit
         </button>

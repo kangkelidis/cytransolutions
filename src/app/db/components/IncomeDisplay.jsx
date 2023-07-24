@@ -24,23 +24,25 @@ export default function IncomeDisplay() {
   const [driverId, setDriverId] = React.useState();
   const [clientId, setClientId] = React.useState();
 
-  const [total, setTotal] = React.useState();
-  const [count, setCount] = React.useState();
+  const [totals, setTotals] = React.useState();
 
   const [selectedBtn, setSelectedBtn] = React.useState();
 
   function TotalsBox() {
     return (
       <div className="bg-gray-900 ">
-        <div className="flex flex-col gap-1 px-5">
+        <div className="flex flex-col px-5">
           <span className="text-sm">Total:</span>
           <div className=" bg-green-600 px-4 text-2xl font-bold rounded-lg">
-            <span>{toCurrency(total)}</span>
+            <span>{totals && toCurrency(totals.total)}</span>
           </div>
         </div>
-        <div className="text-xs px-5">
+        <div className="text-xs px-5 mt-1">
           <span>
-            from <span>{count}</span> rides
+            Credit: <span>{totals && toCurrency(totals.credit)} </span> 
+          </span>
+          <span>
+             {" "} - <span>{totals && totals.count}</span> rides
           </span>
         </div>
       </div>
@@ -185,8 +187,7 @@ export default function IncomeDisplay() {
             driver: driverId ? driverId.value : undefined,
             client: clientId ? clientId.value : undefined,
           }}
-          setTotal={setTotal}
-          setCount={setCount}
+          totals={totals} setTotals={setTotals}
         />
       </div>
     );

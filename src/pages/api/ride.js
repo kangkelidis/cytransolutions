@@ -71,8 +71,11 @@ export default async function handler(req, res) {
       const total = result.reduce((acc, ride) => {
         return acc + ride.total
       }, 0)
+      const credit = result.reduce((acc, ride) => {
+        return acc + ride.credit
+      }, 0)
 
-      return res.json({ body: { data: result, total: total, count: count } });
+      return res.json({ body: { data: result, total: total, count: count, credit: credit } });
     }
 
     const filters = {

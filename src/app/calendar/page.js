@@ -1,5 +1,78 @@
-export default function Calendar() {
+import ResizableDiv from "./components/ResizableDiv";
+import NewRideBtn from "../components/NewRideBtn";
+const RideApi = await import("@/pages/api/ride");
+
+export default async function Calendar() {
+  async function fetchResults() {
+    const response = await RideApi.getTodaysRidesInfo();
+    return JSON.parse(response);
+  }
+
+  const results = await fetchResults();
+  results.forEach((res) => {
+      res.color =  res.driver.color
+      res.driver = res.driver.name;
+      if (res.client) res.client = res.client.name;
+  });
+
+  const groupedByDriver = results.reduce((acc, obj) => {
+    let key = obj.driver;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(obj);
+    return acc;
+  }, {});
+
+  function CalendarBoard() {
+    const now = new Date();
     return (
-        <h1>Calendar</h1>
-    )
+      <div className="z-0 absolute flex flex-col text-xs gap-0 w-[calc(100%-16px)] pr-4 -mt-[30px] pb-[60px]">
+        {new Array(24).fill().map((_, i) => {
+          return (
+            <div className="flex items-end gap-2 h-[60px] select-none">
+              <h4 className="inline -mb-[0.4rem]">
+                {String(i).padStart(2, "0")}:00
+              </h4>
+              <hr className="inline-block w-full border-gray-500 border-dotted" />
+            </div>
+          );
+        })}
+        <div>
+          <h4
+            className="absolute -mt-[0.4rem] text-red-400 font-bold bg-slate-800 px-[0.5px] rounded-sm"
+            style={{ top: now.getHours() * 60 + now.getMinutes() }}
+          >
+            {now.toLocaleTimeString("en-UK", { timeStyle: "short" })}
+          </h4>
+          <hr
+            className="border-solid border-red-500 border-2 absolute w-[calc(100%-50px)]"
+            style={{ top: now.getHours() * 60 + now.getMinutes(), left: 35 }}
+          ></hr>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <main>
+        <NewRideBtn />
+      <h1>Calendar</h1>
+      <div className="bg-gray-600 h-[calc(100%-150px)] w-[calc(100%-10%)] p-4 absolute overflow-scroll no-scrollbar rounded-lg shadow-lg m-5 ">
+        <CalendarBoard />
+
+        <div className="flex flex-row gap-[110px]">
+          {Object.keys(groupedByDriver).map((driver, i) => (
+            <div key={i}>
+              {groupedByDriver[driver].map((result, i) => (
+                <div key={i} className="absolute pl-11 mt-[30px]">
+                  <ResizableDiv rideInfo={result} />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
 }

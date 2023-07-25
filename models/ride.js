@@ -10,6 +10,10 @@ const rideSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    duration: {
+      type: Number,
+      default: 60
+    },
     client: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Client",

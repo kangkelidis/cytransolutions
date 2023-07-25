@@ -15,6 +15,7 @@ export default function Drivers() {
         {"Address": "address"},
         {"Contact": "tel"},
         // {"Charges": null},
+        {"Color": "color"},
         {"Notes": "notes"},
         {"Actions": null},
       ];

@@ -296,7 +296,7 @@ export default function Controls({
           <ResetFilters />
         </div>
 
-        {(pathname.includes("rides")) && (
+        {(pathname.includes("rides") || pathname.includes("drivers") || pathname.includes("clients")) && (
           <div className="flex gap-10">
             <button
               onClick={() => router.push(pathname + "/create")}
@@ -305,7 +305,9 @@ export default function Controls({
               <BiPlus className="self-center" />
               NEW
             </button>
+            {pathname.includes("rides") &&
             <DateControls />
+            }
           </div>
         ) }
         

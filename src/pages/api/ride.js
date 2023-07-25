@@ -170,15 +170,17 @@ export default async function handler(req, res) {
     const ride = await Ride.findById(id);
     const prev_inv = ride.invoice;
 
-    ride.date = filteredData.date;
-    ride.client = filteredData.client;
-    ride.driver = filteredData.driver;
-    ride.passenger = filteredData.passenger;
-    ride.from = filteredData.from;
-    ride.to = filteredData.to;
-    ride.cash = filteredData.cash;
-    ride.credit = filteredData.credit;
-    ride.notes = filteredData.notes;
+    console.log(filteredData);
+    if (filteredData.date) ride.date = filteredData.date;
+    if (filteredData.client) ride.client = filteredData.client;
+    if (filteredData.driver) ride.driver = filteredData.driver;
+    if (filteredData.passenger) ride.passenger = filteredData.passenger;
+    if (filteredData.from) ride.from = filteredData.from;
+    if (filteredData.to) ride.to = filteredData.to;
+    if (filteredData.cash) ride.cash = filteredData.cash;
+    if (filteredData.credit) ride.credit = filteredData.credit;
+    if (filteredData.notes) ride.notes = filteredData.notes;
+    if (filteredData.duration) ride.duration = filteredData.duration;
     ride.prev_inv = prev_inv;
 
     if (belongsInAnInvoice(filteredData)) {
@@ -286,4 +288,31 @@ async function useFilter(filters, sort, rev) {
     .populate("invoice")
     .sort({ [sort]: rev === "false" ? 1 : -1, "invoice.status": 1 })
     .exec();
+}
+
+export async function getTodaysRidesInfo() {
+  await dbConnect();
+
+  const today = new Date()
+  today.setHours(0,0,0,0)
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  tomorrow.setHours(0,0,0,0)
+
+  const filters = {
+    from: today,
+    till: tomorrow,
+    // driverId: driverId,
+    // clientId: clientId,
+  };
+
+  const result = await Ride.find({ $and: [
+    {date: { $gte: filters.from }},
+    {date: { $lte: filters.till }},
+  ]})
+  .populate("client")
+  .populate("driver")
+
+  return JSON.stringify( result );
+
 }

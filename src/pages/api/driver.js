@@ -72,6 +72,7 @@ export default async function handler(req, res) {
       name: filteredData.name,
       tel: filteredData.tel,
       email: filteredData.email,
+      color: filteredData.color,
       notes: filteredData.notes,
     });
     return res.json({ message: "ok" });

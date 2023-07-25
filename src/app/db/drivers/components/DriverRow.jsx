@@ -14,6 +14,7 @@ export default function DriverRow({
     email,
     invoice,
     total,
+    color,
     notes,
   },
   tdClass,
@@ -64,6 +65,13 @@ export default function DriverRow({
           </span>
         </div>
       </td> */}
+
+      <td className={tdClass}>
+        <div className=" text-xs px-2 w-32 h-16"
+        style={{backgroundColor: color}}>
+          {color}
+        </div>
+      </td>
 
       <td className={tdClass}>
         <div className=" text-xs px-2 w-32 h-16">

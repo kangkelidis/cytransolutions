@@ -14,6 +14,9 @@ const driverSchema = new mongoose.Schema({
     count: {
         type: Number,
     },
+    color: {
+        type: String,
+    },
     createdAt: {
         type: Date,
         default: Date.now

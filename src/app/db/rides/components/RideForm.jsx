@@ -8,6 +8,7 @@ import "flatpickr/dist/themes/dark.css";
 import Select from "react-select";
 import CreatableSelect from "react-select/creatable";
 import { getSession } from "next-auth/react";
+import StatusBox from "../../components/StatusBox";
 
 
 export default function RideForm() {
@@ -166,7 +167,12 @@ export default function RideForm() {
 
   return (
     <div>
-      <h1 className="text-2xl p-4 m-4 bg-slate-800">{editMode ? <span>Edit Ride no. <span className="text-purple-500">{data.count}</span></span> : "Add a new Ride"}</h1>
+      <div className="flex bg-slate-800 justify-between items-center p-4">
+        <h1 className="text-2xl">{editMode ? <span>Edit Ride no. <span className="text-purple-500">{data.count}</span></span> : "Add a new Ride"}</h1>
+        <div className="w-[6rem] cursor-default">
+          <StatusBox status={data.invoice ? data.invoice.status : null}/>
+        </div>
+      </div>
       {!isLoading &&
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col m-4 gap-4 md:grid md:grid-cols-2 ">
@@ -390,7 +396,27 @@ export default function RideForm() {
             />
           </div>
 
-          <div className="col-span-2">
+          <div>
+          <label
+              className="text-gray-700 dark:text-gray-200"
+              htmlFor="duration"
+            >
+              Duration
+            </label>
+            <input
+            disabled={locked}
+              id="duration"
+              type="number"
+              step={5}
+              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+              value={data.duration}
+              onChange={(newVal) =>
+                changeSingleStateValue(setData, "duration", newVal.target.value)
+              }
+            />
+          </div>
+
+          <div className="col-span-1">
             <label className="text-gray-700 dark:text-gray-200" htmlFor="notes">
               Notes
             </label>

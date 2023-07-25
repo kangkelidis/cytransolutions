@@ -9,6 +9,7 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       const data = JSON.parse(req.body);
   
+      console.log(data);
       try {
         const user = await User.create(data);
         return res.json({ message: "ok" });
@@ -17,4 +18,14 @@ export default async function handler(req, res) {
         return res.status(500).send("Error");
       }
     }
+}
+
+export async function getAllUsers() {
+  await dbConnect()
+  try {
+    const res = await User.find({});
+    return JSON.stringify(res);
+  } catch (error) {
+    console.log(error.message);
+  }
 }

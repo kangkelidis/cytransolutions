@@ -3,14 +3,14 @@ import dbConnect from "../../../../utils/dbConnect";
 import { NextRequest, NextResponse } from 'next/server';
 
 
-export async function POST(req) {
-  const data = await req.json();
+// export async function POST(req) {
+//   const data = await req.json();
 
-  const { email, password } = data;
+//   const { email, password } = data;
 
-  dbConnect();
+//   dbConnect();
 
-  const user = await User.create(data)
+//   const user = await User.create(data)
 
-  return NextResponse.json({ message: 'Created user!' });
-}
+//   return NextResponse.json({ message: 'Created user!' });
+// }

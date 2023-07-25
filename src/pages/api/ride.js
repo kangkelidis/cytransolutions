@@ -142,6 +142,7 @@ export default async function handler(req, res) {
           .populate("driver")
           .populate("invoice")
           .sort({ [sort]: rev === "false" ? 1 : -1 });
+          console.log("INVOICE RIDES API GET", result);
         return res.json({ body: { data: result } });
       }
 
@@ -168,9 +169,10 @@ export default async function handler(req, res) {
     );
     // use this to find if invoice changed
     const ride = await Ride.findById(id);
+    console.log("RIDE", ride);
     const prev_inv = ride.invoice;
 
-    console.log(filteredData);
+    console.log("Filter data", filteredData);
     if (filteredData.date) ride.date = filteredData.date;
     if (filteredData.client) ride.client = filteredData.client;
     if (filteredData.driver) ride.driver = filteredData.driver;
@@ -182,10 +184,11 @@ export default async function handler(req, res) {
     if (filteredData.notes) ride.notes = filteredData.notes;
     if (filteredData.duration) ride.duration = filteredData.duration;
     ride.prev_inv = prev_inv;
+    console.log("RIDE2", ride);
 
-    if (belongsInAnInvoice(filteredData)) {
+    if (belongsInAnInvoice(ride)) {
       // either find invoice id or create a new
-      ride.invoice = await generateInvoiceId(data.client);
+      ride.invoice = await generateInvoiceId(ride.client);
     } else {
       // remove current invoice
       ride.invoice = undefined;
@@ -230,6 +233,7 @@ async function generateInvoiceId(client) {
     invoice_id = openInvoice._id;
   } else {
     // create a new Invoice
+    console.log("Creating new invoice...");
     invoice_id = await invoiceApi.createNewInvoice(client);
   }
 
@@ -290,7 +294,7 @@ async function useFilter(filters, sort, rev) {
     .exec();
 }
 
-export async function getTodaysRidesInfo() {
+export async function getTodaysRidesInfo(driverId, clientId) {
   await dbConnect();
 
   const today = new Date()
@@ -302,8 +306,8 @@ export async function getTodaysRidesInfo() {
   const filters = {
     from: today,
     till: tomorrow,
-    // driverId: driverId,
-    // clientId: clientId,
+    driverId: driverId,
+    clientId: clientId,
   };
 
   const result = await Ride.find({ $and: [
@@ -312,7 +316,7 @@ export async function getTodaysRidesInfo() {
   ]})
   .populate("client")
   .populate("driver")
-
+  .populate("invoice")
   return JSON.stringify( result );
 
 }

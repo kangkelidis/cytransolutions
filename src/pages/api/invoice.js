@@ -84,6 +84,7 @@ export default async function handler(req, res) {
 }
 
 export async function findOpenInvoice(client_id) {
+  console.log("searching for open invoice with client id: ", client_id);
   const result = await Invoice.findOne({ client: client_id, status: "open" });
   return result;
 }

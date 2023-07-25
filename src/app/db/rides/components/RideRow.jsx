@@ -31,8 +31,16 @@ export default function RideRow({
 }) {
   const router = useRouter();
 
-  function handleEdit() {
-    if (invoice && invoice.status !== "open" ) {
+  async function handleEdit() {
+
+    const res = await fetch(`/api/invoice?id=${invoice}`, {
+      method: "GET"
+    })
+    const data = await res.json();
+    const invModel = data.body && data.body.data
+
+    if (invModel && invModel.status !== "open" ) {
+      console.log(invModel);
       alert("Invoice is not OPEN")
       return
     }

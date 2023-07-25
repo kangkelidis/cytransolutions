@@ -16,7 +16,6 @@ export default function EditInvoice() {
         fetchUser()
       }, []);
 
-      console.log(user);
 
     return (
         <div>

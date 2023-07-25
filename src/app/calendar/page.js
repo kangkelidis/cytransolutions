@@ -1,5 +1,6 @@
 import ResizableDiv from "./components/ResizableDiv";
 import NewRideBtn from "../components/NewRideBtn";
+
 const RideApi = await import("@/pages/api/ride");
 
 export default async function Calendar() {
@@ -7,6 +8,7 @@ export default async function Calendar() {
     const response = await RideApi.getTodaysRidesInfo();
     return JSON.parse(response);
   }
+
 
   const results = await fetchResults();
   results.forEach((res) => {

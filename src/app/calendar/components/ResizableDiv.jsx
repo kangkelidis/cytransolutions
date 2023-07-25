@@ -71,7 +71,7 @@ export default function ResizableDiv({ rideInfo }) {
 
   function handleClick(e) {
     e.preventDefault();
-    if (user.role === "driver" && rideInfo.driver !== user.name) {
+    if (user && user.role === "driver" && rideInfo.driver !== user.name) {
       alert("Not your ride. Cannot edit.")
       return
     }
@@ -95,7 +95,7 @@ export default function ResizableDiv({ rideInfo }) {
           <button
             className={`border-[0.5px] px-2 rounded-md bg-slate-700 hover:bg-purple-500}`}
             onClick={() => {
-              if (user.role === "driver" && rideInfo.driver !== user.name) {
+              if (user && user.role === "driver" && rideInfo.driver !== user.name) {
                 alert("Not your ride. Cannot edit.")
                 return
               }
@@ -180,12 +180,12 @@ export default function ResizableDiv({ rideInfo }) {
           }
             ${editable && "!border-[5px] !border-green-600 !border-solid "}
            ${(rideInfo.invoice && rideInfo.invoice.status != "open" ||
-           (user.role === "driver" && rideInfo.driver !== user.name))  ? "hover:!border-red-500 opacity-70 hover:border-[3px] !border-solid" : "hover:border-blue-600 hover:border-[3px] border-dashed"}`}
+           (user && user.role === "driver" && rideInfo.driver !== user.name))  ? "hover:!border-red-500 opacity-70 hover:border-[3px] !border-solid" : "hover:border-blue-600 hover:border-[3px] border-dashed"}`}
           style={{ height: height, backgroundColor: rideInfo.color }}
         >
           <span>{rideInfo && rideInfo.from}</span>
 
-          {showInfo && !(user.role === "driver" && rideInfo.driver !== user.name) && (
+          {showInfo && !(user && user.role === "driver" && rideInfo.driver !== user.name) && (
             <div className="absolute z-50 left-[100px] bg-black rounded-md px-2 flex flex-col">
               <span className="  ">{rideInfo && rideInfo.driver}</span>
               <span>

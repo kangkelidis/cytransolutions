@@ -300,13 +300,11 @@ export async function getTodaysRidesInfo(dateToDisplay, driverId, clientId) {
   await dbConnect();
 
   const today = dateToDisplay ? new Date(dateToDisplay) : new Date()
-  console.log("today:", today);
-  console.log("datetodisplay:", dateToDisplay);
   today.setHours(0,0,0,0)
   const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  tomorrow.setHours(0,0,0,0)
-  console.log(tomorrow);
+  // tomorrow.setDate(tomorrow.getDate() + 1)
+  tomorrow.setHours(23,59,59,999)
+  console.log("tomorriw", tomorrow);
   const filters = {
     from: today,
     till: tomorrow,

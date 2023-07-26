@@ -7,9 +7,7 @@ const RideApi = await import("@/pages/api/ride");
 export const revalidate = 0
 
 export default async function Calendar({ searchParams }) {
-  console.log("searchparams",searchParams);
   var dateToDisplay = searchParams?.d
-console.log("datetodispla", dateToDisplay);
   async function fetchResults() {
     const response = await RideApi.getTodaysRidesInfo(dateToDisplay);
     return JSON.parse(response);

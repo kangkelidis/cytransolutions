@@ -299,12 +299,15 @@ async function useFilter(filters, sort, rev) {
 export async function getTodaysRidesInfo(dateToDisplay, driverId, clientId) {
   await dbConnect();
 
+  console.log("datetodisplay", dateToDisplay);
   const today = dateToDisplay ? new Date(dateToDisplay) : new Date()
-  today.setHours(0,0,0,0)
+  console.log("today1", today);
+  today.setUTCHours(0,0,0,0)
+  console.log("today2", today);
   const tomorrow = new Date(today)
   // tomorrow.setDate(tomorrow.getDate() + 1)
-  tomorrow.setHours(23,59,59,999)
-  console.log("tomorriw", tomorrow);
+  tomorrow.setUTCHours(23,59,59,999)
+  console.log("tomorrow", tomorrow);
   const filters = {
     from: today,
     till: tomorrow,

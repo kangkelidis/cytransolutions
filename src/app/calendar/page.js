@@ -51,7 +51,7 @@ export default async function Calendar({ searchParams }) {
             className="absolute -mt-[0.4rem] text-red-400 font-bold bg-slate-800 px-[0.5px] rounded-sm"
             style={{ top: now.getHours() * 60 + now.getMinutes() }}
           >
-            {now.toLocaleTimeString("en-UK", { timeStyle: "short" })}
+            {now.toLocaleTimeString("en-UK", {timeZone: "Europe/Athens" , timeStyle: "short" })}
           </h4>
           <hr
             className="border-solid border-red-500 border-2 absolute w-[calc(100%-50px)]"

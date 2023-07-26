@@ -66,6 +66,8 @@ export default async function handler(req, res) {
         clientId: clientId,
       };
 
+      filters.from.setHours(0,0,0,0)
+
       const result = await useFilter(filters, "date", "false");
       const count = result.length;
       const total = result.reduce((acc, ride) => {
@@ -297,12 +299,13 @@ async function useFilter(filters, sort, rev) {
 export async function getTodaysRidesInfo(dateToDisplay, driverId, clientId) {
   await dbConnect();
 
-  const d = dateToDisplay ? dateToDisplay : null
-  const today = new Date(d)
+  const today = dateToDisplay ? new Date(dateToDisplay) : new Date()
+  console.log(today);
   today.setHours(0,0,0,0)
-  const tomorrow = new Date(d)
+  const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
   tomorrow.setHours(0,0,0,0)
+  console.log(tomorrow);
   const filters = {
     from: today,
     till: tomorrow,

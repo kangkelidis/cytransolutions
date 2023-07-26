@@ -300,10 +300,9 @@ export async function getTodaysRidesInfo(dateToDisplay, driverId, clientId) {
   const d = dateToDisplay ? dateToDisplay : null
   const today = new Date(d)
   today.setHours(0,0,0,0)
-  const tomorrow = new Date()
+  const tomorrow = new Date(d)
   tomorrow.setDate(tomorrow.getDate() + 1)
   tomorrow.setHours(0,0,0,0)
-
   const filters = {
     from: today,
     till: tomorrow,

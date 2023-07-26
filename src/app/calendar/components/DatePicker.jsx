@@ -10,7 +10,7 @@ export default function DatePicker() {
   const router = useRouter();
 
   React.useEffect(() => {
-    router.push(`/calendar?d=${date.toISOString()}`);
+    router.push(`/calendar?d=${date.toLocaleDateString()}`);
   }, [date]);
 
   return (

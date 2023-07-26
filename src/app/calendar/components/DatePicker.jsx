@@ -15,8 +15,6 @@ export default function DatePicker() {
 
   return (
     <div>
-
-
       <Flatpickr
         options={{
           altInput: true,
@@ -27,7 +25,9 @@ export default function DatePicker() {
         value={date}
         data-enable-time
         onChange={(newVal) => {
-          setDate(new Date(newVal));
+          console.log("DatePicker", newVal);
+          let d = new Date(newVal)
+          setDate(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())));
         }}
       />
 

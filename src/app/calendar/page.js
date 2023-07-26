@@ -1,11 +1,15 @@
 import ResizableDiv from "./components/ResizableDiv";
 import NewRideBtn from "../components/NewRideBtn";
+import DatePicker from "./components/DatePicker";
 
 const RideApi = await import("@/pages/api/ride");
 
-export default async function Calendar() {
+export const revalidate = 0
+
+export default async function Calendar({ searchParams }) {
+  let dateToDisplay = searchParams?.d
   async function fetchResults() {
-    const response = await RideApi.getTodaysRidesInfo();
+    const response = await RideApi.getTodaysRidesInfo(dateToDisplay);
     return JSON.parse(response);
   }
 
@@ -28,8 +32,10 @@ export default async function Calendar() {
 
   function CalendarBoard() {
     const now = new Date();
+    const displayedDate = new Date(dateToDisplay)
+    const showRedLine = now.getFullYear() === displayedDate.getFullYear() && now.getMonth() === displayedDate.getMonth() && now.getDate() === displayedDate.getDate()
     return (
-      <div className="z-0 absolute flex flex-col text-xs gap-0 w-[calc(100%-16px)] pr-4 -mt-[30px] pb-[60px]">
+      <div className="z-0 absolute flex flex-col text-xs gap-0 w-[calc(100%-16px)] pr-4 -mt-[30px] pb-[60px]">        
         {new Array(24).fill().map((_, i) => {
           return (
             <div className="flex items-end gap-2 h-[60px] select-none">
@@ -40,7 +46,7 @@ export default async function Calendar() {
             </div>
           );
         })}
-        <div>
+        <div hidden={!showRedLine}>
           <h4
             className="absolute -mt-[0.4rem] text-red-400 font-bold bg-slate-800 px-[0.5px] rounded-sm"
             style={{ top: now.getHours() * 60 + now.getMinutes() }}
@@ -58,8 +64,9 @@ export default async function Calendar() {
 
   return (
     <main>
-        <NewRideBtn />
       <h1>Calendar</h1>
+        <NewRideBtn date={dateToDisplay} />
+        <DatePicker />
       <div className="bg-gray-600 h-[calc(100%-150px)] w-[calc(100%-10%)] p-4 absolute overflow-scroll no-scrollbar rounded-lg shadow-lg m-5 ">
         <CalendarBoard />
 

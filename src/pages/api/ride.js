@@ -294,10 +294,11 @@ async function useFilter(filters, sort, rev) {
     .exec();
 }
 
-export async function getTodaysRidesInfo(driverId, clientId) {
+export async function getTodaysRidesInfo(dateToDisplay, driverId, clientId) {
   await dbConnect();
 
-  const today = new Date()
+  const d = dateToDisplay ? dateToDisplay : null
+  const today = new Date(d)
   today.setHours(0,0,0,0)
   const tomorrow = new Date()
   tomorrow.setDate(tomorrow.getDate() + 1)

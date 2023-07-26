@@ -11,7 +11,7 @@ import { getSession } from "next-auth/react";
 import StatusBox from "../../components/StatusBox";
 
 
-export default function RideForm() {
+export default function RideForm({ dateToDisplay }) {
   const router = useRouter();
   
   const [editMode, setEditMode] = React.useState(false);
@@ -22,7 +22,7 @@ export default function RideForm() {
   const [locations, setLocations] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true)
   const [data, setData] = React.useState({
-    date: Date.now(),
+    date: dateToDisplay ? new Date(dateToDisplay).setHours(new Date().getHours()) : Date.now(),
   });
   const [locked, setLocked] = React.useState(false)
 

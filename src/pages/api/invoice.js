@@ -34,7 +34,7 @@ export default async function handler(req, res) {
       if (id) {
         const result = await Invoice.findById(id)
           .populate("client")
-          .populate("rides");
+          .populate({path: 'rides', options: { sort: { 'date': 1 } } });
         return res.json({ body: { data: result } });
       }
 
@@ -44,7 +44,7 @@ export default async function handler(req, res) {
 
       let result = await query
         .populate("client")
-        .populate("rides")
+        .populate({path: 'rides', options: { sort: { 'date': -1 } } })
         .sort({ [sort]: rev === "false" ? 1 : -1 });
 
       if (filters.inv_status !== "" && filters.inv_status !== undefined) {

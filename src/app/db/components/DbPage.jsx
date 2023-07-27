@@ -8,7 +8,7 @@ export default function DbPAge({ page, titles, filters, setFilters, sortBy, setS
   const [dbData, setDbData] = React.useState([]);
   const [numOfEntries, setNumOfEntries] = React.useState(0);
   const [pageNo, setPageNo] = React.useState(0);
-  const [limit, setLimit] = React.useState(10);
+  const [limit, setLimit] = React.useState(15);
   const [pages, setPages] = React.useState([]);
   const [searchTerm, setSearchTerm] = React.useState();
   const [isLoading, setIsLoading] = React.useState(true);

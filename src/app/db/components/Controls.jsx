@@ -142,16 +142,22 @@ export default function Controls({
 
   function DateControls() {
     const today = new Date();
+    today.setHours(0,0,0,0)
     const tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setHours(23,59,59,999)
     const startOfWeek = new Date();
     startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+    startOfWeek.setHours(0,0,0,0)
     const endOfWeek = new Date();
     endOfWeek.setDate(startOfWeek.getDate() + 7);
+    endOfWeek.setHours(23,59,59,999)
     const startOfMOnth = new Date();
     startOfMOnth.setDate(1);
+    startOfWeek.setHours(0,0,0,0)
     const endOfMonth = new Date();
     endOfMonth.setDate(31);
+    endOfWeek.setHours(23,59,59,999)
+
     return (
       <div className="flex gap-3">
         <button
@@ -167,8 +173,8 @@ export default function Controls({
             setFilters((prev) => {
               return {
                 ...prev,
-                from: { value: today.toLocaleDateString(), type: "date" },
-                till: { value: tomorrow.toLocaleDateString(), type: "date" },
+                from: { value: today, type: "date" },
+                till: { value: tomorrow, type: "date" },
               };
             });
           }}
@@ -207,10 +213,10 @@ export default function Controls({
               return {
                 ...prev,
                 from: {
-                  value: startOfMOnth.toLocaleDateString(),
+                  value: startOfMOnth,
                   type: "date",
                 },
-                till: { value: endOfMonth.toLocaleDateString(), type: "date" },
+                till: { value: endOfMonth, type: "date" },
               };
             });
           }}

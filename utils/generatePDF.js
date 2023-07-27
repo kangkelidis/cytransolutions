@@ -96,5 +96,5 @@ export function printInvoice(invoice) {
     "IBAN: CY470020001950000357026026038", "BIC: BCYPCY2N"], 13, 275)
 
     // console.log(`${invoice.date ? new Date(invoice.date).toLocaleDateString("en-US") : "DRAFT" }_${invoice.code.replace("/", "-")}_${invoice.client.name}.pdf`);
-    doc.save(`${invoice.date ? new Date(invoice.date).toISOString().slice(0,10) : "DRAFT" }_${invoice.date.toLocaleDateString("en-UK", {month: "short"})}_${invoice.code.replace("/", "-")}_${invoice.client.name}.pdf`);
+    doc.save(`${invoice.date ? new Date(invoice.date).toISOString().slice(0,10) : "DRAFT" }_${invoice.date?.toLocaleDateString("en-UK", {month: "short"})}_${invoice.code.replace("/", "-")}_${invoice.client.name}.pdf`);
   }

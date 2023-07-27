@@ -31,7 +31,7 @@ export default function DatabaseLayout({ children }) {
 
   });
   
-  const [sortBy_ride, setSortBy_ride] = useState({ col: "_id", rev: false });
+  const [sortBy_ride, setSortBy_ride] = useState({ col: "date", rev: true });
   const [sortBy_inv, setSortBy_inv] = useState({ col: "_id", rev: false });
   const [sortBy_dri, setSortBy_dri] = useState({ col: "_id", rev: false });
   const [sortBy_cli, setSortBy_cli] = useState({ col: "_id", rev: false });

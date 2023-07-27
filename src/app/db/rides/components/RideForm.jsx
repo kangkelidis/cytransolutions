@@ -10,7 +10,6 @@ import CreatableSelect from "react-select/creatable";
 import { getSession } from "next-auth/react";
 import StatusBox from "../../components/StatusBox";
 
-
 export default function RideForm({ dateToDisplay }) {
   const router = useRouter();
   
@@ -25,7 +24,7 @@ export default function RideForm({ dateToDisplay }) {
     date: dateToDisplay ? new Date(dateToDisplay).setHours(new Date().getHours()) : Date.now(),
   });
   const [locked, setLocked] = React.useState(false)
-
+  const [reload, setReload] = React.useState(false)
   
   React.useEffect(() => {
     setIsLoading(true)
@@ -36,7 +35,7 @@ export default function RideForm({ dateToDisplay }) {
     fetchClients();
     fetchDrivers();
     fetchLocations();
-  }, []);
+  }, [reload]);
   
   async function fetchUser() {
     const session = await getSession()
@@ -104,18 +103,24 @@ export default function RideForm({ dateToDisplay }) {
 
     setIsLoading(true)
     if (editMode) {
-      await fetch(`/api/ride?id=${id}`, {
+      const response = await fetch(`/api/ride?id=${id}`, {
         method: "PUT",
         body: JSON.stringify({ ...data }),
       });
     } else {
-      await fetch("/api/ride", {
+      const response = await fetch("/api/ride", {
         method: "POST",
         body: JSON.stringify({ ...data }),
       });
+      if(response.ok) {
+        alert("Ride added.")
+        router.back();
+      } else {
+        alert("Error! Ride not added.")
+        setReload(prev  => !prev)
+      }
     }
 
-    router.back();
   }
 
   function validateForm() {

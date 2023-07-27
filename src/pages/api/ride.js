@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
     try {
       const ride = await Ride.create(data);
-      return res.json({ message: "ok" });
+      return res.status(200).json({ message: "ok" });
     } catch (error) {
       console.log(error.message);
       return res.status(500).send("Error");
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
     if (driverId) {
       let tillDate = till ? new Date(till) : undefined
       if (tillDate) {
-        tillDate.setDate(tillDate.getDate() +1)
+        tillDate.setHours(23, 59,59,999)
       }
       const filters = {
         from: from ? new Date(from) : undefined,
@@ -80,9 +80,13 @@ export default async function handler(req, res) {
       return res.json({ body: { data: result, total: total, count: count, credit: credit } });
     }
 
+    let fromDate = from ? new Date(from) : undefined
+    fromDate?.setUTCHours(0,0,0,0)
+    let tillDate = till ? new Date(till) : undefined
+    tillDate?.setUTCHours(23,59,59,999)
     const filters = {
-      from: from ? new Date(from) : undefined,
-      till: till ? new Date(till) : undefined,
+      from: fromDate,
+      till: tillDate,
       client: client,
       cash: cash === "true" ? 1 : cash === "false" ? 0 : undefined,
       credit: credit === "true" ? 1 : credit === "false" ? 0 : undefined,
@@ -132,7 +136,7 @@ export default async function handler(req, res) {
         } else {
           result = await useFilter(filters, sort, rev);
         }
-        console.log("res", result);
+        // console.log("res", result);
 
         if (term !== "undefined" && term != "") {
           result = await searchUsingTerm(term, sort, rev, result);
@@ -143,7 +147,7 @@ export default async function handler(req, res) {
           .populate("client")
           .populate("driver")
           .populate("invoice")
-          .sort({ [sort]: rev === "false" ? 1 : -1 });
+          .sort({ "date": 1 });
           console.log("INVOICE RIDES API GET", result);
         return res.json({ body: { data: result } });
       }
@@ -161,7 +165,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // TODO use save
   if (req.method === "PUT") {
     console.log("RIDE PUT-----------");
     const id = req.query.id;

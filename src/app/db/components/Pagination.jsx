@@ -84,7 +84,7 @@ export default function Pagination({
             onChange={(e) => setLimit(e.target.value)}
             className="text-black p-1 rounded-md text-xxs"
           >
-            <option value={10}>10</option>
+            <option value={15}>15</option>
             <option value={25}>25</option>
             <option value={50}>50</option>
           </select>

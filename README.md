@@ -1,34 +1,15 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+https://github.com/alekosomegas/cytransolutions/assets/64306207/50b7508c-f27d-47bf-847f-8e98ae3abdf7
 
-First, run the development server:
+https://github.com/alekosomegas/cytransolutions/assets/64306207/60117a6c-9eb6-4665-99b5-44d85584b916
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+https://github.com/alekosomegas/cytransolutions/assets/64306207/679fd8f8-9362-4402-8926-c62d2d35db60
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+https://github.com/alekosomegas/cytransolutions/assets/64306207/53dc73c6-4d09-4be3-bd54-780f61bb364e
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+https://github.com/alekosomegas/cytransolutions/assets/64306207/cbba62d3-2719-4bc9-a7cf-ade0a151b07c
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+https://github.com/alekosomegas/cytransolutions/assets/64306207/cdeae16d-9ddd-4d05-8e37-72e4f7d376a6
 
-## Learn More
+https://github.com/alekosomegas/cytransolutions/assets/64306207/2e71cdb6-82f6-400b-af78-996a2e23bbba
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

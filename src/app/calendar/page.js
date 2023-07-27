@@ -49,13 +49,13 @@ export default async function Calendar({ searchParams }) {
         <div hidden={!showRedLine}>
           <h4
             className="absolute -mt-[0.4rem] text-red-400 font-bold bg-slate-800 px-[0.5px] rounded-sm"
-            style={{ top: now.getUTCHours() * 60  + now.getMinutes()  +60}}
+            style={{ top: now.getUTCHours() * 60  + now.getMinutes()  +180}}
           >
             {now.toLocaleTimeString("en-UK", {timeZone: "Europe/Athens" , timeStyle: "short" })}
           </h4>
           <hr
             className="border-solid border-red-500 border-2 absolute w-[calc(100%-50px)]"
-            style={{ top: now.getUTCHours() * 60  + now.getMinutes()  +60, left: 35 }}
+            style={{ top: now.getUTCHours() * 60  + now.getMinutes()  +180, left: 35 }}
           ></hr>
         </div>
       </div>

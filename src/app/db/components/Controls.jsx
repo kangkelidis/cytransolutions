@@ -194,6 +194,7 @@ export default function Controls({
             setFilters((prev) => {
               return {
                 ...prev,
+                // TODO remove toLocale - does not work on mob
                 from: { value: startOfWeek.toLocaleDateString(), type: "date" },
                 till: { value: endOfWeek.toLocaleDateString(), type: "date" },
               };

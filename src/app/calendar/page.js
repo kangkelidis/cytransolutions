@@ -1,6 +1,7 @@
 import ResizableDiv from "./components/ResizableDiv";
 import NewRideBtn from "../components/NewRideBtn";
 import DatePicker from "./components/DatePicker";
+import RidesPerDriver from "./components/RidesPerDriver";
 
 const RideApi = await import("@/pages/api/ride");
 
@@ -70,17 +71,8 @@ export default async function Calendar({ searchParams }) {
       <div className="bg-gray-600 h-[calc(100%-150px)] w-[calc(100%-10%)] p-4 absolute overflow-scroll no-scrollbar rounded-lg shadow-lg m-5 ">
         <CalendarBoard />
 
-        <div className="flex flex-row gap-[110px]">
-          {Object.keys(groupedByDriver).map((driver, i) => (
-            <div key={i}>
-              {groupedByDriver[driver].map((result, i) => (
-                <div key={i} className="absolute pl-11 mt-[30px]">
-                  <ResizableDiv rideInfo={result} />
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+          <RidesPerDriver  groupedByDriver={groupedByDriver}/>
+
       </div>
     </main>
   );

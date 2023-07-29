@@ -157,7 +157,7 @@ export default async function handler(req, res) {
       });
 
       total = result.length;
-      result = result.slice(perPage * page, perPage * page + perPage);
+      result = result.slice(Number(perPage) * Number(page), Number(perPage) * Number(page) + Number(perPage));
       return res.json({ body: { data: result, total: total } });
     } catch (error) {
       console.log(error.message);

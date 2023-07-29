@@ -155,6 +155,7 @@ export default function ResizableDiv({ rideInfo }) {
     <div
       className=""
       onContextMenu={handleClick}
+      onDoubleClick={handleClick}
       onMouseEnter={() => setShowInfo(true)}
       onMouseLeave={() => setShowInfo(false)}
     >

@@ -149,14 +149,14 @@ export default function Controls({
     startOfWeek.setDate(today.getDate() - ((today.getDay() + 6) % 7));
     startOfWeek.setHours(0,0,0,0)
     const endOfWeek = new Date();
-    endOfWeek.setDate(startOfWeek.getDate() + 7);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
     endOfWeek.setHours(23,59,59,999)
     const startOfMOnth = new Date();
     startOfMOnth.setDate(1);
-    startOfWeek.setHours(0,0,0,0)
+    startOfMOnth.setHours(0,0,0,0)
     const endOfMonth = new Date();
     endOfMonth.setDate(31);
-    endOfWeek.setHours(23,59,59,999)
+    endOfMonth.setHours(23,59,59,999)
 
     return (
       <div className="flex gap-3">
@@ -195,8 +195,8 @@ export default function Controls({
               return {
                 ...prev,
                 // TODO remove toLocale - does not work on mob
-                from: { value: startOfWeek.toLocaleDateString(), type: "date" },
-                till: { value: endOfWeek.toLocaleDateString(), type: "date" },
+                from: { value: startOfWeek, type: "date" },
+                till: { value: endOfWeek, type: "date" },
               };
             });
           }}

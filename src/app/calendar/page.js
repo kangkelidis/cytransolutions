@@ -1,4 +1,3 @@
-import ResizableDiv from "./components/ResizableDiv";
 import NewRideBtn from "../components/NewRideBtn";
 import DatePicker from "./components/DatePicker";
 import RidesPerDriver from "./components/RidesPerDriver";

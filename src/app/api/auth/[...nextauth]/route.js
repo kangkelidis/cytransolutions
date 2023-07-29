@@ -3,7 +3,6 @@ import User from "../../../../../models/user";
 import dbConnect from "../../../../../utils/dbConnect";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-
 const handler = NextAuth({
     // Enable JSON Web Tokens
     session: {
@@ -11,12 +10,14 @@ const handler = NextAuth({
     },
     // Here we add our login providers - this is where you could add Google or Github SSO as well
     providers: [
+
         CredentialsProvider({
+            id: "domain-login",
             name: "credentials",
             // The credentials object is what's used to generate Next Auths default login page - We will not use it however.
             credentials: {
                 email: {label: "Email", type: "email"},
-                password: {label: "Password", type: "password"}
+                password: {label: "Password", type: "password"},
             },
             // Authorize callback is ran upon calling the signin function
             authorize: async (credentials) => {
@@ -33,8 +34,21 @@ const handler = NextAuth({
 
                 return user
             }
-            
-        })
+        }),
+
+        // CredentialsProvider({
+        //     id: "demo-login",
+        //     name: "demo",
+        //     // The credentials object is what's used to generate Next Auths default login page - We will not use it however.
+        //     credentials: {
+
+        //     },
+        //     authorize: async (credentials) => {
+        //         dbConnect()
+        //         const user = await User.findOne({email: "demo@user.com"})
+        //         return user
+        //     }
+        // }),
     ],
     // All of this is just to add user information to be accessible for our app in the token/session
     callbacks: {

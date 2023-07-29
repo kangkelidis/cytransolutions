@@ -4,9 +4,10 @@ import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 
-export default function TopBar({ sidebarOpen, setSidebarOpen }) {
-  const { data: session } = useSession();
 
+export default  function TopBar({ sidebarOpen, setSidebarOpen }) {
+  const { data: session } = useSession();
+  
   return (
     <div className="bg-gray-900 w-[calc(100%)] h-[50px] sticky flex justify-between ">
       <div

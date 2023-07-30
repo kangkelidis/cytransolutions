@@ -20,6 +20,7 @@ export default function RideRow({
     to,
     cash,
     credit,
+    inv_credit,
     invoice,
     notes,
   },
@@ -113,7 +114,7 @@ export default function RideRow({
         </div>
         <div className="flex flex-col">
           <small>Credit</small>
-          <span>{credit ? credit : "-"}</span>
+          <span>{inv_credit && inv_credit }<span className="text-xs">{credit ? " ("+credit+")" : "(-)"}</span></span>
         </div>
       </td>
 

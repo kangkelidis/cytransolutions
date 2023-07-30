@@ -49,8 +49,10 @@ invoicesSchema.methods.calculateTotal = async function () {
     let total = 0;
     await Promise.all(this.rides.map(async (ride_id) => {
         const ride = await Ride.findById(ride_id);
-        console.log("Ride : ", ride);
-        if (ride) total += ride.credit;
+        if (ride) {
+          total += ride.inv_credit ? ride.inv_credit : ride.credit;
+        }
+          
       })
     );
     

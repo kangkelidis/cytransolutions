@@ -85,7 +85,7 @@ export function printInvoice(invoice) {
         ride.passenger,
         ride.from + " - " + ride.to,
         ride.notes,
-        ride.credit,
+        ride.inv_credit ? ride.inv_credit : ride.credit,
       ];
     }),
 
@@ -99,7 +99,7 @@ export function printInvoice(invoice) {
   doc.setFont("Helvetica", "normal");
   doc.text("Subtotal:", 150, finalY + 10);
   doc.text(
-    `${toCurrency(invoice.total)}`,
+    `${toCurrency(invoice.inv_total ? invoice.inv_total : invoice.total)}`,
     197,
     finalY + 10,
     null,
@@ -108,7 +108,7 @@ export function printInvoice(invoice) {
   );
   doc.text("VAT 9%:", 150, finalY + 15);
   doc.text(
-    `${toCurrency((invoice.total * 9) / 100)}`,
+    `${toCurrency((invoice.inv_total ? invoice.inv_total : invoice.total * 9) / 100)}`,
     197,
     finalY + 15,
     null,
@@ -118,7 +118,7 @@ export function printInvoice(invoice) {
   doc.text("Total:", 150, finalY + 20);
   doc.setFont("Helvetica", "bold");
   doc.text(
-    `${toCurrency((invoice.total * 109) / 100)}`,
+    `${toCurrency((invoice.inv_total ? invoice.inv_total : invoice.total * 109) / 100)}`,
     197,
     finalY + 20,
     null,

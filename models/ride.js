@@ -45,6 +45,9 @@ const rideSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    inv_credit: {
+      type: Number,
+    },
     total: {
       type: Number,
       default: 0,
@@ -68,6 +71,7 @@ rideSchema.post("validate", async function (doc) {
   console.log("RIDE MODEL: POST VALIDATION ", doc);
   console.log("prev invoice", doc.prev_inv);
   doc.total = doc.credit + doc.cash;
+  doc.inv_total = doc.inv_credit + doc.cash;
 
   // only when creating new ride
   if (!doc.count) {

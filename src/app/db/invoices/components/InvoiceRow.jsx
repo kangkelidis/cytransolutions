@@ -9,7 +9,7 @@ import { toCurrency } from "../../../../../utils/utils";
 import { savePDF } from "../../../../../utils/savePDF"
 
 export default function InvoiceRow({
-  entry: { _id, code, client, status, date, total, notes },
+  entry: { _id, code, client, status, date, inv_total, total, notes },
   tdClass,
   trClass,
   tdId,
@@ -61,7 +61,7 @@ export default function InvoiceRow({
 
       <td className={tdClass}>{date ? <DateDisplay date={date} /> : "-"}</td>
       <td className={tdClass}>
-        <span className="font-bold">{toCurrency(total)}</span>
+        <span className="font-bold">{inv_total ? toCurrency(inv_total) : toCurrency(total)}</span>
       </td>
       <td className={tdClass}>
         <StatusBox status={status} />

@@ -186,6 +186,7 @@ export default async function handler(req, res) {
     if (filteredData.to) ride.to = filteredData.to;
     if (filteredData.cash) ride.cash = filteredData.cash;
     if (filteredData.credit) ride.credit = filteredData.credit;
+    if (filteredData.inv_credit) ride.inv_credit = filteredData.inv_credit;
     if (filteredData.notes) ride.notes = filteredData.notes;
     if (filteredData.duration) ride.duration = filteredData.duration;
     ride.prev_inv = prev_inv;
@@ -226,7 +227,7 @@ export default async function handler(req, res) {
 function belongsInAnInvoice(data) {
   // if credit amount and known client
   console.log("check if belongs in invoice ");
-  return data.credit && data.credit !== "0" && data.client;
+  return (data.credit && data.credit !== "0" || data.inv_credit && data.inv_credit !== "0" ) && data.client;
 }
 
 async function generateInvoiceId(client) {

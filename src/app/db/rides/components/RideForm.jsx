@@ -25,6 +25,7 @@ export default function RideForm({ dateToDisplay }) {
   });
   const [locked, setLocked] = React.useState(false)
   const [reload, setReload] = React.useState(false)
+  const [currentUser, setCurrentUser] = React.useState()
   
   React.useEffect(() => {
     setIsLoading(true)
@@ -63,6 +64,7 @@ export default function RideForm({ dateToDisplay }) {
 
   async function fetchDrivers() {
     const user = await fetchUser()
+    setCurrentUser(user)
     let response
     if (user.role === "driver") {
       response = await fetch(`/api/driver?name=${user.name}`, {
@@ -106,7 +108,16 @@ export default function RideForm({ dateToDisplay }) {
       const response = await fetch(`/api/ride?id=${id}`, {
         method: "PUT",
         body: JSON.stringify({ ...data }),
-      });
+      })
+
+      if(response.ok) {
+        alert("Ride updated.")
+        setReload(prev  => !prev)
+
+      } else {
+        alert("Error! Ride not updated.")
+        setReload(prev  => !prev)
+      }
     } else {
       const response = await fetch("/api/ride", {
         method: "POST",
@@ -400,6 +411,29 @@ export default function RideForm({ dateToDisplay }) {
               }
             />
           </div>
+
+{ (currentUser?.role === "manager" || currentUser?.role === "admin") &&
+
+          <div>
+            <label
+              className="text-gray-700 dark:text-gray-200"
+              htmlFor="inv_credit"
+            >
+              Invoice Credit
+            </label>
+            <input
+            disabled={locked}
+              id="inv_credit"
+              type="number"
+              className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+              onFocus={(e) => {e.target.select()}}
+              value={data.inv_credit ? data.inv_credit : data.credit}
+              onChange={(newVal) =>
+                changeSingleStateValue(setData, "inv_credit", newVal.target.value)
+              }
+            />
+          </div>
+}
 
           <div>
           <label

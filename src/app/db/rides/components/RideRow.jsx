@@ -7,6 +7,8 @@ import React from "react";
 import DateDisplay from "../../components/DateDisplay";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
+import { getSession } from "next-auth/react";
+
 
 export default function RideRow({
   entry: {
@@ -30,7 +32,19 @@ export default function RideRow({
   tdId,
   setReload,
 }) {
+  const [user, setUser] = React.useState()   
+
   const router = useRouter();
+
+  async function fetchUser() {
+    const session = await getSession()
+    setUser(session.user)
+  }
+
+  React.useEffect(() => {
+    fetchUser()
+  }, []);
+
 
   async function handleEdit() {
 
@@ -114,7 +128,7 @@ export default function RideRow({
         </div>
         <div className="flex flex-col">
           <small>Credit</small>
-          <span>{inv_credit && inv_credit }<span className="text-xs">{credit ? " ("+credit+")" : "(-)"}</span></span>
+          <span>{(user?.role === "admin" || user?.role === "manager") && inv_credit && inv_credit }<span className="text-xs">{credit ? " ("+credit+")" : "(-)"}</span></span>
         </div>
       </td>
 

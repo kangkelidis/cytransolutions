@@ -19,7 +19,7 @@ export default function RidesPerDriver({ groupedByDriver }) {
   }
 
   return (
-    <div>
+    <div className="flex flex-row gap-[110px]">
       {Object.keys(groupedByDriver).map((driver, i) => {
         if (driver === driverUser?.name || driverUser === "manager") {
             return (

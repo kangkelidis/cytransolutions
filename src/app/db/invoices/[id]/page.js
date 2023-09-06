@@ -19,7 +19,7 @@ export default function EditInvoice() {
 
     return (
         <div>
-            {user && (user.role === "admin" || user.role === "manager") ? <InvoiceForm /> : <></> }
+            {user && (user.role === "admin" || user.role === "manager" || user.role === "demo") ? <InvoiceForm /> : <></> }
         </div>
     )
 }

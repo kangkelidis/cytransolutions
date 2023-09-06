@@ -109,7 +109,7 @@ export default function RideRow({
 
       {!invoiceView && (
         <td className={tdClass + " min-w-[8rem]"}>
-          <span>{driver.count +". "+ driver.name}</span>
+          <span>{driver?.count +". "+ driver?.name}</span>
         </td>
       )}
       {!invoiceView && (

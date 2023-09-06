@@ -80,13 +80,13 @@ export default function SelectUsingDB({ name, selectedData, setSelectedData }) {
       options={
         data.length > 0 &&
         data.map((d) => ({
-          value: d._id,
-          label: d.name,
+          value: d?._id,
+          label: d?.name,
         }))
       }
       styles={selectStyles}
       value={data.length === 1 && name === "driver" ? 
-        {value: data[0]._id, label: data[0].name} 
+        {value: data[0]?._id, label: data[0]?.name} 
         : selectedData}
       onChange={(newVal) => {
         setSelectedData(newVal)

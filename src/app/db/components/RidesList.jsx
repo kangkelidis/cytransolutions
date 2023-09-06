@@ -88,7 +88,7 @@ export default function RidesList({ filters, totals, setTotals }) {
                 {d.from + "-" + d.to}
               </th>
               <th className="font-thin text-left px-4 whitespace-nowrap">
-                {d.driver.name}
+                {d.driver?.name}
               </th>
               <th className="font-thin text-left px-4 whitespace-nowrap">
                 {d.client && d.client.name}

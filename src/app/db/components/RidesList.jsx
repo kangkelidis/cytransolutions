@@ -4,9 +4,13 @@ import React from "react";
 import { getSession } from "next-auth/react";
 import { toCurrency } from "../../../../utils/utils";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { initializeRides } from "@/app/dashboard/reducers/ridesReducer";
+import { setFilters } from "@/app/dashboard/reducers/filtersReducer";
 
 export default function RidesList({ filters, totals, setTotals }) {
   const [data, setData] = React.useState([]);
+  const dispatch = useDispatch()
 
   React.useEffect(() => {
     fetchData();
@@ -40,7 +44,12 @@ export default function RidesList({ filters, totals, setTotals }) {
     total: dbData.body.total,
     credit: dbData.body.credit,
     count: dbData.body.count,
+
+    
   }
+    
+  dispatch(initializeRides(filters))
+  dispatch(setFilters(filters))
 
     if (!totals || newTotals.count !== totals.count || newTotals.credit !== totals.credit || newTotals.total !== totals.total ) {
         setTotals(newTotals)

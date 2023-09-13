@@ -158,7 +158,7 @@ export function printInvoice(invoice) {
       [
         "Account name: CYTRANSOLUTIONS LTD",
         "Account number: 357026026038",
-        "IBAN: CY470020001950000357026026038",
+        "IBAN: CY47002001950000357026026038",
         "BIC: BCYPCY2N",
       ],
       13,

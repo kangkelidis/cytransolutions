@@ -100,16 +100,18 @@ export function printInvoice(invoice) {
 
   doc.setFontSize(11);
   doc.setFont("Helvetica", "normal");
-  doc.text("Subtotal:", 150, finalY + 10);
-  doc.text(
-    `${toCurrency(invoice.inv_total ? invoice.inv_total * vat_adj_sub : invoice.total * vat_adj_sub)}`,
-    197,
-    finalY + 10,
-    null,
-    null,
-    "right"
-  );
-  doc.text(`VAT 9%:`, 150, finalY + 15);
+  if (!invoice.vat_included) {
+    doc.text("Subtotal:", 150, finalY + 10);
+    doc.text(
+      `${toCurrency(invoice.inv_total ? invoice.inv_total * vat_adj_sub : invoice.total * vat_adj_sub)}`,
+      197,
+      finalY + 10,
+      null,
+      null,
+      "right"
+    );
+  }
+  doc.text(`VAT 9%: ${invoice.vat_included ? "inc." : ""}`, 150, finalY + 15);
   doc.text(
     `${toCurrency((invoice.inv_total ? invoice.inv_total * vat_adj_vat : invoice.total * vat_adj_vat))}`,
     197,

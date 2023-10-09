@@ -93,22 +93,25 @@ export function printInvoice(invoice) {
 
   let finalY = doc.lastAutoTable.finalY;
 
+  const vat_adj_sub = invoice.vat_included ? 100/109 : 1
+  const vat_adj_vat = invoice.vat_included ? 9/109 : 9/100
+  const vat_adj_tot = invoice.vat_included ? 1 : 109/100
   doc.line(13, finalY + 5, 197, finalY + 5);
 
   doc.setFontSize(11);
   doc.setFont("Helvetica", "normal");
   doc.text("Subtotal:", 150, finalY + 10);
   doc.text(
-    `${toCurrency(invoice.inv_total ? invoice.inv_total : invoice.total)}`,
+    `${toCurrency(invoice.inv_total ? invoice.inv_total * vat_adj_sub : invoice.total * vat_adj_sub)}`,
     197,
     finalY + 10,
     null,
     null,
     "right"
   );
-  doc.text("VAT 9%:", 150, finalY + 15);
+  doc.text(`VAT 9%:`, 150, finalY + 15);
   doc.text(
-    `${toCurrency((invoice.inv_total ? invoice.inv_total : invoice.total * 9) / 100)}`,
+    `${toCurrency((invoice.inv_total ? invoice.inv_total * vat_adj_vat : invoice.total * vat_adj_vat))}`,
     197,
     finalY + 15,
     null,
@@ -118,7 +121,7 @@ export function printInvoice(invoice) {
   doc.text("Total:", 150, finalY + 20);
   doc.setFont("Helvetica", "bold");
   doc.text(
-    `${toCurrency((invoice.inv_total ? invoice.inv_total : invoice.total * 109) / 100)}`,
+    `${toCurrency(invoice.inv_total ? invoice.inv_total * vat_adj_tot : invoice.total * vat_adj_tot)}`,
     197,
     finalY + 20,
     null,

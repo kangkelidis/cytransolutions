@@ -77,6 +77,7 @@ export default async function handler(req, res) {
       date: filteredData.date,
       status: filteredData.status,
       notes: filteredData.notes,
+      vat_included: Boolean(filteredData.vat_included)
     });
     return res.json({ message: "ok" });
   }

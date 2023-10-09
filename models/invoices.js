@@ -30,6 +30,10 @@ const invoicesSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    vat_included: {
+      type: Boolean,
+      default: false
+    },
     createdAt: {
       type: Date,
       default: Date.now,

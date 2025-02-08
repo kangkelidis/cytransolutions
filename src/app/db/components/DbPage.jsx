@@ -45,6 +45,11 @@ export default function DbPAge({ page, titles, filters, setFilters, sortBy, setS
       }
     );
     const data = await response.json();
+    if (!response.ok) {
+      console.log(data);
+      return;
+    }
+    
 
     setDbData(data.body.data);
     setNumOfEntries(data.body.total);

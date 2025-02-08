@@ -1,14 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useContext } from "react";
 import DbPage from "../components/DbPage";
-import { useContext } from 'react';
 import { FiltersContext } from "../layout";
-
+import CreateInvoiceButton from "./components/CreateInvoiceButton";
 
 export default function Invoices() {
-
-  let {filters_inv, setFilters_inv, sortBy_inv, setSortBy_inv} = useContext(FiltersContext);
+  const { filters_inv, setFilters_inv, sortBy_inv, setSortBy_inv } = useContext(FiltersContext);
 
   const titles = [
     { "": null },
@@ -22,13 +20,18 @@ export default function Invoices() {
   ];
 
   return (
-    <DbPage
-      page={"invoice"}
-      titles={titles}
-      filters={filters_inv}
-      setFilters={setFilters_inv}
-      sortBy={sortBy_inv}
-      setSortBy={setSortBy_inv}
-    />
+    <>
+      <div className="w-ull flex justify-end">
+        <CreateInvoiceButton />
+      </div>
+      <DbPage
+        page={"invoice"}
+        titles={titles}
+        filters={filters_inv}
+        setFilters={setFilters_inv}
+        sortBy={sortBy_inv}
+        setSortBy={setSortBy_inv}
+      />
+    </>
   );
 }

@@ -56,7 +56,7 @@ export default function InvoiceRow({
       </td>
 
       <td className={tdClass}>
-        <span className="font-bold">{client.name}</span>
+        <span className="font-bold">{client?.name}</span>
       </td>
 
       <td className={tdClass}>{date ? <DateDisplay date={date} /> : "-"}</td>

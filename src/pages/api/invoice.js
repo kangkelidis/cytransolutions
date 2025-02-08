@@ -3,9 +3,41 @@ import dbConnect from "../../../utils/dbConnect";
 import Client from "../../../models/client";
 import Ride from "../../../models/ride";
 import { zeroPad } from "../../../utils/utils";
+import Tables from "../../../models/tables"; 
 
 export default async function handler(req, res) {
   await dbConnect();
+  
+  if (req.method === "POST") {
+    const data = req.body;
+    // Only allow creation of a custom invoice if data.custom is true.
+    if (data.custom) {
+      try {
+        //  increase the table counting custom invoices
+        const tables = await Tables.findOne({})
+        const count = tables.custom_invoices + 1
+        await Tables.findOneAndUpdate({}, {custom_invoices: count})
+        return res.status(200).json({ message: "Custom invoice created" });
+      } catch (error) {
+        console.log("Custom invoice creation error: ", error.message);
+        return res.status(500).json({ message: error.message });
+      }
+    } else {
+      // Optionally, for non-custom posts, you could return an error or delegate to other logic.
+      return res.status(400).json({ message: "POST only supports custom invoices" });
+    }
+  }
+
+  if (req.method === "GET" && req.query.nextCustom === "true") {
+    try {
+      const tables = await Tables.findOne({})
+      const countCustom = tables.custom_invoices
+      const nextCode = `${countCustom + 1}`;
+      return res.status(200).json({ nextCode });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 
   if (req.method === "GET") {
     const perPage = req.query.limit;
@@ -130,7 +162,7 @@ async function searchUsingTerm(term, sort, rev, allResults) {
   allResults.forEach((res) => {
     console.log(res.code, term);
     if (pattern.test(res.code)) filteredResults.add(res);
-    if (pattern.test(res.client.name)) filteredResults.add(res);
+    if (pattern.test(res.client?.name)) filteredResults.add(res);
     if (pattern.test(res.status)) filteredResults.add(res);
     if (res.date && pattern.test(res.date)) filteredResults.add(res);
     if (pattern.test(res.notes)) filteredResults.add(res);

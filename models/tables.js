@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import invoices from "./invoices";
 
 const tablesSchema = new mongoose.Schema({
     clients: {
@@ -16,7 +17,11 @@ const tablesSchema = new mongoose.Schema({
     locations: {
         type: Number,
         default: 0
-    }
+    },
+    custom_invoices: {
+        type: Number,
+        default: 0
+    },
 
 })
 

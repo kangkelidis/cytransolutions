@@ -4,7 +4,7 @@ import { toCurrency } from "./utils.js";
 
 export function generateInvoicePDF(invoice) {
   const doc = new jsPDF.jsPDF();
-  const vatRate = 0.19;
+  const vatRate = 0.09;
 
   // Layout constants (adjusted to match invoice.js)
   const PAGE_MARGIN = 13; // invoice.js uses 10 but here we use 13

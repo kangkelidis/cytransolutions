@@ -19,7 +19,7 @@ export default function NewInvoice() {
 function CustomInvoiceForm({ onClose }) {
   // State for invoice rows
   const [rows, setRows] = useState([{ description: "", amount: "" }]);
-  const vatRate = 0.19; // 19% VAT
+  const vatRate = 0.09; // 9% VAT
 
   // State for client type: "existing" or "custom"
   const [clientType, setClientType] = useState("existing");
@@ -238,7 +238,7 @@ function CustomInvoiceForm({ onClose }) {
                 onChange={(e) => setPricesIncludeVat(e.target.checked)}
                 className="mr-1"
               />
-              Prices include VAT (19%)
+              Prices include VAT (9%)
             </label>
           </div>
         </div>
